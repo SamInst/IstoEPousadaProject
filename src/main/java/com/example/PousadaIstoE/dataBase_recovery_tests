@@ -1,0 +1,4 @@
+insert into employee (id, cpf, name) VALUES (1, '000.000.000-01', 'sam employee');
+
+insert into client (id, address, cpf, data_entry, data_out, job, name, phone, registered_by_id) VALUES
+        (1, 'address test', '000.000.000-00', '2023-03-08', '2023-03-13', 'developer', 'sam', '(00) 90000-0000', 1);
