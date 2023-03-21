@@ -12,16 +12,43 @@ public class MapaGeral {
     @Id
     private Long id;
 
-    LocalDate today;
+    private LocalDate data;
     private String report;
     private Integer apartment;
+    private Float entrada;
+    private Float saida;
+    private Float total = entrada + saida;
 
-    public LocalDate getToday() {
-        return today;
+    public Float getEntrada() {
+        return entrada;
     }
 
-    public void setToday(LocalDate today) {
-        this.today = today;
+    public void setEntrada(Float entrada) {
+        this.entrada = entrada;
+    }
+
+    public Float getSaida() {
+        return saida;
+    }
+
+    public void setSaida(Float saida) {
+        this.saida = saida;
+    }
+
+    public MapaGeral(LocalDate data, String report, Integer apartment, Float entrada, Float saida) {
+        this.data = data;
+        this.report = report;
+        this.apartment = apartment;
+        this.entrada = entrada;
+        this.saida = saida;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public void setData(LocalDate today) {
+        this.data = today;
     }
 
     public String getReport() {
@@ -46,13 +73,6 @@ public class MapaGeral {
 
     public Long getId() {
         return id;
-    }
-
-    public MapaGeral(Long id, LocalDate today, String report, Integer apartment) {
-        this.id = id;
-        this.today = today;
-        this.report = report;
-        this.apartment = apartment;
     }
 
     public MapaGeral() {
