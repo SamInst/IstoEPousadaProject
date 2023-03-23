@@ -10,14 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/maps")
 public class MapaGeralController {
-    @PersistenceContext
-    private EntityManager manager;
-
 private final MapaGeralService mapaGeralService;
     public MapaGeralController(MapaGeralService mapaGeralService) {
         this.mapaGeralService = mapaGeralService;
@@ -34,8 +32,13 @@ private final MapaGeralService mapaGeralService;
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping //---------------------------------------------------------------------------------------------------
+    @PostMapping
     public MapaGeral add(@RequestBody MapaGeral mapaGeral) {
         return mapaGeralService.add(mapaGeral);
+    }
+    @GetMapping("/findByDate")
+    public List<MapaGeral> findByData(LocalDate date){
+    System.out.println(date);
+        return mapaGeralService.findByData(date);
     }
 }

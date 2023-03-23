@@ -20,12 +20,19 @@ public class MapaGeralService {
     public MapaGeralService(MapaGeralRepository mapaGeralRepository) {
         this.mapaGeralRepository = mapaGeralRepository;
     }
-
     public List<MapaGeral> listAllMaps(){
         return mapaGeralRepository.findAll();
     }
 
     public MapaGeral add(MapaGeral mapaGeral) {
+        Float total = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
+                .setMaxResults(1)
+                .getSingleResult();
+
+        if (total == null){
+            throw new EntityNotFound("Não foi criado um mapa hoje ainda");
+        }
+
         mapaGeral.setData(LocalDate.now());
         mapaGeral.setHora(LocalTime.now());
         mapaGeral.setTotal(total(mapaGeral));
@@ -56,4 +63,16 @@ public class MapaGeralService {
       mapaGeral.setTotal(somaTotal);
       return mapaGeral.getTotal();
   }
+
+  public List<MapaGeral> findByData(LocalDate date){
+      return mapaGeralRepository.findByData(date);
+  }
+
+  private void pagamento_pix(MapaGeral mapaGeral){
+        mapaGeral.setSaida(mapaGeral.getEntrada());
+  }
+  private void pagamento_cartao(MapaGeral mapaGeral){
+    mapaGeral.setSaida(mapaGeral.getEntrada());
+    }
+
 }

@@ -1,7 +1,5 @@
 package com.example.PousadaIstoE.model;
-
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 

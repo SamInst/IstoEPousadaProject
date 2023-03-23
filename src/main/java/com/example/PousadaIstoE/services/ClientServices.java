@@ -40,8 +40,6 @@ public class ClientServices {
                     client.getPhone(),
                     client.getAddress(),
                     client.getJob(),
-                    client.getDataEntry(),
-                    client.getDataOut(),
                     client.getRegisteredBy().getName()
             );
             return ResponseEntity.ok(response);

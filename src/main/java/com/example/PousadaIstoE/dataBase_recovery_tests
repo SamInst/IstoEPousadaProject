@@ -4,6 +4,23 @@ insert into tb_clients (id, address, cpf, data_entry, data_out, job, name, phone
     (1, 'address test', '000.000.000-00', '2023-03-08', '2023-03-13', 'developer', 'sam', '(00) 90000-0000', 1);
 
 insert into tb_mapa_geral (id, apartment, data, entrada, report, saida, total)
-values (1, 3, now(), 35, 'ENTRADA DIA', 0, 35);
+values (1, NULL, now(), 0, 'TRANSFERENCIA MAPA', 0, 350);
+
+insert into tb_mapa_geral (id, apartment, data, entrada, report, saida, total)
+values (2, 3, now(), 50, 'ENTRADA DIA', 0, 85);
+
+insert into tb_mapa_geral (id, apartment, data, entrada, report, saida)
+values (3, 3, now(), 0, 'ENTRADA DIA', 20);
+insert into tb_mapa_geral (id, apartment, data, entrada, report, saida, total)
+values (4, 3, now(), 0, 'ENTRADA DIA', 0, 400);
 
 SELECT * FROM tb_mapa_geral;
+
+SELECT total FROM tb_mapa_geral ORDER BY id DESC;
+
+
+SELECT total FROM tb_mapa_geral ORDER BY id DESC LIMIT 1;
+select sum(entrada + tb_mapa_geral.saida) as total from tb_mapa_geral;
+select sum(saida) from tb_mapa_geral;
+
+delete from tb_mapa_geral where id > 0;
