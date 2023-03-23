@@ -1,15 +1,13 @@
 package com.example.PousadaIstoE.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
-
+@Table(name = "tb_clients")
 @Entity
 public class Client {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String name;
