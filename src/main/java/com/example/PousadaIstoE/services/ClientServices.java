@@ -31,7 +31,7 @@ public class ClientServices {
     public List<Client> findAll(){
         return clientRepository.findAll();
     }
-    public ResponseEntity<ClienteResponse> findClientById(@PathVariable("id") Long id){
+    public ResponseEntity<ClienteResponse> findClientById(Long id){
         final var client = clientRepository.findById(id).orElseThrow(() -> new EntityNotFound("Client not found"));
         if (client != null) {
             final var response = new ClienteResponse(
@@ -48,16 +48,16 @@ public class ClientServices {
         }
     }
 
-    public Client registerClient(@RequestBody Client client) {
+    public Client registerClient(Client client) {
         return clientRepository.save(client);
     }
 
-    public Client updateClientData(@PathVariable Long clientId, @RequestBody Client client) {
+    public Client updateClientData(Long clientId, Client client) {
         Client client1 = clientRepository.findById(clientId).get();
         BeanUtils.copyProperties(client1, client, "id");
         return clientRepository.save(client1);
     }
-    public ResponseEntity<Client> removeClient(@PathVariable Long clientId) {
+    public ResponseEntity<Client> removeClient(Long clientId) {
         try {
             exclude(clientId);
             return ResponseEntity.noContent().build();

@@ -38,7 +38,6 @@ private final MapaGeralService mapaGeralService;
     }
     @GetMapping("/findByDate")
     public List<MapaGeral> findByData(LocalDate date){
-    System.out.println(date);
         return mapaGeralService.findByData(date);
     }
 }

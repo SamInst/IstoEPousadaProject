@@ -17,10 +17,7 @@ public class Pernoites {
 
     @ManyToOne
     private Client client;
-    @ManyToOne
-    private Employee registeredBy;
-
-
+    private Integer quantidadePessoa;
 
     public Long getId() {
         return id;
@@ -28,6 +25,10 @@ public class Pernoites {
 
     public Integer getApt() {
         return apt;
+    }
+
+    public Integer getQuantidadePessoa() {
+        return quantidadePessoa;
     }
 
     public void setApt(Integer apt) {
@@ -64,13 +65,5 @@ public class Pernoites {
 
     public void setClient(Client client) {
         this.client = client;
-    }
-
-    public Employee getRegisteredBy() {
-        return registeredBy;
-    }
-
-    public void setRegisteredBy(Employee registeredBy) {
-        this.registeredBy = registeredBy;
     }
 }
