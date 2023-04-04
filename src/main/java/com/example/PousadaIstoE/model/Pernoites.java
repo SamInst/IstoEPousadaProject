@@ -1,9 +1,7 @@
 package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 public class Pernoites {
@@ -14,10 +12,12 @@ public class Pernoites {
     private LocalDate dataEntrada;
     private LocalDate dataSaida;
     private String Consumo;
+    private Integer quantidadePessoa;
+
 
     @ManyToOne
     private Client client;
-    private Integer quantidadePessoa;
+
 
     public Long getId() {
         return id;
@@ -27,8 +27,16 @@ public class Pernoites {
         return apt;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Integer getQuantidadePessoa() {
         return quantidadePessoa;
+    }
+
+    public void setQuantidadePessoa(Integer quantidadePessoa) {
+        this.quantidadePessoa = quantidadePessoa;
     }
 
     public void setApt(Integer apt) {

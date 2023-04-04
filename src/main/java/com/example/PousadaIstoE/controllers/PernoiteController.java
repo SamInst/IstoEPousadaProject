@@ -22,7 +22,7 @@ public class PernoiteController {
 
     @GetMapping("/{pernoiteId}")
     public ResponseEntity<PernoiteResponse> findbyId(@PathVariable ("pernoiteId") Long id){
-        return pernoiteService.findbyId(id);
+        return pernoiteService.findById(id);
     }
 
     @PostMapping

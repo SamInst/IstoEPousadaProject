@@ -8,7 +8,6 @@ import com.example.PousadaIstoE.response.PernoiteResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.time.Period;
 import java.util.List;
 
@@ -25,9 +24,13 @@ public class PernoiteService {
         return pernoitesRepository.findAll();
     }
 
-    public ResponseEntity<PernoiteResponse> findbyId(Long id){
+    public ResponseEntity<PernoiteResponse> findById(Long id){
         final var pernoites = pernoitesRepository.findById(id).orElseThrow(() -> new EntityNotFound("Pernoite não encontrado"));
+        System.out.println(pernoites.getQuantidadePessoa());
+        System.out.println(pernoites.getApt());
+
         quantidadeDePessoas(pernoites);
+
         Integer p1 = Period.between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
         Float total = price * p1;
 

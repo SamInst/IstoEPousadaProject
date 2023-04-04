@@ -24,3 +24,24 @@ select sum(entrada + tb_mapa_geral.saida) as total from tb_mapa_geral;
 select sum(saida) from tb_mapa_geral;
 
 delete from tb_mapa_geral where id > 0;
+
+insert into pernoites (id, consumo, data_entrada, data_saida, quantidade_pessoa, client_id, room_id)
+VALUES (1, 'consumo','2023-03-27', '2023-03-29', 2, 1, 1);
+
+
+
+insert into quartos (id, number) VALUES (1, 1);
+insert into quartos (id, number) VALUES (2, 2);
+insert into quartos (id, number) VALUES (3, 3);
+insert into quartos (id, number) VALUES (4, 4);
+insert into quartos (id, number) VALUES (5, 5);
+insert into quartos (id, number) VALUES (6, 6);
+insert into quartos (id, number) VALUES (7, 7);
+insert into quartos (id, number) VALUES (8, 8);
+insert into quartos (id, number) VALUES (9, 9);
+insert into quartos (id, number) VALUES (10, 10);
+select * from quartos;
+
+delete from pernoites where id = 102;
+insert into  entradas (id, consumo, apt, hora_entrada, hora_saida, placa)
+VALUES (1, 'consumo', 2, '18:20', '19:30', 'abc1234');

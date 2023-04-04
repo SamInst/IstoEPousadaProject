@@ -19,6 +19,10 @@ public class Entradas {
     private String Consumo;
     private String placa;
 
+    public Entradas() {
+
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -65,6 +69,15 @@ public class Entradas {
     }
 
     public void setPlaca(String placa) {
+        this.placa = placa;
+    }
+
+    public Entradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String consumo, String placa) {
+        this.id = id;
+        this.apt = apt;
+        this.horaEntrada = horaEntrada;
+        this.horaSaida = horaSaida;
+        Consumo = consumo;
         this.placa = placa;
     }
 }
