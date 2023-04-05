@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,31 +84,28 @@ public class PernoiteService {
         List<Pernoites> pernoitesExistentes = pernoitesRepository.findAll();
         List<LocalDate> listaDias = listagemDeDiasEntreDatas(pernoites.getDataEntrada(), pernoites.getDataSaida());
 
-        List<LocalDate> dia2 = new ArrayList<>();
-        dia2.add(pernoites.getDataEntrada());
 
 
-//        for (LocalDate dia : listaDias) {
-//            System.out.println(dia + " asda");
-//        }
+
         for (Pernoites pernoite : pernoitesExistentes) {
             for (LocalDate dia : listaDias) {
-                System.out.println(dia + " asda");
 
-                System.out.println(listaDias + " bbb");
-//                if (pernoite.getDataEntrada().isEqual(dia)) {
-//                    throw new EntityConflict("O quarto não está disponível nessa data.");
-//                }
+
+                System.out.println(dia+ " a");
+                System.out.println(listaDias + " c");
+
             if (pernoite.getApt().equals(pernoites.getApt())) {
-                if (pernoites.getDataEntrada().isEqual(pernoite.getDataEntrada())
-                    ||
-                    pernoites.getDataSaida().isEqual(pernoite.getDataSaida())
-                    ||
-                    dia2.equals(listaDias)
-                ) {
-                   throw new EntityConflict("O quarto não está disponível nessa data.");
+
+                if (pernoites.getDataEntrada().isEqual(pernoite.getDataEntrada()) ||
+                        pernoites.getDataSaida().isEqual(pernoite.getDataSaida())) {
+                    if (listaDias.contains(dia)){
+                        throw new EntityConflict("quararara");
+                    }
                     }
                 }
+//                if (dia2.contains(pernoites.getDataEntrada())){
+//                    throw new EntityConflict("O quarto não está disponível nessa data.");
+//                }
             }
         }
     }
