@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,23 +83,38 @@ public class PernoiteService {
 
     private void validacaoPernoite(Pernoites pernoites){
         List<Pernoites> pernoitesExistentes = pernoitesRepository.findAll();
-        List<LocalDate> listaDias = contagemDeDiasEntreDatas(pernoites.getDataEntrada(), pernoites.getDataSaida());
+        List<LocalDate> listaDias = listagemDeDiasEntreDatas(pernoites.getDataEntrada(), pernoites.getDataSaida());
 
-        for (LocalDate dia : listaDias) {
-            System.out.println(dia + "asda");
-        }
+        List<LocalDate> dia2 = new ArrayList<>();
+        dia2.add(pernoites.getDataEntrada());
 
+
+//        for (LocalDate dia : listaDias) {
+//            System.out.println(dia + " asda");
+//        }
         for (Pernoites pernoite : pernoitesExistentes) {
+            for (LocalDate dia : listaDias) {
+                System.out.println(dia + " asda");
+
+                System.out.println(listaDias + " bbb");
+//                if (pernoite.getDataEntrada().isEqual(dia)) {
+//                    throw new EntityConflict("O quarto não está disponível nessa data.");
+//                }
             if (pernoite.getApt().equals(pernoites.getApt())) {
-                if ((pernoites.getDataEntrada().isEqual(pernoite.getDataEntrada())) ||
-                        (pernoites.getDataSaida().isEqual(pernoite.getDataSaida()))) {
+                if (pernoites.getDataEntrada().isEqual(pernoite.getDataEntrada())
+                    ||
+                    pernoites.getDataSaida().isEqual(pernoite.getDataSaida())
+                    ||
+                    dia2.equals(listaDias)
+                ) {
                    throw new EntityConflict("O quarto não está disponível nessa data.");
+                    }
                 }
             }
         }
     }
 
-    private static List<LocalDate> contagemDeDiasEntreDatas(LocalDate dataInicial, LocalDate dataFinal) {
+    private static List<LocalDate> listagemDeDiasEntreDatas(LocalDate dataInicial, LocalDate dataFinal) {
         List<LocalDate> listaDias = new ArrayList<>();
         long diferencaEmDias = ChronoUnit.DAYS.between(dataInicial, dataFinal);
 
@@ -106,8 +122,7 @@ public class PernoiteService {
             LocalDate data = dataInicial.plusDays(i);
             listaDias.add(data);
         }
-        System.out.println(listaDias + "1111");
+        System.out.println(listaDias);
         return listaDias;
     }
-
 }
