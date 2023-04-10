@@ -34,4 +34,9 @@ public class EntradaController {
     public Entradas entradas(Entradas entradas){
         return entradaService.registerEntrada(entradas);
     }
+
+    @PutMapping("/{id}")
+    public Entradas atualizarEntrada (@PathVariable ("id") Long entradaID, @RequestBody Entradas entradas){
+        return entradaService.updateEntradaData(entradaID, entradas);
+    }
 }

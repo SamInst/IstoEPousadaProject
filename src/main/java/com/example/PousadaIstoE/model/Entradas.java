@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
@@ -16,7 +15,7 @@ public class Entradas {
     private Integer apt;
     private LocalTime horaEntrada;
     private LocalTime horaSaida;
-    private String Consumo;
+    private String consumo;
     private String placa;
 
     public Entradas() {
@@ -57,11 +56,11 @@ public class Entradas {
     }
 
     public String getConsumo() {
-        return Consumo;
+        return consumo;
     }
 
     public void setConsumo(String consumo) {
-        Consumo = consumo;
+        this.consumo = consumo;
     }
 
     public String getPlaca() {
@@ -77,7 +76,7 @@ public class Entradas {
         this.apt = apt;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
-        Consumo = consumo;
+        this.consumo = consumo;
         this.placa = placa;
     }
 }

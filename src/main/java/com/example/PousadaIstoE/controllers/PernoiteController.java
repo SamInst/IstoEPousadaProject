@@ -30,7 +30,7 @@ public class PernoiteController {
     public Pernoites createPernoite(Pernoites pernoites){
         return pernoiteService.createPernoite(pernoites);
     }
-    @PutMapping("{pernoiteId}")
+    @PutMapping("/{pernoiteId}")
     public Pernoites AlterarDadosPernoite(@PathVariable ("pernoiteId") Long pernoiteId, @RequestBody Pernoites pernoites){
         return pernoiteService.updatePernoiteData(pernoiteId, pernoites);
     }

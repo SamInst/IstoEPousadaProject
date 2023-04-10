@@ -3,14 +3,12 @@ package com.example.PousadaIstoE.services;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityDates;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
-import com.example.PousadaIstoE.model.ListaDias;
 import com.example.PousadaIstoE.model.Pernoites;
 import com.example.PousadaIstoE.repository.PernoitesRepository;
 import com.example.PousadaIstoE.response.PernoiteResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
@@ -19,7 +17,6 @@ import java.util.List;
 public class PernoiteService {
     Float price;
     private final PernoitesRepository pernoitesRepository;
-
 
     protected PernoiteService(PernoitesRepository pernoitesRepository) {
         this.pernoitesRepository = pernoitesRepository;
@@ -44,15 +41,15 @@ public class PernoiteService {
                         pernoites.getClient().getName(),
                         pernoites.getClient().getPhone()
                 ),
-                pernoites.getApt(),
-                pernoites.getDataEntrada(),
-                pernoites.getDataSaida(),
-                pernoites.getConsumo(),
+                        pernoites.getApt(),
+                        pernoites.getDataEntrada(),
+                        pernoites.getDataSaida(),
+                        pernoites.getConsumo(),
                new PernoiteResponse.Valores(
-                       pernoites.getQuantidadePessoa(),
-                       p1,
-                       price,
-                       total
+                        pernoites.getQuantidadePessoa(),
+                        p1,
+                        price,
+                        total
                )
         );
         return ResponseEntity.ok(response);
@@ -85,11 +82,12 @@ public class PernoiteService {
         List<Pernoites> pernoitesCadastrados = pernoitesRepository.findByApt(pernoite.getApt());
 
         for (Pernoites pernoiteCadastrado : pernoitesCadastrados) {
-            if (pernoite.getDataEntrada().isBefore(pernoiteCadastrado.getDataSaida()) &&
-                    pernoite.getDataSaida().isAfter(pernoiteCadastrado.getDataEntrada())) {
+            if (pernoite.getDataEntrada().isBefore(pernoiteCadastrado.getDataSaida())
+                    && pernoite.getDataSaida().isAfter(pernoiteCadastrado.getDataEntrada())) {
                 throw new EntityConflict("O apartamento já está ocupado entre as datas informadas.");
             }
-            if (pernoite.getDataEntrada().isBefore(LocalDate.now())||pernoite.getDataSaida().isBefore(LocalDate.now())){
+            if (pernoite.getDataEntrada().isBefore(LocalDate.now())
+                    || pernoite.getDataSaida().isBefore(LocalDate.now())){
                 throw new EntityDates("A data inserida não pode ser inferior a hoje");
             }
             if (pernoite.getDataSaida().isBefore(pernoite.getDataEntrada())){
