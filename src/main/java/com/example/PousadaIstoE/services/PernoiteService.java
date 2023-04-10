@@ -1,7 +1,9 @@
 package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.exceptions.EntityConflict;
+import com.example.PousadaIstoE.exceptions.EntityDates;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
+import com.example.PousadaIstoE.model.ListaDias;
 import com.example.PousadaIstoE.model.Pernoites;
 import com.example.PousadaIstoE.repository.PernoitesRepository;
 import com.example.PousadaIstoE.response.PernoiteResponse;
@@ -11,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,7 +20,8 @@ public class PernoiteService {
     Float price;
     private final PernoitesRepository pernoitesRepository;
 
-    public PernoiteService(PernoitesRepository pernoitesRepository) {
+
+    protected PernoiteService(PernoitesRepository pernoitesRepository) {
         this.pernoitesRepository = pernoitesRepository;
     }
 
@@ -58,7 +59,7 @@ public class PernoiteService {
     }
 
     public Pernoites createPernoite(Pernoites pernoites){
-        validacaoPernoite(pernoites);
+        cadastrarPernoite(pernoites);
         return pernoitesRepository.save(pernoites);
     }
 
@@ -80,45 +81,21 @@ public class PernoiteService {
          }
     }
 
-    private void validacaoPernoite(Pernoites pernoites){
-        List<Pernoites> pernoitesExistentes = pernoitesRepository.findAll();
-        List<LocalDate> listaDias = listagemDeDiasEntreDatas(pernoites.getDataEntrada(), pernoites.getDataSaida());
+    private void cadastrarPernoite(Pernoites pernoite) throws EntityConflict {
+        List<Pernoites> pernoitesCadastrados = pernoitesRepository.findByApt(pernoite.getApt());
 
-
-
-
-        for (Pernoites pernoite : pernoitesExistentes) {
-            for (LocalDate dia : listaDias) {
-
-
-                System.out.println(dia+ " a");
-                System.out.println(listaDias + " c");
-
-            if (pernoite.getApt().equals(pernoites.getApt())) {
-
-                if (pernoites.getDataEntrada().isEqual(pernoite.getDataEntrada()) ||
-                        pernoites.getDataSaida().isEqual(pernoite.getDataSaida())) {
-                    if (listaDias.contains(dia)){
-                        throw new EntityConflict("quararara");
-                    }
-                    }
-                }
-//                if (dia2.contains(pernoites.getDataEntrada())){
-//                    throw new EntityConflict("O quarto não está disponível nessa data.");
-//                }
+        for (Pernoites pernoiteCadastrado : pernoitesCadastrados) {
+            if (pernoite.getDataEntrada().isBefore(pernoiteCadastrado.getDataSaida()) &&
+                    pernoite.getDataSaida().isAfter(pernoiteCadastrado.getDataEntrada())) {
+                throw new EntityConflict("O apartamento já está ocupado entre as datas informadas.");
+            }
+            if (pernoite.getDataEntrada().isBefore(LocalDate.now())||pernoite.getDataSaida().isBefore(LocalDate.now())){
+                throw new EntityDates("A data inserida não pode ser inferior a hoje");
+            }
+            if (pernoite.getDataSaida().isBefore(pernoite.getDataEntrada())){
+                throw new EntityDates("A data de Saída não pode ser inferior a data de entrada");
             }
         }
-    }
-
-    private static List<LocalDate> listagemDeDiasEntreDatas(LocalDate dataInicial, LocalDate dataFinal) {
-        List<LocalDate> listaDias = new ArrayList<>();
-        long diferencaEmDias = ChronoUnit.DAYS.between(dataInicial, dataFinal);
-
-        for (int i = 0; i <= diferencaEmDias; i++) {
-            LocalDate data = dataInicial.plusDays(i);
-            listaDias.add(data);
-        }
-        System.out.println(listaDias);
-        return listaDias;
+        pernoitesRepository.save(pernoite);
     }
 }
