@@ -56,7 +56,7 @@ public class PernoiteService {
     }
 
     public Pernoites createPernoite(Pernoites pernoites){
-        cadastrarPernoite(pernoites);
+        validacaoDeApartamento(pernoites);
         return pernoitesRepository.save(pernoites);
     }
 
@@ -78,7 +78,7 @@ public class PernoiteService {
          }
     }
 
-    private void cadastrarPernoite(Pernoites pernoite) throws EntityConflict {
+    private void validacaoDeApartamento(Pernoites pernoite) throws EntityConflict {
         List<Pernoites> pernoitesCadastrados = pernoitesRepository.findByApt(pernoite.getApt());
 
         for (Pernoites pernoiteCadastrado : pernoitesCadastrados) {
@@ -92,6 +92,10 @@ public class PernoiteService {
             }
             if (pernoite.getDataSaida().isBefore(pernoite.getDataEntrada())){
                 throw new EntityDates("A data de Saída não pode ser inferior a data de entrada");
+            }
+            if (pernoite.getDataEntrada().equals(pernoite.getDataSaida())
+                    ||pernoite.getDataSaida().equals(pernoite.getDataEntrada())) {
+                throw new EntityDates("A data de Entrada/Saída não podem ser iguais");
             }
         }
         pernoitesRepository.save(pernoite);

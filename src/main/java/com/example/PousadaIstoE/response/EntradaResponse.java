@@ -8,6 +8,11 @@ public record EntradaResponse(
         LocalTime hora_saida,
         String consumo,
         String placa,
-        Float total
+        TempoPermanecido tempo_permanecido,
+        double total
 ) {
+    public record TempoPermanecido(
+            int horas,
+            int minutos
+    ){}
 }
