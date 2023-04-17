@@ -1,7 +1,10 @@
 package com.example.PousadaIstoE.model;
 
+import com.example.PousadaIstoE.response.StatusPagamento;
+import com.example.PousadaIstoE.response.TipoPagamento;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Pernoites {
@@ -12,9 +15,13 @@ public class Pernoites {
     private LocalDate dataEntrada;
     private LocalDate dataSaida;
     private String Consumo;
+    @OneToMany
+    List<Consumo> consumoList;
     private Integer quantidadePessoa;
     @ManyToOne
     private Client client;
+    private TipoPagamento tipoPagamento;
+    private StatusPagamento status_pagamento;
 
     public Long getId() {
         return id;
@@ -51,5 +58,17 @@ public class Pernoites {
     }
     public void setClient(Client client) {
         this.client = client;
+    }
+
+    public List<com.example.PousadaIstoE.model.Consumo> getConsumoList() {
+        return consumoList;
+    }
+
+    public TipoPagamento getTipoPagamento() {
+        return tipoPagamento;
+    }
+
+    public StatusPagamento getStatus_pagamento() {
+        return status_pagamento;
     }
 }

@@ -3,6 +3,7 @@ package com.example.PousadaIstoE.services;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityDates;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
+import com.example.PousadaIstoE.model.Consumo;
 import com.example.PousadaIstoE.model.Pernoites;
 import com.example.PousadaIstoE.repository.PernoitesRepository;
 import com.example.PousadaIstoE.response.PernoiteResponse;
@@ -34,7 +35,8 @@ public class PernoiteService {
         quantidadeDePessoas(pernoites);
 
         Integer p1 = Period.between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
-        Float total = price * p1;
+        List<Consumo> consum = pernoites.getConsumoList();
+        Float total = (price * p1) + consum.size();
 
         final var response = new  PernoiteResponse(
                 new PernoiteResponse.Client(
@@ -49,7 +51,9 @@ public class PernoiteService {
                         pernoites.getQuantidadePessoa(),
                         p1,
                         price,
-                        total
+                        total,
+                       pernoites.getTipoPagamento(),
+                       pernoites.getStatus_pagamento()
                )
         );
         return ResponseEntity.ok(response);

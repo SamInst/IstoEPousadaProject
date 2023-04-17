@@ -9,6 +9,7 @@ public record PernoiteResponse(
         String consumo,
         Valores valores
 
+
 ) {
     public record Client (
         String nome_cliente,
@@ -19,8 +20,8 @@ public record PernoiteResponse(
             Integer quantidade_pessoas,
             Integer quantidade_dias,
             Float valor_diaria,
-            Float valor_total
+            Float valor_total,
+            TipoPagamento tipoPagamento,
+            StatusPagamento status_pagamento
     ){}
-
-
 }
