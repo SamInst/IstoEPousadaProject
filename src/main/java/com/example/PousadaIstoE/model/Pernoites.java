@@ -16,7 +16,7 @@ public class Pernoites {
     private LocalDate dataSaida;
     private String Consumo;
     @OneToMany
-    List<Consumo> consumoList;
+    List<ConsumoPernoite> consumoList;
     private Integer quantidadePessoa;
     @ManyToOne
     private Client client;
@@ -60,7 +60,7 @@ public class Pernoites {
         this.client = client;
     }
 
-    public List<com.example.PousadaIstoE.model.Consumo> getConsumoList() {
+    public List<ConsumoPernoite> getConsumoList() {
         return consumoList;
     }
 

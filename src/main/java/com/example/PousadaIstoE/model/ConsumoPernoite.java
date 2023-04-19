@@ -1,11 +1,21 @@
 package com.example.PousadaIstoE.model;
 
-import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
-public class Consumo {
+@Table(name = "tb_pernoite_consumo")
+public class ConsumoPernoite {
+    private Integer quantidade;
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+    @ManyToOne
+    private Pernoites pernoites;
+
     private Float agua = 3F;
     private Float salgado = 4F;
     private Float bombom = 2F;
@@ -36,5 +46,9 @@ public class Consumo {
 
     public Float getRefrigerante() {
         return Refrigerante;
+    }
+
+    public Pernoites getPernoites() {
+        return pernoites;
     }
 }
