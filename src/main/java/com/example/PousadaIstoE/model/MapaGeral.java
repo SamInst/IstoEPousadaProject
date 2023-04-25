@@ -49,6 +49,22 @@ public class MapaGeral {
     public Integer getApartment() {
         return apartment;
     }
+
+    public void setReport(String report) {
+        this.report = report;
+    }
+
+    public void setApartment(Integer apartment) {
+        this.apartment = apartment;
+    }
+
     public MapaGeral() {
+    }
+
+    public MapaGeral(LocalDate data, String report, Integer apartment, Float entrada) {
+        this.data = data;
+        this.report = report;
+        this.apartment = apartment;
+        this.entrada = entrada;
     }
 }

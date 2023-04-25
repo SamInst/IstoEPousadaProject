@@ -3,32 +3,48 @@ package com.example.PousadaIstoE.services;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.Entradas;
+import com.example.PousadaIstoE.model.MapaGeral;
 import com.example.PousadaIstoE.model.Pernoites;
+import com.example.PousadaIstoE.model.RegistroDeEntradas;
 import com.example.PousadaIstoE.repository.EntradaRepository;
+import com.example.PousadaIstoE.repository.MapaGeralRepository;
 import com.example.PousadaIstoE.repository.PernoitesRepository;
+import com.example.PousadaIstoE.repository.RegistroDeEntradasRepository;
 import com.example.PousadaIstoE.response.EntradaResponse;
+import com.example.PousadaIstoE.response.StatusPagamento;
+import com.example.PousadaIstoE.response.TipoPagamento;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 public class EntradaService {
-    double total = 0.0;
+    LocalTime hora_saida = LocalTime.now();
+    @PersistenceContext
+    private EntityManager manager;
+    double total;
+    double valorEntrada;
     Duration diferenca;
     int horas;
     int minutosRestantes;
     private final EntradaRepository entradaRepository;
     private final PernoitesRepository pernoitesRepository;
+    private final MapaGeralRepository mapaGeralRepository;
+    private final RegistroDeEntradasRepository registroDeEntradasRepository;
 
 
-    public EntradaService(EntradaRepository entradaRepository, PernoitesRepository pernoitesRepository) {
+    public EntradaService(EntradaRepository entradaRepository, PernoitesRepository pernoitesRepository, MapaGeralRepository mapaGeralRepository, RegistroDeEntradasRepository registroDeEntradasRepository) {
         this.entradaRepository = entradaRepository;
-
         this.pernoitesRepository = pernoitesRepository;
+        this.mapaGeralRepository = mapaGeralRepository;
+        this.registroDeEntradasRepository = registroDeEntradasRepository;
     }
 
     public List<Entradas> findAll() {
@@ -56,27 +72,86 @@ public class EntradaService {
 
     public Entradas registerEntrada(Entradas entradas) {
         entradas.setHoraEntrada(LocalTime.now());
-
+        entradas.setHoraSaida(LocalTime.of(0,0));
         validacaoDeApartamento(entradas);
-
         return entradaRepository.save(entradas);
     }
 
-    public Entradas updateEntradaData(Long pernoiteId, Entradas request) {
+    public void updateEntradaData(Long entradaId, Entradas request) {
 
-        final var entradas = entradaRepository.findById(pernoiteId).orElseThrow(() -> new EntityNotFound("aqfszrgazs"));
+        final var entradas = entradaRepository.findById(entradaId).orElseThrow(() -> new EntityNotFound("Entrada não encontrada"));
         var entradaAtualizada = new Entradas();
+
         if (request.getHoraSaida() != entradas.getHoraSaida() || !Objects.equals(request.getConsumo(), entradas.getConsumo())) {
              entradaAtualizada = new Entradas(
                     entradas.getId(),
                     entradas.getApt(),
                     entradas.getHoraEntrada(),
-                    request.getHoraSaida(),
+                    LocalTime.now(),
                     request.getConsumo(),
-                    entradas.getPlaca()
+                    entradas.getPlaca(),
+                    request.getTipoPagamento(),
+                    request.getStatus_pagamento()
             );
         }
-        return entradaRepository.save(entradaAtualizada);
+        entradaRepository.save(entradaAtualizada);
+        String relatorio;
+        LocalTime noite = LocalTime.of(18,0,0);
+        LocalTime dia = LocalTime.of(6,0,0);
+
+        if (LocalTime.now().isAfter(noite) && LocalTime.now().isBefore(dia)){
+            relatorio = "ENTRADA NOITE";
+        } else {
+            relatorio = "ENTRADA DIA";
+        }
+        calcularHora();
+
+        if (request.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)){
+            Float total = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
+                    .setMaxResults(1)
+                    .getSingleResult();
+
+            double valorTotal = total + valorEntrada;
+            MapaGeral mapaGeral = new MapaGeral(
+            );
+                mapaGeral.setApartment(entradas.getApt());
+                mapaGeral.setData(LocalDate.now());
+                mapaGeral.setEntrada((float) valorEntrada);
+                mapaGeral.setReport(relatorio);
+                mapaGeral.setTotal((float) valorTotal);
+                mapaGeral.setSaida(0F);
+                mapaGeral.setHora(LocalTime.now());
+
+                if (request.getTipoPagamento().equals(TipoPagamento.PIX)){
+                mapaGeral.setReport(relatorio + " (PIX)");
+                mapaGeral.setEntrada(0F);
+                mapaGeral.setTotal(total);
+                }
+                if (request.getTipoPagamento().equals(TipoPagamento.CARTAO)){
+                mapaGeral.setReport(relatorio + " (CARTAO)");
+                mapaGeral.setEntrada(0F);
+                mapaGeral.setTotal(total);
+            }
+            RegistroDeEntradas registroDeEntradas = new RegistroDeEntradas(
+            );
+                registroDeEntradas.setId(entradaId);
+                registroDeEntradas.setApt(entradas.getApt());
+                registroDeEntradas.setHoraEntrada(entradas.getHoraEntrada());
+                registroDeEntradas.setHoraSaida(hora_saida);
+                registroDeEntradas.setConsumo(" ");
+                registroDeEntradas.setPlaca(entradas.getPlaca());
+                registroDeEntradas.setData(LocalDate.now());
+                registroDeEntradas.setTipoPagamento(request.getTipoPagamento());
+                registroDeEntradas.setStatus_pagamento(request.getStatus_pagamento());
+                registroDeEntradas.setHoras(horas);
+                registroDeEntradas.setMinutos(minutosRestantes);
+                registroDeEntradas.setTotal(valorEntrada);
+
+                registroDeEntradasRepository.save(registroDeEntradas);
+                mapaGeralRepository.save(mapaGeral);
+                entradaRepository.save(entradaAtualizada);
+                entradaRepository.deleteById(entradaId);
+        }
     }
 
     private void validacaoDeApartamento(Entradas entradas) throws EntityConflict {
@@ -118,8 +193,10 @@ public class EntradaService {
                 total = 30.0 + ((horas - 2) * 7.0);
                 if (minutosRestantes > 0) {
                     total += 7.0;
+                    }
                 }
             }
-        });
+        );
+        valorEntrada = total;
     }
 }
