@@ -1,7 +1,7 @@
 package com.example.PousadaIstoE.response;
 
 public enum TipoPagamento {
-    NAO_DEFINIDO,
+    PENDENTE,
     DINHEIRO,
     CARTAO,
     PIX;

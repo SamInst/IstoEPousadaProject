@@ -26,7 +26,7 @@ import java.util.Objects;
 
 @Service
 public class EntradaService {
-    LocalTime hora_saida = LocalTime.now();
+
     @PersistenceContext
     private EntityManager manager;
     double total;
@@ -137,7 +137,7 @@ public class EntradaService {
                 registroDeEntradas.setId(entradaId);
                 registroDeEntradas.setApt(entradas.getApt());
                 registroDeEntradas.setHoraEntrada(entradas.getHoraEntrada());
-                registroDeEntradas.setHoraSaida(hora_saida);
+                registroDeEntradas.setHoraSaida(entradas.getHoraSaida());
                 registroDeEntradas.setConsumo(" ");
                 registroDeEntradas.setPlaca(entradas.getPlaca());
                 registroDeEntradas.setData(LocalDate.now());
