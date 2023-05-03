@@ -36,6 +36,7 @@ private final MapaGeralService mapaGeralService;
     public MapaGeral add(@RequestBody MapaGeral mapaGeral) {
         return mapaGeralService.add(mapaGeral);
     }
+
     @GetMapping("/findByDate")
     public List<MapaGeral> findByData(LocalDate date){
         return mapaGeralService.findByData(date);

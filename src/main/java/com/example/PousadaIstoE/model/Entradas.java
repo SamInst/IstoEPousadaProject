@@ -2,12 +2,10 @@ package com.example.PousadaIstoE.model;
 
 import com.example.PousadaIstoE.response.StatusPagamento;
 import com.example.PousadaIstoE.response.TipoPagamento;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 public class Entradas {
@@ -20,8 +18,10 @@ public class Entradas {
     private String consumo;
     private String placa;
 
-    public Entradas() {
+    @OneToMany
+    private List<EntradaConsumo> entradaConsumo;
 
+    public Entradas() {
     }
 
     public void setId(Long id) {
@@ -110,5 +110,13 @@ public class Entradas {
 
     public void setStatus_pagamento(StatusPagamento status_pagamento) {
         this.status_pagamento = status_pagamento;
+    }
+
+    public List<EntradaConsumo> getEntradaConsumo() {
+        return entradaConsumo;
+    }
+
+    public void setEntradaConsumo(List<EntradaConsumo> entradaConsumo) {
+        this.entradaConsumo = entradaConsumo;
     }
 }

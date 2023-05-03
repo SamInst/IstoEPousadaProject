@@ -67,12 +67,4 @@ public class MapaGeralService {
   public List<MapaGeral> findByData(LocalDate date){
       return mapaGeralRepository.findByData(date);
   }
-
-  private void pagamento_pix(MapaGeral mapaGeral){
-        mapaGeral.setSaida(mapaGeral.getEntrada());
-  }
-  private void pagamento_cartao(MapaGeral mapaGeral){
-    mapaGeral.setSaida(mapaGeral.getEntrada());
-    }
-
 }

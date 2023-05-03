@@ -1,13 +1,16 @@
 package com.example.PousadaIstoE.controllers;
 
 import com.example.PousadaIstoE.model.Entradas;
+import com.example.PousadaIstoE.model.RegistroDeEntradas;
 import com.example.PousadaIstoE.response.EntradaResponse;
 import com.example.PousadaIstoE.services.EntradaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/entradas")
@@ -25,7 +28,7 @@ public class EntradaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EntradaResponse> findById(@PathVariable ("id") Long id){
+    public ResponseEntity<AtomicReference<EntradaResponse>> findById(@PathVariable ("id") Long id){
         return entradaService.findById(id);
     }
 
@@ -38,5 +41,9 @@ public class EntradaController {
     @PutMapping("/{id}")
     void atualizarEntrada (@PathVariable ("id") Long entradaID, @RequestBody Entradas entradas){
          entradaService.updateEntradaData(entradaID, entradas);
+    }
+    @GetMapping("/buscar-por-data")
+    public List<RegistroDeEntradas> findByData(LocalDate data_entrada){
+        return entradaService.findByData(data_entrada);
     }
 }

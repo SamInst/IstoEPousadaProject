@@ -15,8 +15,7 @@ public class Pernoites {
     private LocalDate dataEntrada;
     private LocalDate dataSaida;
     private String Consumo;
-    @OneToMany
-    List<ConsumoPernoite> consumoList;
+
     private Integer quantidadePessoa;
     @ManyToOne
     private Client client;
@@ -58,10 +57,6 @@ public class Pernoites {
     }
     public void setClient(Client client) {
         this.client = client;
-    }
-
-    public List<ConsumoPernoite> getConsumoList() {
-        return consumoList;
     }
 
     public TipoPagamento getTipoPagamento() {

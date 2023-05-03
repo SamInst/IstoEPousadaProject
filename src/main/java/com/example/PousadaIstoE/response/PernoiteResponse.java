@@ -1,5 +1,4 @@
 package com.example.PousadaIstoE.response;
-import com.example.PousadaIstoE.model.ConsumoPernoite;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,7 +8,6 @@ public record PernoiteResponse(
         Integer apartamento,
         LocalDate data_de_entrada,
         LocalDate data_de_saida,
-        List<ConsumoPernoite> consumo,
         Valores valores
 
 

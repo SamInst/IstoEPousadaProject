@@ -2,14 +2,8 @@ package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
-import com.example.PousadaIstoE.model.Entradas;
-import com.example.PousadaIstoE.model.MapaGeral;
-import com.example.PousadaIstoE.model.Pernoites;
-import com.example.PousadaIstoE.model.RegistroDeEntradas;
-import com.example.PousadaIstoE.repository.EntradaRepository;
-import com.example.PousadaIstoE.repository.MapaGeralRepository;
-import com.example.PousadaIstoE.repository.PernoitesRepository;
-import com.example.PousadaIstoE.repository.RegistroDeEntradasRepository;
+import com.example.PousadaIstoE.model.*;
+import com.example.PousadaIstoE.repository.*;
 import com.example.PousadaIstoE.response.EntradaResponse;
 import com.example.PousadaIstoE.response.StatusPagamento;
 import com.example.PousadaIstoE.response.TipoPagamento;
@@ -21,8 +15,10 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class EntradaService {
@@ -38,36 +34,64 @@ public class EntradaService {
     private final PernoitesRepository pernoitesRepository;
     private final MapaGeralRepository mapaGeralRepository;
     private final RegistroDeEntradasRepository registroDeEntradasRepository;
+    private final EntradaConsumoRepository entradaConsumoRepository;
 
 
-    public EntradaService(EntradaRepository entradaRepository, PernoitesRepository pernoitesRepository, MapaGeralRepository mapaGeralRepository, RegistroDeEntradasRepository registroDeEntradasRepository) {
+    public EntradaService(EntradaRepository entradaRepository, PernoitesRepository pernoitesRepository, MapaGeralRepository mapaGeralRepository, RegistroDeEntradasRepository registroDeEntradasRepository, EntradaConsumoRepository entradaConsumoRepository) {
         this.entradaRepository = entradaRepository;
         this.pernoitesRepository = pernoitesRepository;
         this.mapaGeralRepository = mapaGeralRepository;
         this.registroDeEntradasRepository = registroDeEntradasRepository;
+        this.entradaConsumoRepository = entradaConsumoRepository;
     }
 
     public List<Entradas> findAll() {
         return entradaRepository.findAll();
     }
 
-    public ResponseEntity<EntradaResponse> findById(Long id) {
+    public ResponseEntity<AtomicReference<EntradaResponse>> findById(Long id) {
+         AtomicReference<EntradaResponse> response = new AtomicReference<>();
+
+         final var teste = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(id);
+         List<List<EntradaConsumo>> entradaConsumoList = new ArrayList<>();
+         entradaConsumoList.add(teste);
+         teste.forEach(a -> {
+//            Float b = a.getItens().getValor();
+//
+//             Float valorConsumo = manager.createQuery("SELECT sum(m.itens.valor) FROM EntradaConsumo m where m.entradas.id = :id", Float.class)
+//                     .getSingleResult();
+//             System.out.println(valorConsumo);
+////
+////             final var valorConsumo2 = entradaConsumoRepository.valorConsumo(id);
+////             System.out.println(valorConsumo2);
+
+
+
+
         final var entrada = entradaRepository.findById(id).orElseThrow(() -> new EntityNotFound("Entrada não foi Cadastrada"));
         calcularHora();
-        final var response =
-                new EntradaResponse(
+        response.set(new EntradaResponse(
                 entrada.getApt(),
                 entrada.getHoraEntrada(),
                 entrada.getHoraSaida(),
-                entrada.getConsumo(),
                 entrada.getPlaca(),
                 new EntradaResponse.TempoPermanecido(
-                horas,
-                minutosRestantes
+                        horas,
+                        minutosRestantes
                 ),
+//                Collections.singletonList(new EntradaResponse.EntradaConsumo(
+//                        entradaConsumo.getItens().getDescricao(),
+//                        entradaConsumo.getItens().getValor())),
+              entradaConsumoList,
                 total
-        );
+        ));
+            });
         return ResponseEntity.ok(response);
+
+    }
+
+    public List<RegistroDeEntradas> findByData(LocalDate localDate){
+        return registroDeEntradasRepository.findByData(localDate);
     }
 
     public Entradas registerEntrada(Entradas entradas) {
@@ -78,11 +102,9 @@ public class EntradaService {
     }
 
     public void updateEntradaData(Long entradaId, Entradas request) {
-
         final var entradas = entradaRepository.findById(entradaId).orElseThrow(() -> new EntityNotFound("Entrada não encontrada"));
         var entradaAtualizada = new Entradas();
 
-        if (request.getHoraSaida() != entradas.getHoraSaida() || !Objects.equals(request.getConsumo(), entradas.getConsumo())) {
              entradaAtualizada = new Entradas(
                     entradas.getId(),
                     entradas.getApt(),
@@ -93,7 +115,7 @@ public class EntradaService {
                     request.getTipoPagamento(),
                     request.getStatus_pagamento()
             );
-        }
+
         entradaRepository.save(entradaAtualizada);
         String relatorio;
         LocalTime noite = LocalTime.of(18,0,0);
@@ -192,7 +214,7 @@ public class EntradaService {
             } else {
                 total = 30.0 + ((horas - 2) * 7.0);
                 if (minutosRestantes > 0) {
-                    total += 7.0;
+                    total += 40.0;
                     }
                 }
             }
