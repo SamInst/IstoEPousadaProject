@@ -11,4 +11,10 @@ public interface EntradaConsumoRepository extends JpaRepository<EntradaConsumo, 
 
     @Query("select sum(u.itens.valor) from EntradaConsumo u where u.entradas.id = :id")
     List<EntradaConsumo> valorConsumo(Long id);
+
+//    void deleteEntradaConsumoByEntradas_Id(Long id_consumo, Long id_entrada);
+
+
+
+
 }

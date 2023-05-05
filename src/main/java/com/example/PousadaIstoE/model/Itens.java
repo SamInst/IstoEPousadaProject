@@ -38,4 +38,11 @@ public class Itens {
         this.valor = valor;
     }
 
+    public Itens(String descricao, Float valor) {
+        this.descricao = descricao;
+        this.valor = valor;
+    }
+
+    public Itens() {
+    }
 }

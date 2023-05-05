@@ -2,13 +2,10 @@ package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
 
-import javax.annotation.processing.Generated;
-
 @Entity
-public class EntradaConsumo {
+public class RegistroConsumoEntrada {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-
     private Long id;
 
     private Integer quantidade;
@@ -17,10 +14,9 @@ public class EntradaConsumo {
     private Itens itens;
 
     @ManyToOne
-    private Entradas entradas;
+    private RegistroDeEntradas registroDeEntradas;
 
     private Float total;
-
 
     public void setId(Long id) {
         this.id = id;
@@ -46,12 +42,12 @@ public class EntradaConsumo {
         this.itens = itens;
     }
 
-    public Entradas getEntradas() {
-        return entradas;
+    public RegistroDeEntradas getRegistroDeEntradas() {
+        return registroDeEntradas;
     }
 
-    public void setEntradas(Entradas entradas) {
-        this.entradas = entradas;
+    public void setRegistroDeEntradas(RegistroDeEntradas registroDeEntradas) {
+        this.registroDeEntradas = registroDeEntradas;
     }
 
     public Float getTotal() {
@@ -60,15 +56,5 @@ public class EntradaConsumo {
 
     public void setTotal(Float total) {
         this.total = total;
-    }
-
-    public EntradaConsumo(Integer quantidade, Itens itens, Entradas entradas) {
-        this.quantidade = quantidade;
-        this.itens = itens;
-        this.entradas = entradas;
-        this.total = quantidade.floatValue() * itens.getValor();
-    }
-
-    public EntradaConsumo() {
     }
 }

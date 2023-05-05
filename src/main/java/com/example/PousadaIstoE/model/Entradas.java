@@ -3,7 +3,6 @@ package com.example.PousadaIstoE.model;
 import com.example.PousadaIstoE.response.StatusPagamento;
 import com.example.PousadaIstoE.response.TipoPagamento;
 import jakarta.persistence.*;
-
 import java.time.LocalTime;
 import java.util.List;
 
@@ -15,10 +14,9 @@ public class Entradas {
     private Integer apt;
     private LocalTime horaEntrada;
     private LocalTime horaSaida;
-    private String consumo;
     private String placa;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<EntradaConsumo> entradaConsumo;
 
     public Entradas() {
@@ -52,45 +50,32 @@ public class Entradas {
     public LocalTime getHoraSaida() {
         return horaSaida;
     }
-
     public void setHoraSaida(LocalTime horaSaida) {
         this.horaSaida = horaSaida;
     }
-
-    public String getConsumo() {
-        return consumo;
-    }
-
-    public void setConsumo(String consumo) {
-        this.consumo = consumo;
-    }
-
     public String getPlaca() {
         return placa;
     }
-
     public void setPlaca(String placa) {
         this.placa = placa;
     }
-
     private TipoPagamento tipoPagamento;
     private StatusPagamento status_pagamento;
 
-    public Entradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String consumo, String placa) {
+    public Entradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String placa) {
         this.id = id;
         this.apt = apt;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
-        this.consumo = consumo;
+
         this.placa = placa;
     }
 
-    public Entradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String consumo, String placa, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
+    public Entradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String placa, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
         this.id = id;
         this.apt = apt;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
-        this.consumo = consumo;
         this.placa = placa;
         this.tipoPagamento = tipoPagamento;
         this.status_pagamento = status_pagamento;

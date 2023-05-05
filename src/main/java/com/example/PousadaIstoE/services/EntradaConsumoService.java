@@ -1,9 +1,10 @@
 package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.model.EntradaConsumo;
-import com.example.PousadaIstoE.model.Entradas;
 import com.example.PousadaIstoE.repository.EntradaConsumoRepository;
+import com.example.PousadaIstoE.repository.EntradaRepository;
 import com.example.PousadaIstoE.response.ConsumoResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +14,11 @@ import java.util.NoSuchElementException;
 public class EntradaConsumoService {
  private final EntradaConsumoRepository entradaConsumoRepository;
 
-    public EntradaConsumoService(EntradaConsumoRepository entradaConsumoRepository) {
+ private final EntradaRepository entradaRepository;
+
+    public EntradaConsumoService(EntradaConsumoRepository entradaConsumoRepository, EntradaRepository entradaRepository) {
         this.entradaConsumoRepository = entradaConsumoRepository;
+        this.entradaRepository = entradaRepository;
     }
 
     public List<EntradaConsumo> BuscaTodos(){
@@ -51,5 +55,10 @@ public class EntradaConsumoService {
                 entradaConsumo.getEntradas()
         );
         return entradaConsumoRepository.save(entradaConsumo1);
+    }
+
+    public ResponseEntity<Object> deletaConsumoPorEntradaId(Long id_consumo){
+        entradaConsumoRepository.deleteById(id_consumo);
+        return ResponseEntity.noContent().build();
     }
 }

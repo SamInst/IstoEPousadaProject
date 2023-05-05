@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Table(name = "tb_registro_de_entradas")
 @Entity
@@ -23,8 +24,10 @@ public class RegistroDeEntradas {
     private Integer minutos;
     private  Double total;
 
-    public RegistroDeEntradas() {
+    @OneToMany
+    private List<RegistroConsumoEntrada> entradaConsumo;
 
+    public RegistroDeEntradas() {
     }
     public void setId(Long id) {
         this.id = id;
@@ -101,7 +104,7 @@ public class RegistroDeEntradas {
         this.total = total;
     }
 
-    public RegistroDeEntradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String consumo, String placa, LocalDate data, Integer horas, Integer minutos, Double total, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
+    public RegistroDeEntradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String consumo, String placa, LocalDate data, Integer horas, Integer minutos, Double total, List<RegistroConsumoEntrada> entradaConsumo, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
         this.id = id;
         this.apt = apt;
         this.horaEntrada = horaEntrada;
@@ -112,7 +115,16 @@ public class RegistroDeEntradas {
         this.horas = horas;
         this.minutos = minutos;
         this.total = total;
+        this.entradaConsumo = entradaConsumo;
         this.tipoPagamento = tipoPagamento;
         this.status_pagamento = status_pagamento;
+    }
+
+    public List<RegistroConsumoEntrada> getEntradaConsumo() {
+        return entradaConsumo;
+    }
+
+    public void setEntradaConsumo(List<RegistroConsumoEntrada> entradaConsumo) {
+        this.entradaConsumo = entradaConsumo;
     }
 }

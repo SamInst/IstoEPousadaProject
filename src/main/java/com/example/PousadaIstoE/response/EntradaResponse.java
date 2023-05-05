@@ -10,6 +10,9 @@ public record EntradaResponse(
         String placa,
         TempoPermanecido tempo_permanecido,
         java.util.List<java.util.List<com.example.PousadaIstoE.model.EntradaConsumo>> consumo,
+
+        double total_consumo,
+        double valor_entrada,
         double total
 ) {
     public record TempoPermanecido(
