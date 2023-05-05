@@ -260,7 +260,6 @@ public class EntradaService {
             totalConsumo = (double) 0;
             consumoVazio(request);
         }
-
         entradaEConsumo = valorEntrada + totalConsumo;
         valorTotal = total + entradaEConsumo;
     }

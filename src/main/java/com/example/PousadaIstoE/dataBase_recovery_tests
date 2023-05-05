@@ -1,30 +1,3 @@
-insert into tb_employees (id, cpf, name) VALUES (1, '000.000.000-01', 'sam employee');
-
-insert into tb_clients (id, address, cpf, data_entry, data_out, job, name, phone, registered_by_id) VALUES
-    (1, 'address test', '000.000.000-00', '2023-03-08', '2023-03-13', 'developer', 'sam', '(00) 90000-0000', 1);
-
-insert into tb_mapa_geral (id, apartment, data, entrada, report, saida, total)
-values (1, NULL, now(), 0, 'TRANSFERENCIA MAPA', 0, 350);
-
-insert into tb_mapa_geral (id, apartment, data, entrada, report, saida, total)
-values (2, 3, now(), 50, 'ENTRADA DIA', 0, 85);
-
-insert into tb_mapa_geral (id, apartment, data, entrada, report, saida)
-values (3, 3, now(), 0, 'ENTRADA DIA', 20);
-insert into tb_mapa_geral (id, apartment, data, entrada, report, saida, total)
-values (4, 3, now(), 0, 'ENTRADA DIA', 0, 400);
-
-SELECT * FROM tb_mapa_geral;
-
-SELECT total FROM tb_mapa_geral ORDER BY id DESC;
-
-
-SELECT total FROM tb_mapa_geral ORDER BY id DESC LIMIT 1;
-select sum(entrada + tb_mapa_geral.saida) as total from tb_mapa_geral;
-select sum(saida) from tb_mapa_geral;
-
-delete from tb_mapa_geral where id > 0;
-
 insert into pernoites (id, consumo, data_entrada, data_saida, quantidade_pessoa, client_id, room_id)
 VALUES (1, 'consumo','2023-03-27', '2023-03-29', 2, 1, 1);
 
@@ -42,6 +15,51 @@ insert into quartos (id, number) VALUES (9, 9);
 insert into quartos (id, number) VALUES (10, 10);
 select * from quartos;
 
-delete from pernoites where id = 102;
+delete from pernoites where id > 0;
 insert into  entradas (id, consumo, apt, hora_entrada, hora_saida, placa)
 VALUES (1, 'consumo', 2, '18:20', '19:30', 'abc1234');
+delete from entradas where id > 0;
+delete from tb_mapa_geral where id > 0;
+
+insert into tb_mapa_geral (id, apartment, report, entrada, saida, total, hora, data)
+VALUES (1, 0, 'TRANFERENCIA DE CAIXA', 400, 0, 400 , now(), now());
+
+drop table pernoites;
+insert into pernoites (id, consumo, data_entrada, data_saida, quantidade_pessoa, client_id,apt)
+VALUES(666, 'agua, agua', '2023/04/17', '2023/04/19', 2, 1,24);
+
+
+delete from itens where id >0;
+insert into itens (id, descricao, valor) VALUES (1, 'agua', 3);
+insert into itens (id, descricao, valor) VALUES (2, 'salgadinho', 3);
+insert into itens (id, descricao, valor) VALUES (3, 'Ice Limão', 10);
+insert into itens (id, descricao, valor) VALUES (4, 'Heineken 600ml', 12);
+insert into itens (id, descricao, valor) VALUES (5, 'Heineken 360ml', 8);
+insert into itens (id, descricao, valor) VALUES (6, 'refrigerante 360ml', 5);
+insert into itens (id, descricao, valor) VALUES (7, 'Cerveja Pilsen', 8);
+insert into itens (id, descricao, valor) VALUES (8, 'Não teve consumo', 0);
+
+
+
+insert into tb_entrada_consumo (id, quantidade, entradas_id, itens_id) VALUES (1, 2, 1252, 1);
+select * from tb_entrada_consumo;
+insert into tb_entrada_consumo (id, quantidade, entradas_id, itens_id) VALUES (2, 2, 1302, 1);
+
+delete from entradas where id > 0;
+
+insert into entrada_consumo_itens_list (entrada_consumo_id, itens_list_id)
+VALUES (1, 1);
+
+insert into entrada_consumo (id, quantidade) VALUES (1, 2);
+
+insert into entrada_consumo (id, quantidade, entradas_id, itens_id)
+VALUES (2, 1, 1402, 2);
+
+select sum(m.total) from entrada_consumo m where m.entradas_id = 1452;
+
+delete from tb_registro_de_entradas where id > 0;
+delete from entrada_consumo where id> 0;
+delete from entradas_entrada_consumo where entradas_id > 0;
+delete from entradas where id > 0;
+
+select * from itens m where m."id" = 8;
