@@ -9,7 +9,7 @@ public record EntradaResponse(
         LocalTime hora_saida,
         String placa,
         TempoPermanecido tempo_permanecido,
-        java.util.List<java.util.List<com.example.PousadaIstoE.model.EntradaConsumo>> consumo,
+        List<com.example.PousadaIstoE.model.EntradaConsumo> consumo,
 
         double total_consumo,
         double valor_entrada,

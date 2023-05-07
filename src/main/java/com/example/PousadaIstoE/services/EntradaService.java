@@ -23,6 +23,7 @@ public class EntradaService {
 
     @PersistenceContext
     private EntityManager manager;
+    Float totalMapaGeral;
     double total;
     double valorEntrada;
     Duration diferenca;
@@ -57,17 +58,16 @@ public class EntradaService {
     }
 
     public ResponseEntity<AtomicReference<EntradaResponse>> findById(Long id) {
-         AtomicReference<EntradaResponse> response = new AtomicReference<>();
+        AtomicReference<EntradaResponse> response = new AtomicReference<>();
+        entradaConsumoList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(id);
 
-         final var teste = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(id);
-         List<List<EntradaConsumo>> entradaConsumoList = new ArrayList<>();
-         entradaConsumoList.add(teste);
-
-        final var entrada = entradaRepository.findById(id).orElseThrow(() -> new EntityNotFound("Entrada não foi Cadastrada"));
+        final var entrada = entradaRepository.findById(id).orElseThrow(() -> new EntityNotFound("Entrada não foi Cadastrada ou não existe mais"));
         calcularHora();
-             Double totalConsumo = manager.createQuery(
+
+        Double totalConsumo = manager.createQuery(
           "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = m.entradas.id", Double.class)
              .getSingleResult();
+
              if (totalConsumo == null){
                  totalConsumo = (double) 0;
              }
@@ -90,13 +90,11 @@ public class EntradaService {
         return ResponseEntity.ok(response);
     }
 
-    public List<RegistroDeEntradas> findByData(LocalDate localDate){
-        return registroDeEntradasRepository.findByData(localDate);
-    }
-
     public Entradas registerEntrada(Entradas entradas) {
         entradas.setHoraEntrada(LocalTime.now());
         entradas.setHoraSaida(LocalTime.of(0,0));
+        entradas.setStatus_pagamento(StatusPagamento.PENDENTE);
+        entradas.setTipoPagamento(TipoPagamento.PENDENTE);
         validacaoDeApartamento(entradas);
         return entradaRepository.save(entradas);
     }
@@ -117,10 +115,9 @@ public class EntradaService {
             );
         entradaRepository.save(entradaAtualizada);
 
-        if (request.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)){
-            if (request.getEntradaConsumo() == null){
-                    consumoVazio(entradaAtualizada);
-                }
+        if (request.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)) {
+            if (request.getEntradaConsumo() == null) {
+                consumoVazio(entradaAtualizada);
             }
             calcularHora();
             validacaoPagamento(request);
@@ -129,9 +126,16 @@ public class EntradaService {
             registrarConsumoEntrada(registroConsumoEntradaList);
             registrarEntrada(request);
 
+
             entradaRepository.save(entradaAtualizada);
+//            entradaRepository.deleteEntradaEConsumo();
+//            registroConsumoEntradaList.forEach(a->{
+//                Long consumo_id = a.getId();
+//                entradaConsumoRepository.deleteById(consumo_id);
+//            });
 //            entradaRepository.deleteById(entradaId);
         }
+    }
 
 
     private void validacaoDeApartamento(Entradas entradas) throws EntityConflict {
@@ -181,20 +185,22 @@ public class EntradaService {
     }
 
     private void salvaNoMapa(Entradas request){
+
+        var a = totalMapaGeral + entradaEConsumo;
         MapaGeral mapaGeral = new MapaGeral(
         );
         mapaGeral.setApartment(entradas.getApt());
         mapaGeral.setData(LocalDate.now());
-        mapaGeral.setEntrada((float) valorEntrada);
+        mapaGeral.setEntrada((float) entradaEConsumo);
         mapaGeral.setReport(relatorio);
-        mapaGeral.setTotal((float) entradaEConsumo);
+        mapaGeral.setTotal((float) a);
         mapaGeral.setSaida(0F);
         mapaGeral.setHora(LocalTime.now());
 
         if (request.getTipoPagamento().equals(TipoPagamento.PIX)){
             mapaGeral.setReport(relatorio + " (PIX)");
             mapaGeral.setEntrada(0F);
-            mapaGeral.setTotal((float) total);
+            mapaGeral.setTotal(totalMapaGeral);
         }
         if (request.getTipoPagamento().equals(TipoPagamento.CARTAO)){
             mapaGeral.setReport(relatorio + " (CARTAO)");
@@ -213,9 +219,6 @@ public class EntradaService {
 
             registroEntradaConsumoRepository.save(registroConsumoEntrada);
             registroConsumoEntradaList.add(registroConsumoEntrada);
-
-            Long consumo_id = a.getId();
-//            entradaConsumoRepository.deleteById(consumo_id);
         });
     }
 
@@ -223,7 +226,7 @@ public class EntradaService {
         LocalTime noite = LocalTime.of(18,0,0);
         LocalTime dia = LocalTime.of(6,0,0);
 
-        if (LocalTime.now().isAfter(noite) && LocalTime.now().isBefore(dia)){
+        if (LocalTime.now().isAfter(noite) || LocalTime.now().isBefore(dia)){
             relatorio = "ENTRADA NOITE";
         } else {
             relatorio = "ENTRADA DIA";
@@ -248,7 +251,7 @@ public class EntradaService {
     }
 
     private void validacaoPagamento(Entradas request){
-        Float total = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
+         totalMapaGeral = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
         .setMaxResults(1)
         .getSingleResult();
 
@@ -261,7 +264,7 @@ public class EntradaService {
             consumoVazio(request);
         }
         entradaEConsumo = valorEntrada + totalConsumo;
-        valorTotal = total + entradaEConsumo;
+        valorTotal = totalMapaGeral + entradaEConsumo;
     }
 
 
@@ -270,6 +273,8 @@ public class EntradaService {
                .getSingleResult();
        EntradaConsumo novoConsumo = new EntradaConsumo();
        novoConsumo.setItens(semConsumo);
+       novoConsumo.setQuantidade(0);
+       novoConsumo.setTotal(0F);
 
        List<EntradaConsumo> entradaConsumoList2 = new ArrayList<>();
        entradaConsumoList2.add(novoConsumo);

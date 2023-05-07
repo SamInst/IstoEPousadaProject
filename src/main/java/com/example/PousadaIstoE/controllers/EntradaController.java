@@ -42,8 +42,4 @@ public class EntradaController {
     void atualizarEntrada (@PathVariable ("id") Long entradaID, @RequestBody Entradas entradas){
          entradaService.updateEntradaData(entradaID, entradas);
     }
-    @GetMapping("/buscar-por-data")
-    public List<RegistroDeEntradas> findByData(LocalDate data_entrada){
-        return entradaService.findByData(data_entrada);
-    }
 }

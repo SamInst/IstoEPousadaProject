@@ -3,7 +3,7 @@ package com.example.PousadaIstoE.services;
 import com.example.PousadaIstoE.model.EntradaConsumo;
 import com.example.PousadaIstoE.repository.EntradaConsumoRepository;
 import com.example.PousadaIstoE.repository.EntradaRepository;
-import com.example.PousadaIstoE.response.ConsumoResponse;
+import com.example.PousadaIstoE.response.EntradaConsumoResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class EntradaConsumoService {
         return entradaConsumoRepository.findAll();
     }
 
-    public List<ConsumoResponse> consumoResponse(Long id, List<ConsumoResponse> entradaConsumo){
+    public List<EntradaConsumoResponse> consumoResponse(Long id, List<EntradaConsumoResponse> entradaConsumo){
         final var consumo = entradaConsumoRepository.findById(id).orElseThrow(
                 ()-> new NoSuchElementException("Consumo não Encontrado"));
 
@@ -34,9 +34,9 @@ public class EntradaConsumoService {
             Float valorItem = consumo.getQuantidade() * consumo.getItens().getValor();
 
 
-                    new ConsumoResponse(
+                    new EntradaConsumoResponse(
                     consumo.getQuantidade(),
-                    new ConsumoResponse.Item(
+                    new EntradaConsumoResponse.Item(
                             consumo.getItens().getDescricao(),
                             consumo.getItens().getValor(),
                             valorItem

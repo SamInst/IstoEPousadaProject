@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.response;
 
-public record ConsumoResponse(
+public record EntradaConsumoResponse(
         Integer quantidade,
         Item item,
         Float total
