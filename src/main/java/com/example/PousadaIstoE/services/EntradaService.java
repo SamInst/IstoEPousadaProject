@@ -79,8 +79,9 @@ public class EntradaService {
         Double totalConsumo = manager.createQuery(
           "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = m.entradas.id", Double.class)
              .getSingleResult();
-
-
+        if (totalConsumo == null){
+            totalConsumo = (double) 0;
+        }
                 double total0 = total + totalConsumo;
 
         response.set(new EntradaResponse(
@@ -133,20 +134,8 @@ public class EntradaService {
 //            registrarConsumoEntrada();
             registrarEntrada(request);
 
-
             entradaRepository.save(entradaAtualizada);
-
-entradaAtualizada.getEntradaConsumo().forEach(a->{
-    System.out.println("chegou no fim");
-    entradaConsumoRepository.deleteById(a.getId());
-    System.out.println("chegou no fim");
-});
-
-
-            System.out.println("chegou no fim");
-
-//            entradaRepository.deleteAllById(Collections.singleton(entradaId));
-//            entradaRepository.deleteById(entradaId);
+            excluirEntradaEConsumo(entradaId);
         }
     }
 
@@ -202,14 +191,14 @@ entradaAtualizada.getEntradaConsumo().forEach(a->{
 
     private void salvaNoMapa(Entradas request){
 
-        var a = totalMapaGeral + entradaEConsumo;
+        var novoTotalMapaGeral = totalMapaGeral + entradaEConsumo;
         MapaGeral mapaGeral = new MapaGeral(
         );
         mapaGeral.setApartment(entradas.getApt());
         mapaGeral.setData(LocalDate.now());
         mapaGeral.setEntrada((float) entradaEConsumo);
         mapaGeral.setReport(relatorio);
-        mapaGeral.setTotal((float) a);
+        mapaGeral.setTotal((float) novoTotalMapaGeral);
         mapaGeral.setSaida(0F);
         mapaGeral.setHora(LocalTime.now());
 
@@ -230,11 +219,11 @@ entradaAtualizada.getEntradaConsumo().forEach(a->{
     }
 
     private void registrarConsumoEntrada(){
-        entradaConsumoList.forEach(a-> {
-            registroConsumoEntrada.setRegistroDeEntradas(registroDeEntradas);
-            registroConsumoEntrada.setItens(a.getItens());
-            registroConsumoEntrada.setQuantidade(a.getQuantidade());
-            registroConsumoEntrada.setTotal(a.getTotal());
+        entradaConsumoList.forEach(entradaConsumo-> {
+
+            registroConsumoEntrada.setItens(entradaConsumo.getItens());
+            registroConsumoEntrada.setQuantidade(entradaConsumo.getQuantidade());
+            registroConsumoEntrada.setTotal(entradaConsumo.getTotal());
 
             registroEntradaConsumoRepository.save(registroConsumoEntrada);
             registroConsumoEntradaList.add(registroConsumoEntrada);
@@ -254,7 +243,17 @@ entradaAtualizada.getEntradaConsumo().forEach(a->{
         registroDeEntradas.setMinutos(minutosRestantes);
         registroDeEntradas.setTotal(entradaEConsumo);
         registroDeEntradas.setEntradaConsumo(registroConsumoEntradaList);
+        registroConsumoEntrada.setRegistroDeEntradas(registroDeEntradas);
 
+        entradaConsumoList.forEach(entradaConsumo-> {
+            registroConsumoEntrada.setItens(entradaConsumo.getItens());
+            registroConsumoEntrada.setQuantidade(entradaConsumo.getQuantidade());
+            registroConsumoEntrada.setTotal(entradaConsumo.getTotal());
+
+        });
+        registroConsumoEntradaList.add(registroConsumoEntrada);
+
+        registroEntradaConsumoRepository.save(registroConsumoEntrada);
         registroDeEntradasRepository.save(registroDeEntradas);
     }
 
@@ -292,5 +291,10 @@ entradaAtualizada.getEntradaConsumo().forEach(a->{
        novoConsumo.setTotal(0F);
        novoConsumo.setEntradas(entradas);
        entradaConsumoRepository.save(novoConsumo);
+   }
+
+   private void excluirEntradaEConsumo(Long entradaId){
+       entradaConsumoRepository.deleteEntradaConsumoByEntradas_Id(entradaId);
+       entradaRepository.deleteById(entradaId);
    }
 }

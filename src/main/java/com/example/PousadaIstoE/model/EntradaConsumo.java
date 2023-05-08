@@ -1,6 +1,7 @@
 package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 
 import javax.annotation.processing.Generated;
 

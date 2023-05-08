@@ -16,4 +16,6 @@ public interface EntradaRepository extends JpaRepository <Entradas, Long> {
     List<Entradas> findByApt(Integer apt);
     @Query("select u from RegistroDeEntradas u where u.data = :data")
     List<RegistroDeEntradas> findByData(LocalDate data);
+
+
 }

@@ -3,6 +3,8 @@ package com.example.PousadaIstoE.model;
 import com.example.PousadaIstoE.response.StatusPagamento;
 import com.example.PousadaIstoE.response.TipoPagamento;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
+
 import java.time.LocalTime;
 import java.util.List;
 
