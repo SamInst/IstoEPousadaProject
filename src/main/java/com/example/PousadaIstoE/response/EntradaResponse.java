@@ -20,7 +20,6 @@ public record EntradaResponse(
             int minutos
     ){}
 
-
 //    public record EntradaConsumo(
 //            String Item,
 //            Float valor

@@ -1,14 +1,13 @@
 package com.example.PousadaIstoE.controllers;
 
 import com.example.PousadaIstoE.model.Entradas;
-import com.example.PousadaIstoE.model.RegistroDeEntradas;
 import com.example.PousadaIstoE.response.EntradaResponse;
+import com.example.PousadaIstoE.response.EntradaSimplesResponse;
 import com.example.PousadaIstoE.services.EntradaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,7 +22,7 @@ public class EntradaController {
 
 
     @GetMapping
-    public List<Entradas> findAll(){
+    public List<EntradaSimplesResponse> findAll(){
         return entradaService.findAll();
     }
 

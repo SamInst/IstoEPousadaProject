@@ -15,8 +15,7 @@ public class Entradas {
     private LocalTime horaEntrada;
     private LocalTime horaSaida;
     private String placa;
-
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany
     private List<EntradaConsumo> entradaConsumo;
 
     public Entradas() {
