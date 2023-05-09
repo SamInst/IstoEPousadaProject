@@ -33,7 +33,7 @@ public class EntradaService {
     double valorTotal;
     Entradas entradas;
     double entradaEConsumo;
-    RegistroConsumoEntrada registroConsumoEntrada = new RegistroConsumoEntrada();
+
     List<EntradaConsumo> entradaConsumoList = new ArrayList<>();
     RegistroDeEntradas registroDeEntradas = new RegistroDeEntradas();
     List<RegistroConsumoEntrada> registroConsumoEntradaList = new ArrayList<>();
@@ -131,8 +131,33 @@ public class EntradaService {
             validacaoPagamento(request);
             validacaoHorario();
             salvaNoMapa(request);
-//            registrarConsumoEntrada();
-            registrarEntrada(request);
+
+
+            List<RegistroConsumoEntrada> registroConsumoEntradaList = new ArrayList<>();
+            RegistroConsumoEntrada registroConsumoEntrada = new RegistroConsumoEntrada();
+            entradaConsumoList.forEach(a->{
+                registroConsumoEntrada.setQuantidade(a.getQuantidade());
+                registroConsumoEntrada.setItens(a.getItens());
+                registroConsumoEntrada.setTotal(a.getTotal());
+                registroEntradaConsumoRepository.save(registroConsumoEntrada);
+            });
+
+            registroConsumoEntradaList.add(registroConsumoEntrada);
+
+            RegistroDeEntradas registroDeEntradas = new RegistroDeEntradas();
+            registroDeEntradas.setApt(entradas.getApt());
+            registroDeEntradas.setHoraEntrada(entradas.getHoraEntrada());
+            registroDeEntradas.setHoraSaida(entradas.getHoraSaida());
+            registroDeEntradas.setPlaca(entradas.getPlaca());
+            registroDeEntradas.setData(LocalDate.now());
+            registroDeEntradas.setTipoPagamento(request.getTipoPagamento());
+            registroDeEntradas.setStatus_pagamento(request.getStatus_pagamento());
+            registroDeEntradas.setHoras(horas);
+            registroDeEntradas.setMinutos(minutosRestantes);
+            registroDeEntradas.setTotal(entradaEConsumo);
+            registroDeEntradas.setEntradaConsumo(registroConsumoEntradaList);
+
+            registroDeEntradasRepository.save(registroDeEntradas);
 
             entradaRepository.save(entradaAtualizada);
             excluirEntradaEConsumo(entradaId);
@@ -218,44 +243,6 @@ public class EntradaService {
         mapaGeralRepository.save(mapaGeral);
     }
 
-    private void registrarConsumoEntrada(){
-        entradaConsumoList.forEach(entradaConsumo-> {
-
-            registroConsumoEntrada.setItens(entradaConsumo.getItens());
-            registroConsumoEntrada.setQuantidade(entradaConsumo.getQuantidade());
-            registroConsumoEntrada.setTotal(entradaConsumo.getTotal());
-
-            registroEntradaConsumoRepository.save(registroConsumoEntrada);
-            registroConsumoEntradaList.add(registroConsumoEntrada);
-        });
-    }
-
-    private void registrarEntrada(Entradas request){
-        registroDeEntradas.setApt(entradas.getApt());
-        registroDeEntradas.setHoraEntrada(entradas.getHoraEntrada());
-        registroDeEntradas.setHoraSaida(entradas.getHoraSaida());
-        registroDeEntradas.setConsumo(" ");
-        registroDeEntradas.setPlaca(entradas.getPlaca());
-        registroDeEntradas.setData(LocalDate.now());
-        registroDeEntradas.setTipoPagamento(request.getTipoPagamento());
-        registroDeEntradas.setStatus_pagamento(request.getStatus_pagamento());
-        registroDeEntradas.setHoras(horas);
-        registroDeEntradas.setMinutos(minutosRestantes);
-        registroDeEntradas.setTotal(entradaEConsumo);
-        registroDeEntradas.setEntradaConsumo(registroConsumoEntradaList);
-        registroConsumoEntrada.setRegistroDeEntradas(registroDeEntradas);
-
-        entradaConsumoList.forEach(entradaConsumo-> {
-            registroConsumoEntrada.setItens(entradaConsumo.getItens());
-            registroConsumoEntrada.setQuantidade(entradaConsumo.getQuantidade());
-            registroConsumoEntrada.setTotal(entradaConsumo.getTotal());
-
-        });
-        registroConsumoEntradaList.add(registroConsumoEntrada);
-
-        registroEntradaConsumoRepository.save(registroConsumoEntrada);
-        registroDeEntradasRepository.save(registroDeEntradas);
-    }
 
 
     private void validacaoDeApartamento(Entradas entradas) throws EntityConflict {

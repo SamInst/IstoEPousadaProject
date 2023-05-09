@@ -17,7 +17,6 @@ public class RegistroDeEntradas {
     private Integer apt;
     private LocalTime horaEntrada;
     private LocalTime horaSaida;
-    private String consumo;
     private String placa;
     private LocalDate data;
     private Integer horas;
@@ -52,12 +51,6 @@ public class RegistroDeEntradas {
     }
     public void setHoraSaida(LocalTime horaSaida) {
         this.horaSaida = horaSaida;
-    }
-    public String getConsumo() {
-        return consumo;
-    }
-    public void setConsumo(String consumo) {
-        this.consumo = consumo;
     }
     public String getPlaca() {
         return placa;
@@ -104,12 +97,11 @@ public class RegistroDeEntradas {
         this.total = total;
     }
 
-    public RegistroDeEntradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String consumo, String placa, LocalDate data, Integer horas, Integer minutos, Double total, List<RegistroConsumoEntrada> entradaConsumo, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
+    public RegistroDeEntradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String placa, LocalDate data, Integer horas, Integer minutos, Double total, List<RegistroConsumoEntrada> entradaConsumo, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
         this.id = id;
         this.apt = apt;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
-        this.consumo = consumo;
         this.placa = placa;
         this.data = data;
         this.horas = horas;
