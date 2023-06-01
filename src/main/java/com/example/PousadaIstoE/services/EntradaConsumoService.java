@@ -1,8 +1,10 @@
 package com.example.PousadaIstoE.services;
 
+import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.EntradaConsumo;
 import com.example.PousadaIstoE.repository.EntradaConsumoRepository;
 import com.example.PousadaIstoE.repository.EntradaRepository;
+import com.example.PousadaIstoE.repository.RegistroEntradaConsumoRepository;
 import com.example.PousadaIstoE.response.EntradaConsumoResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,43 +14,48 @@ import java.util.NoSuchElementException;
 
 @Service
 public class EntradaConsumoService {
- private final EntradaConsumoRepository entradaConsumoRepository;
+    private final EntradaConsumoRepository entradaConsumoRepository;
+    private final RegistroEntradaConsumoRepository registroEntradaConsumoRepository;
 
- private final EntradaRepository entradaRepository;
+    private final EntradaRepository entradaRepository;
 
-    public EntradaConsumoService(EntradaConsumoRepository entradaConsumoRepository, EntradaRepository entradaRepository) {
+    public EntradaConsumoService(EntradaConsumoRepository entradaConsumoRepository, RegistroEntradaConsumoRepository registroEntradaConsumoRepository, EntradaRepository entradaRepository) {
         this.entradaConsumoRepository = entradaConsumoRepository;
+        this.registroEntradaConsumoRepository = registroEntradaConsumoRepository;
         this.entradaRepository = entradaRepository;
     }
 
-    public List<EntradaConsumo> BuscaTodos(){
+    public List<EntradaConsumo> BuscaTodos() {
         return entradaConsumoRepository.findAll();
     }
 
-    public List<EntradaConsumoResponse> consumoResponse(Long id, List<EntradaConsumoResponse> entradaConsumo){
+    public List<EntradaConsumoResponse> consumoResponse(Long id, List<EntradaConsumoResponse> entradaConsumo) {
         final var consumo = entradaConsumoRepository.findById(id).orElseThrow(
-                ()-> new NoSuchElementException("Consumo não Encontrado"));
+                () -> new NoSuchElementException("Consumo não Encontrado"));
 
 
-        entradaConsumo.forEach(a-> {
+        entradaConsumo.forEach(a -> {
             Float valorItem = consumo.getQuantidade() * consumo.getItens().getValor();
 
 
-                    new EntradaConsumoResponse(
+            new EntradaConsumoResponse(
                     consumo.getQuantidade(),
                     new EntradaConsumoResponse.Item(
                             consumo.getItens().getDescricao(),
                             consumo.getItens().getValor(),
                             valorItem
-                            ),
+                    ),
                     a.total()
-                    );
+            );
 
         });
         return entradaConsumo;
     }
 
-    public EntradaConsumo addConsumo(EntradaConsumo entradaConsumo){
+    public EntradaConsumo addConsumo(EntradaConsumo entradaConsumo) {
+        if (entradaConsumo.getEntradas() == null) {
+            throw new EntityNotFound("Nenhuma entrada associada a esse consumo");
+        }
         EntradaConsumo entradaConsumo1 = new EntradaConsumo(
                 entradaConsumo.getQuantidade(),
                 entradaConsumo.getItens(),
@@ -57,7 +64,7 @@ public class EntradaConsumoService {
         return entradaConsumoRepository.save(entradaConsumo1);
     }
 
-    public ResponseEntity<Object> deletaConsumoPorEntradaId(Long id_consumo){
+    public ResponseEntity<Object> deletaConsumoPorEntradaId(Long id_consumo) {
         entradaConsumoRepository.deleteById(id_consumo);
         return ResponseEntity.noContent().build();
     }

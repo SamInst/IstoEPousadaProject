@@ -4,10 +4,7 @@ import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.*;
 import com.example.PousadaIstoE.repository.*;
-import com.example.PousadaIstoE.response.EntradaResponse;
-import com.example.PousadaIstoE.response.EntradaSimplesResponse;
-import com.example.PousadaIstoE.response.StatusPagamento;
-import com.example.PousadaIstoE.response.TipoPagamento;
+import com.example.PousadaIstoE.response.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +21,7 @@ public class EntradaService {
     @PersistenceContext
     private EntityManager manager;
     Float totalMapaGeral;
-    double total;
+    double totalHorasEntrada;
     double valorEntrada;
     Duration diferenca;
     int horas;
@@ -35,8 +32,6 @@ public class EntradaService {
     double entradaEConsumo;
 
     List<EntradaConsumo> entradaConsumoList = new ArrayList<>();
-    RegistroDeEntradas registroDeEntradas = new RegistroDeEntradas();
-    List<RegistroConsumoEntrada> registroConsumoEntradaList = new ArrayList<>();
     private final EntradaRepository entradaRepository;
     private final PernoitesRepository pernoitesRepository;
     private final MapaGeralRepository mapaGeralRepository;
@@ -82,7 +77,7 @@ public class EntradaService {
         if (totalConsumo == null){
             totalConsumo = (double) 0;
         }
-                double total0 = total + totalConsumo;
+                double total0 = totalHorasEntrada + totalConsumo;
 
         response.set(new EntradaResponse(
                 entrada.getApt(),
@@ -112,10 +107,8 @@ public class EntradaService {
 
     public void updateEntradaData(Long entradaId, Entradas request) {
         entradas = entradaRepository.findById(entradaId).orElseThrow(() -> new EntityNotFound("Entrada não encontrada"));
-        entradaConsumoList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(entradaId);
 
-        var entradaAtualizada = new Entradas();
-             entradaAtualizada = new Entradas(
+       var entradaAtualizada = new Entradas(
                     entradas.getId(),
                     entradas.getApt(),
                     entradas.getHoraEntrada(),
@@ -127,6 +120,7 @@ public class EntradaService {
         entradaRepository.save(entradaAtualizada);
 
         if (request.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)) {
+            entradaConsumoList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(entradaId);
             calcularHora();
             validacaoPagamento(request);
             validacaoHorario();
@@ -135,13 +129,10 @@ public class EntradaService {
 
             List<RegistroConsumoEntrada> registroConsumoEntradaList = new ArrayList<>();
             RegistroConsumoEntrada registroConsumoEntrada = new RegistroConsumoEntrada();
-            entradaConsumoList.forEach(a->{
-                registroConsumoEntrada.setQuantidade(a.getQuantidade());
-                registroConsumoEntrada.setItens(a.getItens());
-                registroConsumoEntrada.setTotal(a.getTotal());
+            entradaConsumoList.forEach(consumo -> {
+              registroConsumoEntrada.setEntradaConsumoList(entradaConsumoList);
                 registroEntradaConsumoRepository.save(registroConsumoEntrada);
             });
-
             registroConsumoEntradaList.add(registroConsumoEntrada);
 
             RegistroDeEntradas registroDeEntradas = new RegistroDeEntradas();
@@ -174,16 +165,16 @@ public class EntradaService {
                     minutosRestantes = (int) (minutos % 60);
 
                     if (horas < 2 || (horas == 2 && minutosRestantes <= 20)) {
-                        total = 30.0;
+                        totalHorasEntrada = 30.0;
                     } else {
-                        total = 30.0 + ((horas - 2) * 7.0);
+                        totalHorasEntrada = 30.0 + ((horas - 2) * 7.0);
                         if (minutosRestantes > 0) {
-                            total += 40.0;
+                            totalHorasEntrada += 40.0;
                         }
                     }
                 }
         );
-        valorEntrada = total;
+        valorEntrada = totalHorasEntrada;
     }
 
     private void validacaoPagamento(Entradas request){
@@ -235,7 +226,7 @@ public class EntradaService {
         if (request.getTipoPagamento().equals(TipoPagamento.CARTAO)){
             mapaGeral.setReport(relatorio + " (CARTAO)");
             mapaGeral.setEntrada(0F);
-            mapaGeral.setTotal((float) total);
+            mapaGeral.setTotal((float) totalHorasEntrada);
         }
         if (request.getTipoPagamento().equals(TipoPagamento.DINHEIRO)){
             mapaGeral.setReport(relatorio + " (DINHEIRO)");
@@ -250,7 +241,7 @@ public class EntradaService {
        List<Pernoites> pernoites = pernoitesRepository.findAll();
          pernoites.forEach(apartamento -> {
              List<Entradas> listaDeApartamentos = entradaRepository.findByApt(entradas.getApt());
-             List<Pernoites> listaDeApartamentosPernoite = pernoitesRepository.findByApt(apartamento.getApt());
+             List<Pernoites> listaDeApartamentosPernoite = pernoitesRepository.findByApartamento_Id(apartamento.getApartamento().getId());
              for (Entradas entradaCadastrada : listaDeApartamentos) {
                  for (Pernoites pernoiteCadastrado : listaDeApartamentosPernoite) {
                      if ( entradas.getApt().equals(entradaCadastrada.getApt())
@@ -259,6 +250,7 @@ public class EntradaService {
 //                             && apartamento.getApt().equals(pernoiteCadastrado.getApt())
                          throw new EntityConflict("O apartamento está ocupado no momento.");
                      }
+                     apartamento.getApartamento().setStatusDoQuarto(StatusDoQuarto.OCUPADO);
 //                     if (pernoiteCadastrado.getApt().equals(entradaCadastrada.getApt()))
 ////                             && apartamento.getApt().equals(pernoiteCadastrado.getApt()))
 //                     {
@@ -267,6 +259,7 @@ public class EntradaService {
                  }
              }
          });
+
     }
 
    private void consumoVazio(){

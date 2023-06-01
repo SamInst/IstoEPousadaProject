@@ -7,15 +7,17 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
+@Table(name = "tb_pernoites")
 public class Pernoites {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private Integer apt;
+    @ManyToOne
+    private Quartos apartamento;
     private LocalDate dataEntrada;
     private LocalDate dataSaida;
-    private String Consumo;
-
+    @OneToMany
+    private List<PernoiteConsumo> pernoiteConsumo;
     private Integer quantidadePessoa;
     @ManyToOne
     private Client client;
@@ -25,21 +27,9 @@ public class Pernoites {
     public Long getId() {
         return id;
     }
-    public Integer getApt() {
-        return apt;
-    }
     public void setId(Long id) {this.id = id;}
     public Integer getQuantidadePessoa() {return quantidadePessoa;}
     public void setQuantidadePessoa(Integer quantidadePessoa) {this.quantidadePessoa = quantidadePessoa;}
-    public void setApt(Integer apt) {
-        this.apt = apt;
-    }
-    public String getConsumo() {
-        return Consumo;
-    }
-    public void setConsumo(String consumo) {
-        Consumo = consumo;
-    }
     public LocalDate getDataEntrada() {
         return dataEntrada;
     }
@@ -58,12 +48,34 @@ public class Pernoites {
     public void setClient(Client client) {
         this.client = client;
     }
-
     public TipoPagamento getTipoPagamento() {
         return tipoPagamento;
     }
-
     public StatusPagamento getStatus_pagamento() {
         return status_pagamento;
+    }
+
+    public List<PernoiteConsumo> getPernoiteConsumo() {
+        return pernoiteConsumo;
+    }
+
+    public void setPernoiteConsumo(List<PernoiteConsumo> pernoiteConsumo) {
+        this.pernoiteConsumo = pernoiteConsumo;
+    }
+
+    public Quartos getApartamento() {
+        return apartamento;
+    }
+
+    public void setApartamento(Quartos apartamento) {
+        this.apartamento = apartamento;
+    }
+
+    public void setTipoPagamento(TipoPagamento tipoPagamento) {
+        this.tipoPagamento = tipoPagamento;
+    }
+
+    public void setStatus_pagamento(StatusPagamento status_pagamento) {
+        this.status_pagamento = status_pagamento;
     }
 }

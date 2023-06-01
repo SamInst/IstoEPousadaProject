@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+#    image: PousadaIstoE:0.0.1-SNAPSHOT
+    container_name: PousadaIstoE
+    restart: always
+    volumes:
+      - /home:/home
+    ports:
+      - 8080:8080
+    environment:
+#      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+#      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+#      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+#      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      POSTGRES_USER: ${ISTOE_USER_DB}
+      POSTGRES_PASSWORD: ${ISTOE_PASS_DB}
+      POSTGRES_DB: ${ISTOE_DB_URL}
+
+networks:
+  default:
+    external:
+      name: microservices
