@@ -14,15 +14,24 @@ public class Pernoites {
     private Long id;
     @ManyToOne
     private Quartos apartamento;
-    private LocalDate dataEntrada;
-    private LocalDate dataSaida;
-    @OneToMany
-    private List<PernoiteConsumo> pernoiteConsumo;
-    private Integer quantidadePessoa;
     @ManyToOne
     private Client client;
+    @OneToMany
+    private List<PernoiteConsumo> pernoiteConsumo;
+    private LocalDate dataEntrada;
+    private LocalDate dataSaida;
+    private Integer quantidadePessoa;
     private TipoPagamento tipoPagamento;
     private StatusPagamento status_pagamento;
+    private Float total;
+
+    public Float getTotal() {
+        return total;
+    }
+
+    public void setTotal(Float total) {
+        this.total = total;
+    }
 
     public Long getId() {
         return id;

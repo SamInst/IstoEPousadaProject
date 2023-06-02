@@ -8,10 +8,7 @@ public record PernoiteResponse(
         Integer apartamento,
         LocalDate data_de_entrada,
         LocalDate data_de_saida,
-        Valores valores,
-        StatusDoQuarto status_quarto
-
-
+        Valores valores
 ) {
     public record Client (
         String nome_cliente,
