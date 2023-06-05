@@ -38,14 +38,16 @@ public class EntradaService {
     private final RegistroDeEntradasRepository registroDeEntradasRepository;
     private final EntradaConsumoRepository entradaConsumoRepository;
     private final RegistroEntradaConsumoRepository registroEntradaConsumoRepository;
+    private final QuartosRepository quartosRepository;
 
-    public EntradaService(EntradaRepository entradaRepository, PernoitesRepository pernoitesRepository, MapaGeralRepository mapaGeralRepository, RegistroDeEntradasRepository registroDeEntradasRepository, EntradaConsumoRepository entradaConsumoRepository, RegistroEntradaConsumoRepository registroEntradaConsumoRepository) {
+    public EntradaService(EntradaRepository entradaRepository, PernoitesRepository pernoitesRepository, MapaGeralRepository mapaGeralRepository, RegistroDeEntradasRepository registroDeEntradasRepository, EntradaConsumoRepository entradaConsumoRepository, RegistroEntradaConsumoRepository registroEntradaConsumoRepository, QuartosRepository quartosRepository) {
         this.entradaRepository = entradaRepository;
         this.pernoitesRepository = pernoitesRepository;
         this.mapaGeralRepository = mapaGeralRepository;
         this.registroDeEntradasRepository = registroDeEntradasRepository;
         this.entradaConsumoRepository = entradaConsumoRepository;
         this.registroEntradaConsumoRepository = registroEntradaConsumoRepository;
+        this.quartosRepository = quartosRepository;
     }
 
     public List<EntradaSimplesResponse> findAll (){
@@ -54,7 +56,7 @@ public class EntradaService {
         findAll.forEach( entradas ->{
             EntradaSimplesResponse entradaSimplesResponse = new EntradaSimplesResponse(
                     entradas.getId(),
-                    entradas.getApt(),
+                    entradas.getQuartos().getNumero(),
                     entradas.getHoraEntrada(),
                     entradas.getHoraSaida(),
                     entradas.getPlaca()
@@ -80,7 +82,7 @@ public class EntradaService {
                 double total0 = totalHorasEntrada + totalConsumo;
 
         response.set(new EntradaResponse(
-                entrada.getApt(),
+                entrada.getQuartos().getNumero(),
                 entrada.getHoraEntrada(),
                 entrada.getHoraSaida(),
                 entrada.getPlaca(),
@@ -97,11 +99,19 @@ public class EntradaService {
     }
 
     public Entradas registerEntrada(Entradas entradas) {
+        Quartos quartoOut = entradas.getQuartos();
+        if (quartoOut.getStatusDoQuarto().equals(StatusDoQuarto.OCUPADO)){
+            throw new EntityConflict("Quarto Ocupado");
+        }
         entradas.setHoraEntrada(LocalTime.now());
         entradas.setHoraSaida(LocalTime.of(0,0));
         entradas.setStatus_pagamento(StatusPagamento.PENDENTE);
         entradas.setTipoPagamento(TipoPagamento.PENDENTE);
-        validacaoDeApartamento(entradas);
+//        validacaoDeApartamento(entradas);
+
+
+        quartoOut.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
+        quartosRepository.save(quartoOut);
         return entradaRepository.save(entradas);
     }
 
@@ -110,7 +120,7 @@ public class EntradaService {
 
        var entradaAtualizada = new Entradas(
                     entradas.getId(),
-                    entradas.getApt(),
+                    entradas.getQuartos(),
                     entradas.getHoraEntrada(),
                     LocalTime.now(),
                     entradas.getPlaca(),
@@ -127,31 +137,34 @@ public class EntradaService {
             salvaNoMapa(request);
 
 
-            List<RegistroConsumoEntrada> registroConsumoEntradaList = new ArrayList<>();
-            RegistroConsumoEntrada registroConsumoEntrada = new RegistroConsumoEntrada();
-            entradaConsumoList.forEach(consumo -> {
-              registroConsumoEntrada.setEntradaConsumoList(entradaConsumoList);
-                registroEntradaConsumoRepository.save(registroConsumoEntrada);
-            });
-            registroConsumoEntradaList.add(registroConsumoEntrada);
+//            List<RegistroConsumoEntrada> registroConsumoEntradaList = new ArrayList<>();
+//            RegistroConsumoEntrada registroConsumoEntrada = new RegistroConsumoEntrada();
+//            entradaConsumoList.forEach(consumo -> {
+//              registroConsumoEntrada.setEntradaConsumoList(entradaConsumoList);
+//                registroEntradaConsumoRepository.save(registroConsumoEntrada);
+//            });
+//            registroConsumoEntradaList.add(registroConsumoEntrada);
 
-            RegistroDeEntradas registroDeEntradas = new RegistroDeEntradas();
-            registroDeEntradas.setApt(entradas.getApt());
-            registroDeEntradas.setHoraEntrada(entradas.getHoraEntrada());
-            registroDeEntradas.setHoraSaida(entradas.getHoraSaida());
-            registroDeEntradas.setPlaca(entradas.getPlaca());
-            registroDeEntradas.setData(LocalDate.now());
-            registroDeEntradas.setTipoPagamento(request.getTipoPagamento());
-            registroDeEntradas.setStatus_pagamento(request.getStatus_pagamento());
-            registroDeEntradas.setHoras(horas);
-            registroDeEntradas.setMinutos(minutosRestantes);
-            registroDeEntradas.setTotal(entradaEConsumo);
-            registroDeEntradas.setEntradaConsumo(registroConsumoEntradaList);
+//            RegistroDeEntradas registroDeEntradas = new RegistroDeEntradas();
+//            registroDeEntradas.setApt(entradas.getApt());
+//            registroDeEntradas.setHoraEntrada(entradas.getHoraEntrada());
+//            registroDeEntradas.setHoraSaida(entradas.getHoraSaida());
+//            registroDeEntradas.setPlaca(entradas.getPlaca());
+//            registroDeEntradas.setData(LocalDate.now());
+//            registroDeEntradas.setTipoPagamento(request.getTipoPagamento());
+//            registroDeEntradas.setStatus_pagamento(request.getStatus_pagamento());
+//            registroDeEntradas.setHoras(horas);
+//            registroDeEntradas.setMinutos(minutosRestantes);
+//            registroDeEntradas.setTotal(entradaEConsumo);
+//            registroDeEntradas.setEntradaConsumo(registroConsumoEntradaList);
 
-            registroDeEntradasRepository.save(registroDeEntradas);
+//            registroDeEntradasRepository.save(registroDeEntradas);
 
+            Quartos quartoOut = entradas.getQuartos();
+            quartoOut.setStatusDoQuarto(StatusDoQuarto.DISPONIVEL);
+            quartosRepository.save(quartoOut);
             entradaRepository.save(entradaAtualizada);
-            excluirEntradaEConsumo(entradaId);
+//            excluirEntradaEConsumo(entradaId);
         }
     }
 
@@ -210,7 +223,7 @@ public class EntradaService {
         var novoTotalMapaGeral = totalMapaGeral + entradaEConsumo;
         MapaGeral mapaGeral = new MapaGeral(
         );
-        mapaGeral.setApartment(entradas.getApt());
+        mapaGeral.setApartment(request.getQuartos().getNumero());
         mapaGeral.setData(LocalDate.now());
         mapaGeral.setEntrada((float) entradaEConsumo);
         mapaGeral.setReport(relatorio);
@@ -236,31 +249,30 @@ public class EntradaService {
 
 
 
-    private void validacaoDeApartamento(Entradas entradas) throws EntityConflict {
-
-       List<Pernoites> pernoites = pernoitesRepository.findAll();
-         pernoites.forEach(apartamento -> {
-             List<Entradas> listaDeApartamentos = entradaRepository.findByApt(entradas.getApt());
-             List<Pernoites> listaDeApartamentosPernoite = pernoitesRepository.findByApartamento_Id(apartamento.getApartamento().getId());
-             for (Entradas entradaCadastrada : listaDeApartamentos) {
-                 for (Pernoites pernoiteCadastrado : listaDeApartamentosPernoite) {
-                     if ( entradas.getApt().equals(entradaCadastrada.getApt())
-                       || entradas.getHoraSaida() == null ) {
-//                             && apartamento.getApt().equals(entradas.getApt())
-//                             && apartamento.getApt().equals(pernoiteCadastrado.getApt())
-                         throw new EntityConflict("O apartamento está ocupado no momento.");
-                     }
-                     apartamento.getApartamento().setStatusDoQuarto(StatusDoQuarto.OCUPADO);
-//                     if (pernoiteCadastrado.getApt().equals(entradaCadastrada.getApt()))
-////                             && apartamento.getApt().equals(pernoiteCadastrado.getApt()))
-//                     {
+//    private void validacaoDeApartamento(Entradas entradas) throws EntityConflict {
+//
+//       List<Pernoites> pernoites = pernoitesRepository.findAll();
+//         pernoites.forEach(apartamento -> {
+//             List<Entradas> listaDeApartamentos = entradaRepository.findByQuartos_Numero(entradas.getQuartos().getNumero());
+//             List<Pernoites> listaDeApartamentosPernoite = pernoitesRepository.findByApartamento_Id(apartamento.getApartamento().getId());
+//             for (Entradas entradaCadastrada : listaDeApartamentos) {
+//                 for (Pernoites pernoiteCadastrado : listaDeApartamentosPernoite) {
+//                     if ( entradas.getQuartos().getNumero().equals(entradaCadastrada.getQuartos().getNumero())
+//                       || entradas.getHoraSaida() == null ) {
+////                             && apartamento.getApt().equals(entradas.getApt())
+////                             && apartamento.getApt().equals(pernoiteCadastrado.getApt())
 //                         throw new EntityConflict("O apartamento está ocupado no momento.");
 //                     }
-                 }
-             }
-         });
-
-    }
+//                     apartamento.getApartamento().setStatusDoQuarto(StatusDoQuarto.OCUPADO);
+////                     if (pernoiteCadastrado.getApt().equals(entradaCadastrada.getApt()))
+//////                             && apartamento.getApt().equals(pernoiteCadastrado.getApt()))
+////                     {
+////                         throw new EntityConflict("O apartamento está ocupado no momento.");
+////                     }
+//                 }
+//             }
+//         });
+//    }
 
    private void consumoVazio(){
        Itens semConsumo = manager.createQuery("SELECT m FROM Itens m where  m.id = 8", Itens.class)

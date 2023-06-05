@@ -4,5 +4,6 @@ public enum StatusDoQuarto {
     OCUPADO,
     DISPONIVEL,
     RESERVADO,
-    NECESSITA_LIMPEZA
+    NECESSITA_LIMPEZA,
+    DIARIA_ENCERRADA
 }

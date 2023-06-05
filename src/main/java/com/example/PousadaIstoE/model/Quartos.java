@@ -13,42 +13,20 @@ public class Quartos {
     private Integer capacidadePessoa;
     private StatusDoQuarto statusDoQuarto;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
+    public void setId(Long id) {this.id = id;}
+    public Long getId() {return id;}
     public Integer getNumero() {
         return numero;
     }
-
-    public void setNumero(Integer numero) {
-        this.numero = numero;
-    }
-
     public String getDescricao() {
         return descricao;
     }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
     public Integer getCapacidadePessoa() {
         return capacidadePessoa;
     }
-
-    public void setCapacidadePessoa(Integer capacidadePessoa) {
-        this.capacidadePessoa = capacidadePessoa;
-    }
-
     public StatusDoQuarto getStatusDoQuarto() {
         return statusDoQuarto;
     }
-
     public void setStatusDoQuarto(StatusDoQuarto statusDoQuarto) {
         this.statusDoQuarto = statusDoQuarto;
     }
@@ -60,7 +38,6 @@ public class Quartos {
         this.capacidadePessoa = capacidadePessoa;
         this.statusDoQuarto = statusDoQuarto;
     }
-
     public Quartos() {
     }
 }

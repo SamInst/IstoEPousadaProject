@@ -45,10 +45,10 @@ public class PernoiteService {
 
     public ResponseEntity<PernoiteResponse> findById(Long id) {
         final var pernoites = pernoitesRepository.findById(id).orElseThrow(() -> new EntityNotFound("Pernoite não encontrado"));
-        quantidadeDePessoas(pernoites);
+        quantidadeDePessoas2(pernoites);
 
         Integer p1 = Period.between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
-        pernoites.setTotal(price * p1);
+        Float valor_total = pernoites.getTotal() * p1;
         final var response = new PernoiteResponse(
                 new PernoiteResponse.Client(
                         pernoites.getClient().getName(),
@@ -60,8 +60,8 @@ public class PernoiteService {
                 new PernoiteResponse.Valores(
                         pernoites.getQuantidadePessoa(),
                         p1,
-                        price,
                         pernoites.getTotal(),
+                        valor_total,
                         pernoites.getTipoPagamento(),
                         pernoites.getStatus_pagamento()
                 )
@@ -73,6 +73,7 @@ public class PernoiteService {
         if (pernoites.getClient() == null){
             throw new EntityConflict("É preciso informar o hóspede.");
         }
+        quantidadeDePessoas2(pernoites);
         validacaoDeApartamento(pernoites);
         if (pernoites.getStatus_pagamento() == null) {
             pernoites.setStatus_pagamento(StatusPagamento.PENDENTE);
@@ -90,14 +91,25 @@ public class PernoiteService {
         return pernoitesRepository.save(pernoites1);
     }
 
-    private void quantidadeDePessoas(Pernoites pernoites) {
+//    private void quantidadeDePessoas(Pernoites pernoites) {
+//        Integer quantidadePessoa = pernoites.getQuantidadePessoa();
+//        switch (quantidadePessoa) {
+//            case 1 -> price = 90F;
+//            case 2 -> price = 130F;
+//            case 3 -> price = 180F;
+//            case 4 -> price = 220F;
+//            case 5 -> price = 280F;
+//            default -> throw new EntityConflict("Não podem ser inseridos mais de 5 pessoas no mesmo quarto");
+//        }
+//    }
+    private void quantidadeDePessoas2(Pernoites pernoites) {
         Integer quantidadePessoa = pernoites.getQuantidadePessoa();
         switch (quantidadePessoa) {
-            case 1 -> price = 90F;
-            case 2 -> price = 130F;
-            case 3 -> price = 180F;
-            case 4 -> price = 220F;
-            case 5 -> price = 280F;
+            case 1 -> pernoites.setTotal(90F);
+            case 2 -> pernoites.setTotal(130F);
+            case 3 -> pernoites.setTotal(180F);
+            case 4 -> pernoites.setTotal(220F);
+            case 5 -> pernoites.setTotal(280F);
             default -> throw new EntityConflict("Não podem ser inseridos mais de 5 pessoas no mesmo quarto");
         }
     }
@@ -130,17 +142,10 @@ public class PernoiteService {
         pernoitesRepository.save(pernoite);
     }
 
-    @Scheduled(cron = "0 * * * * ?") // Executa todos os dias à meia-noite
+    @Scheduled(cron = "0 * * * * ?") // Tem que executar todos os dias à meia-noite
     public void updateRoomStatus() {
-        String relatorio = "Pernoite";
         LocalDate currentDate = LocalDate.now();
         List<Pernoites> pernoitesToCheckIn = pernoitesRepository.findByDataEntrada(currentDate);
-        List<Pernoites> pernoitesToCheckOut = pernoitesRepository.findByDataSaida(currentDate);
-        MapaGeral mapaGeral = new MapaGeral();
-
-        Float totalMapaGeral = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
-                .setMaxResults(1)
-                .getSingleResult();
 
         for (Pernoites pernoiteIn : pernoitesToCheckIn) {
             Quartos quartoIn = pernoiteIn.getApartamento();
@@ -148,31 +153,45 @@ public class PernoiteService {
                 quartoIn.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
                 quartosRepository.save(quartoIn);
             }
-//            for (Pernoites pernoiteOut : pernoitesToCheckOut) {
-//                Quartos quartoOut = pernoiteOut.getApartamento();
-//                if (pernoiteOut.getDataSaida().equals(currentDate) && LocalTime.now().isAfter(LocalTime.of(12, 0))) {
-//                    quartoOut.setStatusDoQuarto(StatusDoQuarto.DISPONIVEL);
-//                    quartosRepository.save(quartoOut);
-//                }
-//                if (pernoiteOut.getDataSaida().equals(currentDate)
-//                        && pernoiteOut.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)) {
-//                    if (pernoiteOut.getTipoPagamento().equals(TipoPagamento.PIX)){
-//                        relatorio += " (PIX)";}
-//                    if (pernoiteOut.getTipoPagamento().equals(TipoPagamento.CARTAO)){
-//                        relatorio += " (CARTÃO)";}
-//                    if (pernoiteOut.getTipoPagamento().equals(TipoPagamento.DINHEIRO)){
-//                        relatorio += "(DINHEIRO)";}
-//
-//                    mapaGeral.setApartment(pernoiteOut.getApartamento().getNumero());
-//                    mapaGeral.setData(currentDate);
-//                    mapaGeral.setEntrada(pernoiteOut.getTotal());
-//                    mapaGeral.setReport(relatorio);
-//                    mapaGeral.setTotal(totalMapaGeral);
-//                    mapaGeral.setSaida(0F);
-//                    mapaGeral.setHora(LocalTime.now());
-//                    mapaGeralRepository.save(mapaGeral);
-//                }
-//            }
+        }
+    }
+
+    @Scheduled(cron = "0 1 12 * * ?")
+    public void updateRoomStatusOut() {
+        String relatorio = "Pernoite";
+        LocalDate currentDate = LocalDate.now();
+        List<Pernoites> pernoitesToCheckOut = pernoitesRepository.findByDataSaida(currentDate);
+        MapaGeral mapaGeral = new MapaGeral();
+
+        Float totalMapaGeral = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
+                .setMaxResults(1)
+                .getSingleResult();
+
+        for (Pernoites pernoiteOut : pernoitesToCheckOut) {
+            Quartos quartoOut = pernoiteOut.getApartamento();
+            if (pernoiteOut.getDataSaida().equals(currentDate) && LocalTime.now().isAfter(LocalTime.of(12, 0))) {
+                quartoOut.setStatusDoQuarto(StatusDoQuarto.DIARIA_ENCERRADA);
+                quartosRepository.save(quartoOut);
+            }
+            if (pernoiteOut.getDataSaida().equals(currentDate)
+                    && pernoiteOut.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)) {
+                if (pernoiteOut.getTipoPagamento().equals(TipoPagamento.PIX)) {
+                    relatorio += " (PIX)";
+                }
+                if (pernoiteOut.getTipoPagamento().equals(TipoPagamento.CARTAO)) {
+                    relatorio += " (CARTÃO)";
+                }
+                if (pernoiteOut.getTipoPagamento().equals(TipoPagamento.DINHEIRO)) {
+                    relatorio += "(DINHEIRO)";
+                }
+                mapaGeral.setApartment(pernoiteOut.getApartamento().getNumero());
+                mapaGeral.setData(currentDate);
+                mapaGeral.setEntrada(pernoiteOut.getTotal());
+                mapaGeral.setReport(relatorio);
+                mapaGeral.setSaida(0F);
+                mapaGeral.setHora(LocalTime.now());
+                mapaGeralRepository.save(mapaGeral);
+            }
         }
     }
 }

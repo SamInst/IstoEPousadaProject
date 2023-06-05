@@ -2,6 +2,7 @@ package com.example.PousadaIstoE.repository;
 
 import com.example.PousadaIstoE.model.EntradaConsumo;
 import com.example.PousadaIstoE.model.Entradas;
+import com.example.PousadaIstoE.model.Quartos;
 import com.example.PousadaIstoE.model.RegistroDeEntradas;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Repository
 public interface EntradaRepository extends JpaRepository <Entradas, Long> {
-    List<Entradas> findByApt(Integer apt);
+    List<Entradas> findByQuartos_Numero(Integer quartos_numero);
     @Query("select u from RegistroDeEntradas u where u.data = :data")
     List<RegistroDeEntradas> findByData(LocalDate data);
 

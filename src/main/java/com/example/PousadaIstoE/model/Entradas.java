@@ -13,7 +13,8 @@ public class Entradas {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
-    private Integer apt;
+    @ManyToOne
+    private Quartos quartos;
     private LocalTime horaEntrada;
     private LocalTime horaSaida;
     private String placa;
@@ -26,18 +27,8 @@ public class Entradas {
     public void setId(Long id) {
         this.id = id;
     }
-
-
     public Long getId() {
         return id;
-    }
-
-    public Integer getApt() {
-        return apt;
-    }
-
-    public void setApt(Integer apt) {
-        this.apt = apt;
     }
 
     public LocalTime getHoraEntrada() {
@@ -63,18 +54,18 @@ public class Entradas {
     private TipoPagamento tipoPagamento;
     private StatusPagamento status_pagamento;
 
-    public Entradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String placa) {
+    public Entradas(Long id, Quartos quartos, LocalTime horaEntrada, LocalTime horaSaida, String placa) {
         this.id = id;
-        this.apt = apt;
+        this.quartos = quartos;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
 
         this.placa = placa;
     }
 
-    public Entradas(Long id, Integer apt, LocalTime horaEntrada, LocalTime horaSaida, String placa, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
+    public Entradas(Long id, Quartos quartos, LocalTime horaEntrada, LocalTime horaSaida, String placa, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
         this.id = id;
-        this.apt = apt;
+        this.quartos = quartos;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
         this.placa = placa;
@@ -104,5 +95,13 @@ public class Entradas {
 
     public void setEntradaConsumo(List<EntradaConsumo> entradaConsumo) {
         this.entradaConsumo = entradaConsumo;
+    }
+
+    public Quartos getQuartos() {
+        return quartos;
+    }
+
+    public void setQuartos(Quartos quartos) {
+        this.quartos = quartos;
     }
 }
