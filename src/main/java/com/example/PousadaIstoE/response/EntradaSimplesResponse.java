@@ -8,7 +8,4 @@ public record EntradaSimplesResponse (
         LocalTime hora_entrada,
         LocalTime hora_saida,
         String placa
-){
-
-
-}
+){}

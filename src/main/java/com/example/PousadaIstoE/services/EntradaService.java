@@ -103,12 +103,17 @@ public class EntradaService {
         if (quartoOut.getStatusDoQuarto().equals(StatusDoQuarto.OCUPADO)){
             throw new EntityConflict("Quarto Ocupado");
         }
+        if (quartoOut.getStatusDoQuarto().equals(StatusDoQuarto.NECESSITA_LIMPEZA)){
+            throw new EntityConflict("Quarto Precisa de limpeza!");
+        }
+        if (quartoOut.getStatusDoQuarto().equals(StatusDoQuarto.RESERVADO)){
+            throw new EntityConflict("Quarto Reservado");
+        }
         entradas.setHoraEntrada(LocalTime.now());
         entradas.setHoraSaida(LocalTime.of(0,0));
         entradas.setStatus_pagamento(StatusPagamento.PENDENTE);
         entradas.setTipoPagamento(TipoPagamento.PENDENTE);
 //        validacaoDeApartamento(entradas);
-
 
         quartoOut.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
         quartosRepository.save(quartoOut);
@@ -223,7 +228,7 @@ public class EntradaService {
         var novoTotalMapaGeral = totalMapaGeral + entradaEConsumo;
         MapaGeral mapaGeral = new MapaGeral(
         );
-        mapaGeral.setApartment(request.getQuartos().getNumero());
+        mapaGeral.setApartment(entradas.getQuartos().getNumero());
         mapaGeral.setData(LocalDate.now());
         mapaGeral.setEntrada((float) entradaEConsumo);
         mapaGeral.setReport(relatorio);
@@ -249,30 +254,30 @@ public class EntradaService {
 
 
 
-//    private void validacaoDeApartamento(Entradas entradas) throws EntityConflict {
-//
-//       List<Pernoites> pernoites = pernoitesRepository.findAll();
-//         pernoites.forEach(apartamento -> {
-//             List<Entradas> listaDeApartamentos = entradaRepository.findByQuartos_Numero(entradas.getQuartos().getNumero());
-//             List<Pernoites> listaDeApartamentosPernoite = pernoitesRepository.findByApartamento_Id(apartamento.getApartamento().getId());
-//             for (Entradas entradaCadastrada : listaDeApartamentos) {
-//                 for (Pernoites pernoiteCadastrado : listaDeApartamentosPernoite) {
-//                     if ( entradas.getQuartos().getNumero().equals(entradaCadastrada.getQuartos().getNumero())
-//                       || entradas.getHoraSaida() == null ) {
-////                             && apartamento.getApt().equals(entradas.getApt())
-////                             && apartamento.getApt().equals(pernoiteCadastrado.getApt())
+    private void validacaoDeApartamento(Entradas entradas) throws EntityConflict {
+
+       List<Pernoites> pernoites = pernoitesRepository.findAll();
+         pernoites.forEach(apartamento -> {
+             List<Entradas> listaDeApartamentos = entradaRepository.findByQuartos_Numero(entradas.getQuartos().getNumero());
+             List<Pernoites> listaDeApartamentosPernoite = pernoitesRepository.findByApartamento_Id(apartamento.getApartamento().getId());
+             for (Entradas entradaCadastrada : listaDeApartamentos) {
+                 for (Pernoites pernoiteCadastrado : listaDeApartamentosPernoite) {
+                     if ( entradas.getQuartos().getNumero().equals(entradaCadastrada.getQuartos().getNumero())
+                       || entradas.getHoraSaida() == null ) {
+//                             && apartamento.getApt().equals(entradas.getApt())
+//                             && apartamento.getApt().equals(pernoiteCadastrado.getApt())
+                         throw new EntityConflict("O apartamento está ocupado no momento.");
+                     }
+                     apartamento.getApartamento().setStatusDoQuarto(StatusDoQuarto.OCUPADO);
+//                     if (pernoiteCadastrado.getApt().equals(entradaCadastrada.getApt()))
+////                             && apartamento.getApt().equals(pernoiteCadastrado.getApt()))
+//                     {
 //                         throw new EntityConflict("O apartamento está ocupado no momento.");
 //                     }
-//                     apartamento.getApartamento().setStatusDoQuarto(StatusDoQuarto.OCUPADO);
-////                     if (pernoiteCadastrado.getApt().equals(entradaCadastrada.getApt()))
-//////                             && apartamento.getApt().equals(pernoiteCadastrado.getApt()))
-////                     {
-////                         throw new EntityConflict("O apartamento está ocupado no momento.");
-////                     }
-//                 }
-//             }
-//         });
-//    }
+                 }
+             }
+         });
+    }
 
    private void consumoVazio(){
        Itens semConsumo = manager.createQuery("SELECT m FROM Itens m where  m.id = 8", Itens.class)

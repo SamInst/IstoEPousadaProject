@@ -57,6 +57,7 @@ public class PernoiteService {
                 pernoites.getApartamento().getNumero(),
                 pernoites.getDataEntrada(),
                 pernoites.getDataSaida(),
+                pernoites.getPernoiteConsumo(),
                 new PernoiteResponse.Valores(
                         pernoites.getQuantidadePessoa(),
                         p1,
@@ -120,7 +121,9 @@ public class PernoiteService {
                 || pernoite.getDataSaida().isBefore(LocalDate.now())) {
             throw new EntityDates("A data inserida não pode ser inferior a hoje");
         }
-        if (pernoite.getApartamento().getStatusDoQuarto().equals(StatusDoQuarto.OCUPADO)) {
+        if (pernoite.getApartamento().getStatusDoQuarto().equals(StatusDoQuarto.OCUPADO)
+                && pernoite.getDataEntrada().equals(LocalDate.now())
+        ) {
             throw new EntityConflict("O apartamento já está ocupado.");
         }
         if (pernoite.getApartamento().getStatusDoQuarto().equals(StatusDoQuarto.NECESSITA_LIMPEZA)) {
@@ -149,7 +152,16 @@ public class PernoiteService {
 
         for (Pernoites pernoiteIn : pernoitesToCheckIn) {
             Quartos quartoIn = pernoiteIn.getApartamento();
-            if (pernoiteIn.getDataEntrada().equals(currentDate)) {
+
+            if (pernoiteIn.getDataEntrada().equals(currentDate)
+                    && LocalTime.now().isAfter(LocalTime.of(6,0))
+                    && LocalTime.now().isBefore(LocalTime.of(12,0))){
+                quartoIn.setStatusDoQuarto(StatusDoQuarto.RESERVADO);
+                quartosRepository.save(quartoIn);
+            }
+            if (pernoiteIn.getDataEntrada().equals(currentDate)
+            && LocalTime.now().isAfter(LocalTime.of(12,0))
+            ){
                 quartoIn.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
                 quartosRepository.save(quartoIn);
             }
