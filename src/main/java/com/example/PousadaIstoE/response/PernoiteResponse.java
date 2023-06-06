@@ -22,6 +22,7 @@ public record PernoiteResponse(
             Integer quantidade_pessoas,
             Integer quantidade_dias,
             Float valor_diaria,
+            Double total_consumo,
             Float valor_total,
             TipoPagamento tipoPagamento,
             StatusPagamento status_pagamento

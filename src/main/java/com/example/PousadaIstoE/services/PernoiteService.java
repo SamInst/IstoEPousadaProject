@@ -7,6 +7,7 @@ import com.example.PousadaIstoE.model.MapaGeral;
 import com.example.PousadaIstoE.model.Pernoites;
 import com.example.PousadaIstoE.model.Quartos;
 import com.example.PousadaIstoE.repository.MapaGeralRepository;
+import com.example.PousadaIstoE.repository.PernoiteConsumoRepository;
 import com.example.PousadaIstoE.repository.PernoitesRepository;
 import com.example.PousadaIstoE.repository.QuartosRepository;
 import com.example.PousadaIstoE.response.PernoiteResponse;
@@ -32,11 +33,13 @@ public class PernoiteService {
     private final PernoitesRepository pernoitesRepository;
     private final QuartosRepository quartosRepository;
     private final MapaGeralRepository mapaGeralRepository;
+    private final PernoiteConsumoRepository pernoiteConsumoRepository;
 
-    protected PernoiteService(PernoitesRepository pernoitesRepository, QuartosRepository quartosRepository, MapaGeralRepository mapaGeralRepository) {
+    protected PernoiteService(PernoitesRepository pernoitesRepository, QuartosRepository quartosRepository, MapaGeralRepository mapaGeralRepository, PernoiteConsumoRepository pernoiteConsumoRepository) {
         this.pernoitesRepository = pernoitesRepository;
         this.quartosRepository = quartosRepository;
         this.mapaGeralRepository = mapaGeralRepository;
+        this.pernoiteConsumoRepository = pernoiteConsumoRepository;
     }
 
     public List<Pernoites> findAll() {
@@ -45,7 +48,13 @@ public class PernoiteService {
 
     public ResponseEntity<PernoiteResponse> findById(Long id) {
         final var pernoites = pernoitesRepository.findById(id).orElseThrow(() -> new EntityNotFound("Pernoite não encontrado"));
+        final var consumo_pernoite = pernoiteConsumoRepository.findPernoiteConsumoByPernoites_Id(id);
         quantidadeDePessoas2(pernoites);
+
+        Double totalConsumo = manager.createQuery(
+                        "SELECT sum(m.total) FROM PernoiteConsumo m where m.pernoites.id = id", Double.class)
+                .getSingleResult();
+
 
         Integer p1 = Period.between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
         Float valor_total = pernoites.getTotal() * p1;
@@ -57,11 +66,12 @@ public class PernoiteService {
                 pernoites.getApartamento().getNumero(),
                 pernoites.getDataEntrada(),
                 pernoites.getDataSaida(),
-                pernoites.getPernoiteConsumo(),
+                consumo_pernoite,
                 new PernoiteResponse.Valores(
                         pernoites.getQuantidadePessoa(),
                         p1,
                         pernoites.getTotal(),
+                        totalConsumo,
                         valor_total,
                         pernoites.getTipoPagamento(),
                         pernoites.getStatus_pagamento()
@@ -74,8 +84,12 @@ public class PernoiteService {
         if (pernoites.getClient() == null){
             throw new EntityConflict("É preciso informar o hóspede.");
         }
+        Integer periodoDias = Period.between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
+
         quantidadeDePessoas2(pernoites);
         validacaoDeApartamento(pernoites);
+        Float a = pernoites.getTotal() * periodoDias;
+        pernoites.setTotal(a);
         if (pernoites.getStatus_pagamento() == null) {
             pernoites.setStatus_pagamento(StatusPagamento.PENDENTE);
         }

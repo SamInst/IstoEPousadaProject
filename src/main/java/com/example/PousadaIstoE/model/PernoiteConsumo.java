@@ -1,5 +1,6 @@
 package com.example.PousadaIstoE.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,10 +13,10 @@ public class PernoiteConsumo {
     private Integer quantidade;
     @ManyToOne
     private Itens itens;
+    @JsonIgnore
     @ManyToOne
     private Pernoites pernoites;
     private Float total;
-
 
     public void setId(Long id) {
         this.id = id;
