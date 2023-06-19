@@ -68,7 +68,7 @@ public class Entradas {
         this.placa = placa;
     }
 
-    public Entradas(Long id, Quartos quartos, LocalTime horaEntrada, LocalTime horaSaida, String placa, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
+    public Entradas(Long id, Quartos quartos, LocalTime horaEntrada, LocalTime horaSaida, String placa, TipoPagamento tipoPagamento, StatusPagamento status_pagamento, StatusEntrada statusEntrada) {
         this.id = id;
         this.quartos = quartos;
         this.horaEntrada = horaEntrada;
@@ -76,6 +76,7 @@ public class Entradas {
         this.placa = placa;
         this.tipoPagamento = tipoPagamento;
         this.status_pagamento = status_pagamento;
+        this.statusEntrada = statusEntrada;
     }
 
     public TipoPagamento getTipoPagamento() {

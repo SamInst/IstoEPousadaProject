@@ -30,19 +30,20 @@ public class EntradaService {
     double valorTotal;
     Entradas entradas;
     double entradaEConsumo;
-    Double totalConsumo;
 
     List<EntradaConsumo> entradaConsumoList = new ArrayList<>();
     private final EntradaRepository entradaRepository;
-    private final PernoitesRepository pernoitesRepository;
     private final MapaGeralRepository mapaGeralRepository;
     private final EntradaConsumoRepository entradaConsumoRepository;
 
     private final QuartosRepository quartosRepository;
 
-    public EntradaService(EntradaRepository entradaRepository, PernoitesRepository pernoitesRepository, MapaGeralRepository mapaGeralRepository, EntradaConsumoRepository entradaConsumoRepository, QuartosRepository quartosRepository) {
+    public EntradaService(
+            EntradaRepository entradaRepository,
+            MapaGeralRepository mapaGeralRepository,
+            EntradaConsumoRepository entradaConsumoRepository,
+            QuartosRepository quartosRepository) {
         this.entradaRepository = entradaRepository;
-        this.pernoitesRepository = pernoitesRepository;
         this.mapaGeralRepository = mapaGeralRepository;
         this.entradaConsumoRepository = entradaConsumoRepository;
         this.quartosRepository = quartosRepository;
@@ -57,7 +58,8 @@ public class EntradaService {
                     entradas.getQuartos().getNumero(),
                     entradas.getHoraEntrada(),
                     entradas.getHoraSaida(),
-                    entradas.getPlaca()
+                    entradas.getPlaca(),
+                    entradas.getStatusEntrada()
             );
             entradaSimplesResponseList.add(entradaSimplesResponse);
         });
@@ -80,12 +82,12 @@ public class EntradaService {
         }
         double soma = totalConsumo + valorEntrada;
         List<ConsumoResponse> consumoResponseList = new ArrayList<>();
-        entradaConsumoList.forEach(a->{
+        entradaConsumoList.forEach(consumo -> {
             ConsumoResponse consumoResponse = new ConsumoResponse(
-                    a.getQuantidade(),
-                    a.getItens().getDescricao(),
-                    a.getItens().getValor(),
-                    a.getTotal()
+                    consumo.getQuantidade(),
+                    consumo.getItens().getDescricao(),
+                    consumo.getItens().getValor(),
+                    consumo.getTotal()
             );
             consumoResponseList.add(consumoResponse);
         });
@@ -95,12 +97,13 @@ public class EntradaService {
                 entrada.getHoraSaida(),
                 entrada.getPlaca(),
                 new EntradaResponse.TempoPermanecido(
-                        horas,
-                        minutosRestantes
+                horas,
+                minutosRestantes
                 ),
                 consumoResponseList,
-                        totalConsumo,
-                        valorEntrada,
+                entrada.getStatusEntrada(),
+                totalConsumo,
+                valorEntrada,
                 soma
         ));
         return ResponseEntity.ok(response);
@@ -121,6 +124,7 @@ public class EntradaService {
         entradas.setHoraSaida(LocalTime.of(0,0));
         entradas.setStatus_pagamento(StatusPagamento.PENDENTE);
         entradas.setTipoPagamento(TipoPagamento.PENDENTE);
+        entradas.setStatusEntrada(StatusEntrada.EM_ANDAMENTO);
 
         quartoOut.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
         quartosRepository.save(quartoOut);
@@ -137,13 +141,21 @@ public class EntradaService {
                     LocalTime.now(),
                     entradas.getPlaca(),
                     request.getTipoPagamento(),
-                    request.getStatus_pagamento()
-            );
+                    request.getStatus_pagamento(),
+                    entradas.getStatusEntrada()
+        );
         entradaRepository.save(entradaAtualizada);
 
         if (request.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)) {
+            if (request.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)
+                    && entradaAtualizada.getStatusEntrada().equals(StatusEntrada.FINALIZADA)){
+                throw new EntityConflict("A Entrada já foi salva no mapa");
+            }
             entradaConsumoList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(entradaId);
             calcularHora();
+            if (entradaAtualizada.getEntradaConsumo() == null) {
+                consumoVazio();
+            }
             validacaoPagamento(entradas);
             validacaoHorario();
             salvaNoMapa(request);
@@ -151,6 +163,7 @@ public class EntradaService {
             Quartos quartoOut = entradas.getQuartos();
             quartoOut.setStatusDoQuarto(StatusDoQuarto.DISPONIVEL);
             quartosRepository.save(quartoOut);
+            entradaAtualizada.setStatusEntrada(StatusEntrada.FINALIZADA);
             entradaRepository.save(entradaAtualizada);
         }
     }
@@ -187,10 +200,6 @@ public class EntradaService {
                 .setParameter("id", request.getId())
                 .getSingleResult();
 
-        if (request.getEntradaConsumo() == null) {
-            totalConsumo = (double) 0;
-            consumoVazio();
-        }
         entradaEConsumo = valorEntrada + totalConsumo;
         valorTotal = totalMapaGeral + entradaEConsumo;
     }
@@ -231,33 +240,6 @@ public class EntradaService {
             mapaGeral.setReport(relatorio + " (DINHEIRO)");
         }
         mapaGeralRepository.save(mapaGeral);
-    }
-
-
-
-    private void validacaoDeApartamento(Entradas entradas) throws EntityConflict {
-
-       List<Pernoites> pernoites = pernoitesRepository.findAll();
-         pernoites.forEach(apartamento -> {
-             List<Entradas> listaDeApartamentos = entradaRepository.findByQuartos_Numero(entradas.getQuartos().getNumero());
-             List<Pernoites> listaDeApartamentosPernoite = pernoitesRepository.findByApartamento_Id(apartamento.getApartamento().getId());
-             for (Entradas entradaCadastrada : listaDeApartamentos) {
-                 for (Pernoites pernoiteCadastrado : listaDeApartamentosPernoite) {
-                     if ( entradas.getQuartos().getNumero().equals(entradaCadastrada.getQuartos().getNumero())
-                       || entradas.getHoraSaida() == null ) {
-//                             && apartamento.getApt().equals(entradas.getApt())
-//                             && apartamento.getApt().equals(pernoiteCadastrado.getApt())
-                         throw new EntityConflict("O apartamento está ocupado no momento.");
-                     }
-                     apartamento.getApartamento().setStatusDoQuarto(StatusDoQuarto.OCUPADO);
-//                     if (pernoiteCadastrado.getApt().equals(entradaCadastrada.getApt()))
-////                             && apartamento.getApt().equals(pernoiteCadastrado.getApt()))
-//                     {
-//                         throw new EntityConflict("O apartamento está ocupado no momento.");
-//                     }
-                 }
-             }
-         });
     }
 
    private void consumoVazio(){

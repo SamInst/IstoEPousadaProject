@@ -10,6 +10,7 @@ public record EntradaResponse(
         String placa,
         TempoPermanecido tempo_permanecido,
         List<ConsumoResponse> consumo,
+        StatusEntrada statusEntrada,
 
         double total_consumo,
         double valor_entrada,
@@ -19,9 +20,4 @@ public record EntradaResponse(
             int horas,
             int minutos
     ){}
-
-//    public record EntradaConsumo(
-//            String Item,
-//            Float valor
-//    ){}
 }

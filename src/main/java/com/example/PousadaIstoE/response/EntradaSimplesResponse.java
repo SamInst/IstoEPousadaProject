@@ -7,5 +7,6 @@ public record EntradaSimplesResponse (
         Integer apartamento,
         LocalTime hora_entrada,
         LocalTime hora_saida,
-        String placa
+        String placa,
+        StatusEntrada statusEntrada
 ){}
