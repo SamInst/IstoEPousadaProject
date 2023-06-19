@@ -4,8 +4,8 @@ import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.EntradaConsumo;
 import com.example.PousadaIstoE.repository.EntradaConsumoRepository;
 import com.example.PousadaIstoE.repository.EntradaRepository;
-import com.example.PousadaIstoE.repository.RegistroEntradaConsumoRepository;
 import com.example.PousadaIstoE.response.EntradaConsumoResponse;
+import com.example.PousadaIstoE.response.StatusPagamento;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +15,10 @@ import java.util.NoSuchElementException;
 @Service
 public class EntradaConsumoService {
     private final EntradaConsumoRepository entradaConsumoRepository;
-    private final RegistroEntradaConsumoRepository registroEntradaConsumoRepository;
-
     private final EntradaRepository entradaRepository;
 
-    public EntradaConsumoService(EntradaConsumoRepository entradaConsumoRepository, RegistroEntradaConsumoRepository registroEntradaConsumoRepository, EntradaRepository entradaRepository) {
+    public EntradaConsumoService(EntradaConsumoRepository entradaConsumoRepository, EntradaRepository entradaRepository) {
         this.entradaConsumoRepository = entradaConsumoRepository;
-        this.registroEntradaConsumoRepository = registroEntradaConsumoRepository;
         this.entradaRepository = entradaRepository;
     }
 
@@ -55,6 +52,9 @@ public class EntradaConsumoService {
     public EntradaConsumo addConsumo(EntradaConsumo entradaConsumo) {
         if (entradaConsumo.getEntradas() == null) {
             throw new EntityNotFound("Nenhuma entrada associada a esse consumo");
+        }
+        if (entradaConsumo.getEntradas().getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)){
+            throw new EntityNotFound("Não é permitido adicionar um consumo à uma entrada já finalizada");
         }
         EntradaConsumo entradaConsumo1 = new EntradaConsumo(
                 entradaConsumo.getQuantidade(),

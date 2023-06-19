@@ -1,7 +1,9 @@
 package com.example.PousadaIstoE.model;
 
+import com.example.PousadaIstoE.response.StatusEntrada;
 import com.example.PousadaIstoE.response.StatusPagamento;
 import com.example.PousadaIstoE.response.TipoPagamento;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 
@@ -18,8 +20,11 @@ public class Entradas {
     private LocalTime horaEntrada;
     private LocalTime horaSaida;
     private String placa;
+
     @OneToMany
     private List<EntradaConsumo> entradaConsumo;
+
+    private StatusEntrada statusEntrada;
 
     public Entradas() {
     }
@@ -103,5 +108,13 @@ public class Entradas {
 
     public void setQuartos(Quartos quartos) {
         this.quartos = quartos;
+    }
+
+    public StatusEntrada getStatusEntrada() {
+        return statusEntrada;
+    }
+
+    public void setStatusEntrada(StatusEntrada statusEntrada) {
+        this.statusEntrada = statusEntrada;
     }
 }

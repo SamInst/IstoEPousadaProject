@@ -1,5 +1,6 @@
 package com.example.PousadaIstoE.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +14,7 @@ public class EntradaConsumo {
     @ManyToOne
     private Itens itens;
 
+    @JsonIgnore
     @ManyToOne
     private Entradas entradas;
 

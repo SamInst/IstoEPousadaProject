@@ -30,23 +30,21 @@ public class EntradaService {
     double valorTotal;
     Entradas entradas;
     double entradaEConsumo;
+    Double totalConsumo;
 
     List<EntradaConsumo> entradaConsumoList = new ArrayList<>();
     private final EntradaRepository entradaRepository;
     private final PernoitesRepository pernoitesRepository;
     private final MapaGeralRepository mapaGeralRepository;
-    private final RegistroDeEntradasRepository registroDeEntradasRepository;
     private final EntradaConsumoRepository entradaConsumoRepository;
-    private final RegistroEntradaConsumoRepository registroEntradaConsumoRepository;
+
     private final QuartosRepository quartosRepository;
 
-    public EntradaService(EntradaRepository entradaRepository, PernoitesRepository pernoitesRepository, MapaGeralRepository mapaGeralRepository, RegistroDeEntradasRepository registroDeEntradasRepository, EntradaConsumoRepository entradaConsumoRepository, RegistroEntradaConsumoRepository registroEntradaConsumoRepository, QuartosRepository quartosRepository) {
+    public EntradaService(EntradaRepository entradaRepository, PernoitesRepository pernoitesRepository, MapaGeralRepository mapaGeralRepository, EntradaConsumoRepository entradaConsumoRepository, QuartosRepository quartosRepository) {
         this.entradaRepository = entradaRepository;
         this.pernoitesRepository = pernoitesRepository;
         this.mapaGeralRepository = mapaGeralRepository;
-        this.registroDeEntradasRepository = registroDeEntradasRepository;
         this.entradaConsumoRepository = entradaConsumoRepository;
-        this.registroEntradaConsumoRepository = registroEntradaConsumoRepository;
         this.quartosRepository = quartosRepository;
     }
 
@@ -74,13 +72,23 @@ public class EntradaService {
         calcularHora();
 
         Double totalConsumo = manager.createQuery(
-          "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = m.entradas.id", Double.class)
-             .getSingleResult();
+          "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = :id", Double.class)
+                .setParameter("id", id)
+                .getSingleResult();
         if (totalConsumo == null){
             totalConsumo = (double) 0;
         }
-                double total0 = totalHorasEntrada + totalConsumo;
-
+        double soma = totalConsumo + valorEntrada;
+        List<ConsumoResponse> consumoResponseList = new ArrayList<>();
+        entradaConsumoList.forEach(a->{
+            ConsumoResponse consumoResponse = new ConsumoResponse(
+                    a.getQuantidade(),
+                    a.getItens().getDescricao(),
+                    a.getItens().getValor(),
+                    a.getTotal()
+            );
+            consumoResponseList.add(consumoResponse);
+        });
         response.set(new EntradaResponse(
                 entrada.getQuartos().getNumero(),
                 entrada.getHoraEntrada(),
@@ -90,10 +98,10 @@ public class EntradaService {
                         horas,
                         minutosRestantes
                 ),
-                entradaConsumoList,
+                consumoResponseList,
                         totalConsumo,
                         valorEntrada,
-                total0
+                soma
         ));
         return ResponseEntity.ok(response);
     }
@@ -107,13 +115,12 @@ public class EntradaService {
             throw new EntityConflict("Quarto Precisa de limpeza!");
         }
         if (quartoOut.getStatusDoQuarto().equals(StatusDoQuarto.RESERVADO)){
-            throw new EntityConflict("Quarto Reservado");
+            throw new EntityConflict("Quarto Reservado!");
         }
         entradas.setHoraEntrada(LocalTime.now());
         entradas.setHoraSaida(LocalTime.of(0,0));
         entradas.setStatus_pagamento(StatusPagamento.PENDENTE);
         entradas.setTipoPagamento(TipoPagamento.PENDENTE);
-//        validacaoDeApartamento(entradas);
 
         quartoOut.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
         quartosRepository.save(quartoOut);
@@ -123,7 +130,7 @@ public class EntradaService {
     public void updateEntradaData(Long entradaId, Entradas request) {
         entradas = entradaRepository.findById(entradaId).orElseThrow(() -> new EntityNotFound("Entrada não encontrada"));
 
-       var entradaAtualizada = new Entradas(
+        var entradaAtualizada = new Entradas(
                     entradas.getId(),
                     entradas.getQuartos(),
                     entradas.getHoraEntrada(),
@@ -137,39 +144,14 @@ public class EntradaService {
         if (request.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)) {
             entradaConsumoList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(entradaId);
             calcularHora();
-            validacaoPagamento(request);
+            validacaoPagamento(entradas);
             validacaoHorario();
             salvaNoMapa(request);
-
-
-//            List<RegistroConsumoEntrada> registroConsumoEntradaList = new ArrayList<>();
-//            RegistroConsumoEntrada registroConsumoEntrada = new RegistroConsumoEntrada();
-//            entradaConsumoList.forEach(consumo -> {
-//              registroConsumoEntrada.setEntradaConsumoList(entradaConsumoList);
-//                registroEntradaConsumoRepository.save(registroConsumoEntrada);
-//            });
-//            registroConsumoEntradaList.add(registroConsumoEntrada);
-
-//            RegistroDeEntradas registroDeEntradas = new RegistroDeEntradas();
-//            registroDeEntradas.setApt(entradas.getApt());
-//            registroDeEntradas.setHoraEntrada(entradas.getHoraEntrada());
-//            registroDeEntradas.setHoraSaida(entradas.getHoraSaida());
-//            registroDeEntradas.setPlaca(entradas.getPlaca());
-//            registroDeEntradas.setData(LocalDate.now());
-//            registroDeEntradas.setTipoPagamento(request.getTipoPagamento());
-//            registroDeEntradas.setStatus_pagamento(request.getStatus_pagamento());
-//            registroDeEntradas.setHoras(horas);
-//            registroDeEntradas.setMinutos(minutosRestantes);
-//            registroDeEntradas.setTotal(entradaEConsumo);
-//            registroDeEntradas.setEntradaConsumo(registroConsumoEntradaList);
-
-//            registroDeEntradasRepository.save(registroDeEntradas);
 
             Quartos quartoOut = entradas.getQuartos();
             quartoOut.setStatusDoQuarto(StatusDoQuarto.DISPONIVEL);
             quartosRepository.save(quartoOut);
             entradaRepository.save(entradaAtualizada);
-//            excluirEntradaEConsumo(entradaId);
         }
     }
 
@@ -196,12 +178,13 @@ public class EntradaService {
     }
 
     private void validacaoPagamento(Entradas request){
-        totalMapaGeral = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
+        Float totalMapaGeral = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
                 .setMaxResults(1)
                 .getSingleResult();
 
         Double totalConsumo = manager.createQuery(
-                        "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = m.entradas.id", Double.class)
+                        "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = :id", Double.class)
+                .setParameter("id", request.getId())
                 .getSingleResult();
 
         if (request.getEntradaConsumo() == null) {
@@ -224,15 +207,13 @@ public class EntradaService {
     }
 
     private void salvaNoMapa(Entradas request){
-
-        var novoTotalMapaGeral = totalMapaGeral + entradaEConsumo;
         MapaGeral mapaGeral = new MapaGeral(
         );
         mapaGeral.setApartment(entradas.getQuartos().getNumero());
         mapaGeral.setData(LocalDate.now());
         mapaGeral.setEntrada((float) entradaEConsumo);
         mapaGeral.setReport(relatorio);
-        mapaGeral.setTotal((float) novoTotalMapaGeral);
+        mapaGeral.setTotal((float) valorTotal);
         mapaGeral.setSaida(0F);
         mapaGeral.setHora(LocalTime.now());
 
@@ -288,10 +269,5 @@ public class EntradaService {
        novoConsumo.setTotal(0F);
        novoConsumo.setEntradas(entradas);
        entradaConsumoRepository.save(novoConsumo);
-   }
-
-   private void excluirEntradaEConsumo(Long entradaId){
-       entradaConsumoRepository.deleteEntradaConsumoByEntradas_Id(entradaId);
-       entradaRepository.deleteById(entradaId);
    }
 }

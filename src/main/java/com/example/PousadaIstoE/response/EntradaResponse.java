@@ -9,7 +9,7 @@ public record EntradaResponse(
         LocalTime hora_saida,
         String placa,
         TempoPermanecido tempo_permanecido,
-        List<com.example.PousadaIstoE.model.EntradaConsumo> consumo,
+        List<ConsumoResponse> consumo,
 
         double total_consumo,
         double valor_entrada,
