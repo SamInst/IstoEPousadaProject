@@ -200,6 +200,7 @@ public class EntradaService {
                 .setParameter("id", request.getId())
                 .getSingleResult();
 
+
         entradaEConsumo = valorEntrada + totalConsumo;
         valorTotal = totalMapaGeral + entradaEConsumo;
     }
