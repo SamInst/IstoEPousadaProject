@@ -16,8 +16,7 @@ public class Pernoites {
     private Quartos apartamento;
     @ManyToOne
     private Client client;
-    @OneToMany
-    private List<PernoiteConsumo> pernoiteConsumo;
+
     private LocalDate dataEntrada;
     private LocalDate dataSaida;
     private Integer quantidadePessoa;
@@ -62,14 +61,6 @@ public class Pernoites {
     }
     public StatusPagamento getStatus_pagamento() {
         return status_pagamento;
-    }
-
-    public List<PernoiteConsumo> getPernoiteConsumo() {
-        return pernoiteConsumo;
-    }
-
-    public void setPernoiteConsumo(List<PernoiteConsumo> pernoiteConsumo) {
-        this.pernoiteConsumo = pernoiteConsumo;
     }
 
     public Quartos getApartamento() {

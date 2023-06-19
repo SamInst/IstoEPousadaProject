@@ -17,11 +17,29 @@ services:
 #      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
 #      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
 #      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
-      POSTGRES_USER: ${ISTOE_USER_DB}
-      POSTGRES_PASSWORD: ${ISTOE_PASS_DB}
-      POSTGRES_DB: ${ISTOE_DB_URL}
+      ISTOE_DB_HOST: ${ISTOE_DB_HOST}
+      ISTOE_DB_PORT: ${ISTOE_DB_PORT}
+      ISTOE_USER_DB: ${ISTOE_USER_DB}
+      ISTOE_PASS_DB: ${ISTOE_PASS_DB}
+
+
+  db:
+    restart: always
+    image: postgres:14
+    container_name: pgsql15
+    hostname: pgsql14
+    working_dir: /var/lib/postgresql/data
+    ports:
+      - "5434:5434"
+    volumes:
+        - /home/sam/pastaDocker/data:/var/lib/postgresql/data
+    environment:
+        POSTGRES_HOST_AUTH_METHOD: trust
+        PGDATA: "/var/lib/postgresql/data/pgdata"
+
 
 networks:
   default:
     external:
       name: microservices
+
