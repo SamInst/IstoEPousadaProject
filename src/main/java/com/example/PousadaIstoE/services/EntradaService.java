@@ -191,15 +191,15 @@ public class EntradaService {
     }
 
     private void validacaoPagamento(Entradas request){
-        Float totalMapaGeral = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
+        Float totalMapaGeral = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY :id DESC", Float.class)
                 .setMaxResults(1)
+                .setParameter("id", request.getId())
                 .getSingleResult();
 
         Double totalConsumo = manager.createQuery(
                         "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = :id", Double.class)
                 .setParameter("id", request.getId())
                 .getSingleResult();
-
 
         entradaEConsumo = valorEntrada + totalConsumo;
         valorTotal = totalMapaGeral + entradaEConsumo;
@@ -229,13 +229,11 @@ public class EntradaService {
 
         if (request.getTipoPagamento().equals(TipoPagamento.PIX)){
             mapaGeral.setReport(relatorio + " (PIX)");
-            mapaGeral.setEntrada(0F);
-            mapaGeral.setTotal(totalMapaGeral);
+            mapaGeral.setSaida(mapaGeral.getEntrada());
         }
         if (request.getTipoPagamento().equals(TipoPagamento.CARTAO)){
             mapaGeral.setReport(relatorio + " (CARTAO)");
-            mapaGeral.setEntrada(0F);
-            mapaGeral.setTotal((float) totalHorasEntrada);
+            mapaGeral.setSaida(mapaGeral.getEntrada());
         }
         if (request.getTipoPagamento().equals(TipoPagamento.DINHEIRO)){
             mapaGeral.setReport(relatorio + " (DINHEIRO)");
@@ -254,4 +252,7 @@ public class EntradaService {
        entradaConsumoRepository.save(novoConsumo);
    }
 
+   public List<Entradas> findByStatusEntrada(StatusEntrada statusEntrada){
+        return entradaRepository.findEntradasByStatusEntrada(statusEntrada);
+   }
 }
