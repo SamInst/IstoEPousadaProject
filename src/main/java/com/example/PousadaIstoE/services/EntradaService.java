@@ -252,4 +252,5 @@ public class EntradaService {
        novoConsumo.setEntradas(entradas);
        entradaConsumoRepository.save(novoConsumo);
    }
+
 }
