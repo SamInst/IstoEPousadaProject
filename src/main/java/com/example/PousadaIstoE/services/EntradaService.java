@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class EntradaService {
     @PersistenceContext
     private EntityManager manager;
-    Float totalMapaGeral;
     double totalHorasEntrada;
     double valorEntrada;
     Duration diferenca;
@@ -30,6 +29,7 @@ public class EntradaService {
     double valorTotal;
     Entradas entradas;
     double entradaEConsumo;
+    Float totalMapaGeral;
 
     List<EntradaConsumo> entradaConsumoList = new ArrayList<>();
     private final EntradaRepository entradaRepository;
@@ -180,7 +180,7 @@ public class EntradaService {
                     if (horas < 2 || (horas == 2 && minutosRestantes <= 20)) {
                         totalHorasEntrada = 30.0;
                     } else {
-                        totalHorasEntrada = 30.0 + ((horas - 2) * 7.0);
+                        totalHorasEntrada = 30.0 + ((horas - 2) * 10.0);
                         if (minutosRestantes > 0) {
                             totalHorasEntrada += 40.0;
                         }
@@ -191,10 +191,7 @@ public class EntradaService {
     }
 
     private void validacaoPagamento(Entradas request){
-        Float totalMapaGeral = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY :id DESC", Float.class)
-                .setMaxResults(1)
-                .setParameter("id", request.getId())
-                .getSingleResult();
+        totalMapaGeral = mapaGeralRepository.findLastTotal();
 
         Double totalConsumo = manager.createQuery(
                         "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = :id", Double.class)

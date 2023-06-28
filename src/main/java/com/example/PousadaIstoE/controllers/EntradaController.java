@@ -3,6 +3,7 @@ package com.example.PousadaIstoE.controllers;
 import com.example.PousadaIstoE.model.Entradas;
 import com.example.PousadaIstoE.response.EntradaResponse;
 import com.example.PousadaIstoE.response.EntradaSimplesResponse;
+import com.example.PousadaIstoE.response.StatusEntrada;
 import com.example.PousadaIstoE.services.EntradaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +41,9 @@ public class EntradaController {
     @PutMapping("/{id}")
     void atualizarEntrada (@PathVariable ("id") Long entradaID, @RequestBody Entradas entradas){
          entradaService.updateEntradaData(entradaID, entradas);
+    }
+    @GetMapping("/findByStatusEntrada")
+    public List<Entradas> findByStatus(StatusEntrada statusEntrada){
+        return entradaService.findByStatusEntrada(statusEntrada);
     }
 }

@@ -106,17 +106,6 @@ public class PernoiteService {
         return pernoitesRepository.save(pernoites1);
     }
 
-//    private void quantidadeDePessoas(Pernoites pernoites) {
-//        Integer quantidadePessoa = pernoites.getQuantidadePessoa();
-//        switch (quantidadePessoa) {
-//            case 1 -> price = 90F;
-//            case 2 -> price = 130F;
-//            case 3 -> price = 180F;
-//            case 4 -> price = 220F;
-//            case 5 -> price = 280F;
-//            default -> throw new EntityConflict("Não podem ser inseridos mais de 5 pessoas no mesmo quarto");
-//        }
-//    }
     private void quantidadeDePessoas2(Pernoites pernoites) {
         Integer quantidadePessoa = pernoites.getQuantidadePessoa();
         switch (quantidadePessoa) {

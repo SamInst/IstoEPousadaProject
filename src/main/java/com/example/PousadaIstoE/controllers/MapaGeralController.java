@@ -3,9 +3,6 @@ package com.example.PousadaIstoE.controllers;
 import com.example.PousadaIstoE.model.MapaGeral;
 import com.example.PousadaIstoE.response.MapaGeralResponse;
 import com.example.PousadaIstoE.services.MapaGeralService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.PrePersist;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,5 +37,10 @@ private final MapaGeralService mapaGeralService;
     @GetMapping("/findByDate")
     public List<MapaGeral> findByData(LocalDate date){
         return mapaGeralService.findByData(date);
+    }
+
+    @GetMapping("/getTotalMapaGeral")
+    public Float totalMapaGeral(){
+        return mapaGeralService.totalMapaGeral();
     }
 }

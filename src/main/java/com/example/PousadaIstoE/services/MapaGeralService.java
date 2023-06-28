@@ -67,4 +67,8 @@ public class MapaGeralService {
   public List<MapaGeral> findByData(LocalDate date){
       return mapaGeralRepository.findByData(date);
   }
+
+  public Float totalMapaGeral(){
+    return mapaGeralRepository.findLastTotal();
+  }
 }
