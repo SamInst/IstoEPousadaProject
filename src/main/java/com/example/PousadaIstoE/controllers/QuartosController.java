@@ -32,4 +32,9 @@ class QuartosController {
     public Quartos AlterarDadoQuarto(@PathVariable ("quartoID") Long quartoId, @RequestBody Quartos quartos){
         return quartosService.updateQuartoData(quartoId, quartos);
     }
+
+    @GetMapping("/find/{id}")
+    public Quartos findById(@PathVariable ("id") Long id){
+        return quartosService.findQuarto(id);
+    }
 }

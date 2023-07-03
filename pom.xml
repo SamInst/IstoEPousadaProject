@@ -63,11 +63,45 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
+<!--		<dependency>-->
+<!--			<groupId>org.springdoc</groupId>-->
+<!--			<artifactId>springdoc-openapi-ui</artifactId>-->
+<!--			<version>1.6.15</version>-->
+<!--		</dependency>-->
+
+
+			<!-- Dependências do Swagger -->
+<!--			<dependency>-->
+<!--				<groupId>io.springfox</groupId>-->
+<!--				<artifactId>springfox-boot-starter</artifactId>-->
+<!--				<version>3.0.0</version>-->
+<!--			</dependency>-->
+
+<!--			<dependency>-->
+<!--				<groupId>io.swagger.core.v3</groupId>-->
+<!--				<artifactId>swagger-annotations</artifactId>-->
+<!--				<version>2.1.10</version>-->
+<!--			</dependency>-->
+
+<!--		<dependency>-->
+<!--			<groupId>io.springfox</groupId>-->
+<!--			<artifactId>springfox-boot-starter</artifactId>-->
+<!--			<version>3.0.0</version>-->
+<!--		</dependency>-->
+
 		<dependency>
 			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-ui</artifactId>
-			<version>1.6.15</version>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.1.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>4.0.1</version> <!-- Use the appropriate version -->
+			<scope>provided</scope>
+		</dependency>
+
 
 		<dependency>
 			<groupId>io.rest-assured</groupId>
