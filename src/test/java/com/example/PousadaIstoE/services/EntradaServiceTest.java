@@ -2,11 +2,9 @@ package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.Fixture.EntradaConsumoFixture;
 import com.example.PousadaIstoE.Fixture.EntradasFixture;
-import com.example.PousadaIstoE.Fixture.QuartosFixture;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.EntradaConsumo;
 import com.example.PousadaIstoE.model.Entradas;
-import com.example.PousadaIstoE.model.Quartos;
 import com.example.PousadaIstoE.repository.EntradaConsumoRepository;
 import com.example.PousadaIstoE.repository.EntradaRepository;
 import com.example.PousadaIstoE.repository.MapaGeralRepository;
@@ -14,7 +12,6 @@ import com.example.PousadaIstoE.repository.QuartosRepository;
 import com.example.PousadaIstoE.response.StatusDoQuarto;
 import com.example.PousadaIstoE.response.StatusEntrada;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,10 +41,6 @@ class EntradaServiceTest {
     List<Entradas> entradasList = EntradasFixture.entradasList();
     Entradas entrada = EntradasFixture.entradas();
     Long entrada_id = 1L;
-    Quartos quartoDisponivel = QuartosFixture.quartoDisponivel();
-    Quartos quartoOceupado = QuartosFixture.quartoOcupado();
-    @Mock
-    private TypedQuery query;
     List<EntradaConsumo> entradaConsumosList= EntradaConsumoFixture.entradaConsumoList();
 
     @Test
@@ -59,8 +52,6 @@ class EntradaServiceTest {
 
     @Test
     void findById() {
-        manager = mock(EntityManager.class);
-        query = mock(TypedQuery.class);
         when(entradaRepository.findById(entrada_id)).thenReturn(Optional.ofNullable(entrada));
         when(entradaConsumoRepository.findEntradaConsumoByEntradas_Id(entrada_id)).thenReturn(entradaConsumosList);
         entradaService.findById(entrada_id);
