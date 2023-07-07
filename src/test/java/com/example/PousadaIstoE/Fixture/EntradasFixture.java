@@ -15,7 +15,7 @@ public class EntradasFixture {
     public static Entradas entradas(){
         return new Entradas(
                 1L,
-                new Quartos(),
+                QuartosFixture.quartoDisponivel(),
                 LocalTime.now(),
                 LocalTime.now().plusHours(2),
                 "abc1234",
@@ -24,6 +24,7 @@ public class EntradasFixture {
                 StatusEntrada.FINALIZADA
         );
     }
+
     public static List<Entradas> entradasList (){
         List<Entradas> entradasList = new ArrayList<>();
         entradasList.add(entradas());

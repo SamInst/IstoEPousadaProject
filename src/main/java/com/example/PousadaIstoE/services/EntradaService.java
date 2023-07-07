@@ -202,7 +202,7 @@ public class EntradaService {
         valorTotal = totalMapaGeral + entradaEConsumo;
     }
 
-    public void validacaoHorario(){
+    private void validacaoHorario(){
         LocalTime noite = LocalTime.of(18,0,0);
         LocalTime dia = LocalTime.of(6,0,0);
 
