@@ -33,7 +33,7 @@ public class EntradaController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
+    @PostMapping("/register")
     public Entradas entradas(Entradas entradas){
         return entradaService.registerEntrada(entradas);
     }

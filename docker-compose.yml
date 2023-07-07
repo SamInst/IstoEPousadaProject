@@ -11,7 +11,7 @@ services:
     volumes:
       - /home:/home
     ports:
-      - 8080:8080
+      - 8081:8081
     environment:
 #      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
 #      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}

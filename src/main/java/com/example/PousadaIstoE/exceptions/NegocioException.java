@@ -1,4 +1,4 @@
-package br.gov.ma.siisp.msassistencias.exceptions;
+package com.example.PousadaIstoE.exceptions;
 
 public class NegocioException extends RuntimeException {
     public NegocioException(String message) {

@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+
 @Entity
 public class Itens {
     @Id
@@ -39,6 +40,12 @@ public class Itens {
     }
 
     public Itens(String descricao, Float valor) {
+        this.descricao = descricao;
+        this.valor = valor;
+    }
+
+    public Itens(Long id, String descricao, Float valor) {
+        this.id = id;
         this.descricao = descricao;
         this.valor = valor;
     }

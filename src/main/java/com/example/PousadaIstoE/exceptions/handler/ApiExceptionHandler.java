@@ -1,11 +1,9 @@
 package com.example.PousadaIstoE.exceptions.handler;
 
-import com.example.PousadaIstoE.exceptions.EntidadeNaoEncontradaException;
-import com.example.PousadaIstoE.exceptions.NegocioException;
+import com.example.PousadaIstoE.exceptions.EntityConflict;
+import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -16,12 +14,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
 import java.util.ArrayList;
 import java.util.List;
 
 @ControllerAdvice
-public class ApiExceptionHandler{
-    private static final Logger logger = LoggerFactory.getLogger(ApiExceptionHandler.class);
+public class ApiExceptionHandler {
     private static final String ERROR_BUSINESS = "Erro de Negócio";
     private static final String ENTIDADE_NAO_ENCONTRADA = "Entidade Não encontrada";
     private static final String ERRROR_REQUEST = "Erro de Requisição";
@@ -33,12 +31,13 @@ public class ApiExceptionHandler{
     private String projetoName;
 
     private final MessageSource messageSource;
+
     public ApiExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
-    @ExceptionHandler(NegocioException.class)
-    public ResponseEntity<ErrorMessage> handleNegocioException(NegocioException ex, HttpServletRequest request) {
+    @ExceptionHandler(EntityConflict.class)
+    public ResponseEntity<ErrorMessage> handleNegocioException(EntityConflict ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessage(
                         projetoName,
@@ -81,8 +80,8 @@ public class ApiExceptionHandler{
                         criarErrosValidacaoPorTipo(ex)));
     }
 
-    @ExceptionHandler(EntidadeNaoEncontradaException.class)
-    public ResponseEntity<ErrorMessage> handleEntidadeNaoEncontrada(EntidadeNaoEncontradaException ex, HttpServletRequest request) {
+    @ExceptionHandler(EntityNotFound.class)
+    public ResponseEntity<ErrorMessage> handleEntidadeNaoEncontrada(EntityNotFound ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorMessage(
                         projetoName,

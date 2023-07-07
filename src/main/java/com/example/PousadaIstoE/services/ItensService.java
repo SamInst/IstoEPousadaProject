@@ -24,8 +24,8 @@ public class ItensService {
         return itensRepository.findById(id).orElseThrow(()-> new EntityNotFound("Item não encontrado"));
     }
 
-    public Itens criaItens(Itens descricao){
-        return itensRepository.save(descricao);
+    public Itens criaItens(Itens itens){
+        return itensRepository.save(itens);
     }
 
     public Optional<Itens> itemConsumoVazio(){

@@ -24,7 +24,7 @@ class QuartosController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Quartos createQuartos(Quartos quartos){
+    public Quartos createQuartos(@RequestBody Quartos quartos){
         return quartosService.createQuartos(quartos);
     }
 

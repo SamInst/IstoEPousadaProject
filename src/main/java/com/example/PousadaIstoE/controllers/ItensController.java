@@ -23,8 +23,8 @@ public class ItensController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public Itens criaItens(@RequestBody Itens descricao){
-        return itensService.criaItens(descricao);
+    public Itens criaItens(@RequestBody Itens itens){
+        return itensService.criaItens(itens);
     }
 
     @GetMapping("/{itemId}")

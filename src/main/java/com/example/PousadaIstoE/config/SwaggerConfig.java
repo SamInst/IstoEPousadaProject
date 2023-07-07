@@ -38,7 +38,7 @@ public class SwaggerConfig {
         var contato = new Contact();
         contato.setName("Sam Helson");
         contato.setEmail("sam04hel@gmail.com");
-        contato.setUrl("https://localhost:8080");
+        contato.setUrl("https://mail.google.com/mail/?view=cm&to=sam04hel@gmail.com");
         return contato;
     }
     private License createLicense(){
