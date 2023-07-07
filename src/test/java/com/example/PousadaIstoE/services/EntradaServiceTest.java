@@ -15,7 +15,6 @@ import com.example.PousadaIstoE.response.StatusDoQuarto;
 import com.example.PousadaIstoE.response.StatusEntrada;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +23,6 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
