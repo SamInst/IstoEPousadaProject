@@ -2,7 +2,6 @@ package com.example.PousadaIstoE.Fixture;
 
 import com.example.PousadaIstoE.model.Quartos;
 import com.example.PousadaIstoE.response.StatusDoQuarto;
-
 import java.util.ArrayList;
 import java.util.List;
 
