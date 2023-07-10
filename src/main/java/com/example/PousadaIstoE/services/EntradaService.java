@@ -5,8 +5,6 @@ import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.*;
 import com.example.PousadaIstoE.repository.*;
 import com.example.PousadaIstoE.response.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
@@ -18,8 +16,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class EntradaService {
-    @PersistenceContext
-    private EntityManager manager;
     double totalHorasEntrada;
     double valorEntrada;
     Duration diferenca;
@@ -35,18 +31,19 @@ public class EntradaService {
     private final EntradaRepository entradaRepository;
     private final MapaGeralRepository mapaGeralRepository;
     private final EntradaConsumoRepository entradaConsumoRepository;
-
     private final QuartosRepository quartosRepository;
+    private final ItensRepository itensRepository;
 
     public EntradaService(
             EntradaRepository entradaRepository,
             MapaGeralRepository mapaGeralRepository,
             EntradaConsumoRepository entradaConsumoRepository,
-            QuartosRepository quartosRepository) {
+            QuartosRepository quartosRepository, ItensRepository itensRepository) {
         this.entradaRepository = entradaRepository;
         this.mapaGeralRepository = mapaGeralRepository;
         this.entradaConsumoRepository = entradaConsumoRepository;
         this.quartosRepository = quartosRepository;
+        this.itensRepository = itensRepository;
     }
 
     public List<EntradaSimplesResponse> findAll (){
@@ -70,16 +67,13 @@ public class EntradaService {
         AtomicReference<EntradaResponse> response = new AtomicReference<>();
         entradaConsumoList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(id);
 
-        final var entrada = entradaRepository.findById(id).orElseThrow(() -> new EntityNotFound("Entrada não foi Cadastrada ou não existe mais"));
+        final var entrada = entradaRepository.findById(id).orElseThrow(
+                () -> new EntityNotFound("Entrada não foi Cadastrada ou não existe mais"));
         calcularHora();
+        Double totalConsumo = entradaRepository.totalConsumo(id);
 
-        Double totalConsumo = manager.createQuery(
-          "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = :id", Double.class)
-                .setParameter("id", id)
-                .getSingleResult();
-        if (totalConsumo == null){
-            totalConsumo = (double) 0;
-        }
+        if (totalConsumo == null){ totalConsumo = 0D; }
+
         double soma = totalConsumo + valorEntrada;
         List<ConsumoResponse> consumoResponseList = new ArrayList<>();
         entradaConsumoList.forEach(consumo -> {
@@ -125,7 +119,6 @@ public class EntradaService {
         entradas.setStatus_pagamento(StatusPagamento.PENDENTE);
         entradas.setTipoPagamento(TipoPagamento.PENDENTE);
         entradas.setStatusEntrada(StatusEntrada.EM_ANDAMENTO);
-
         quartoOut.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
         quartosRepository.save(quartoOut);
         return entradaRepository.save(entradas);
@@ -159,11 +152,7 @@ public class EntradaService {
             validacaoPagamento(entradas);
             validacaoHorario();
             salvaNoMapa(request);
-
-            Quartos quartoOut = entradas.getQuartos();
-            quartoOut.setStatusDoQuarto(StatusDoQuarto.DISPONIVEL);
-            quartosRepository.save(quartoOut);
-            entradaAtualizada.setStatusEntrada(StatusEntrada.FINALIZADA);
+            atualizaQuarto(entradas.getQuartos(), entradaAtualizada);
             entradaRepository.save(entradaAtualizada);
         }
     }
@@ -192,12 +181,7 @@ public class EntradaService {
 
     private void validacaoPagamento(Entradas request){
         totalMapaGeral = mapaGeralRepository.findLastTotal();
-
-        Double totalConsumo = manager.createQuery(
-                        "SELECT sum(m.total) FROM EntradaConsumo m where m.entradas.id = :id", Double.class)
-                .setParameter("id", request.getId())
-                .getSingleResult();
-
+        Double totalConsumo = entradaRepository.totalConsumo(request.getId());
         entradaEConsumo = valorEntrada + totalConsumo;
         valorTotal = totalMapaGeral + entradaEConsumo;
     }
@@ -239,10 +223,8 @@ public class EntradaService {
     }
 
    private void consumoVazio(){
-       Itens semConsumo = manager.createQuery("SELECT m FROM Itens m where  m.id = 8", Itens.class)
-               .getSingleResult();
        EntradaConsumo novoConsumo = new EntradaConsumo();
-       novoConsumo.setItens(semConsumo);
+       novoConsumo.setItens(itensRepository.getItenVazio());
        novoConsumo.setQuantidade(0);
        novoConsumo.setTotal(0F);
        novoConsumo.setEntradas(entradas);
@@ -251,5 +233,13 @@ public class EntradaService {
 
    public List<Entradas> findByStatusEntrada(StatusEntrada statusEntrada){
         return entradaRepository.findEntradasByStatusEntrada(statusEntrada);
+   }
+
+   private void atualizaQuarto(Quartos quartos, Entradas entradaAtualizada){
+       quartos = entradas.getQuartos();
+       quartos.setStatusDoQuarto(StatusDoQuarto.DISPONIVEL);
+       quartosRepository.save(quartos);
+       entradaAtualizada.setStatusEntrada(StatusEntrada.FINALIZADA);
+       entradaRepository.save(entradaAtualizada);
    }
 }

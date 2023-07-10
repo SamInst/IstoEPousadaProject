@@ -25,6 +25,43 @@ public class EntradasFixture {
         );
     }
 
+    public static Entradas entradasEmAndamento(){
+        return new Entradas(
+                1L,
+                QuartosFixture.quartoDisponivel(),
+                LocalTime.now(),
+                LocalTime.now().plusHours(2),
+                "abc1234",
+                TipoPagamento.PENDENTE,
+                StatusPagamento.PENDENTE,
+                StatusEntrada.EM_ANDAMENTO
+        );
+    }
+    public static Entradas entradasEmAndamentoWithLongHours(){
+        return new Entradas(
+                1L,
+                QuartosFixture.quartoDisponivel(),
+                LocalTime.now(),
+                LocalTime.now().plusHours(5),
+                "abc1234",
+                TipoPagamento.PIX,
+                StatusPagamento.CONCLUIDO,
+                StatusEntrada.EM_ANDAMENTO
+        );
+    }
+    public static Entradas entradasEmAndamentoWithLongHoursDInheiro(){
+        return new Entradas(
+                1L,
+                QuartosFixture.quartoDisponivel(),
+                LocalTime.now(),
+                LocalTime.now().plusHours(5),
+                "abc1234",
+                TipoPagamento.DINHEIRO,
+                StatusPagamento.CONCLUIDO,
+                StatusEntrada.EM_ANDAMENTO
+        );
+    }
+
     public static List<Entradas> entradasList (){
         List<Entradas> entradasList = new ArrayList<>();
         entradasList.add(entradas());
