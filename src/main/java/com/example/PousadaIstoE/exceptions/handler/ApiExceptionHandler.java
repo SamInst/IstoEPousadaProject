@@ -27,6 +27,8 @@ public class ApiExceptionHandler {
 
     private static final String MSG_ERRO_SERVER = "Ocorreu um erro inesperado, entre em contato com administrador do sistema";
 
+
+
     @Value("${spring.application.name}")
     private String projetoName;
 

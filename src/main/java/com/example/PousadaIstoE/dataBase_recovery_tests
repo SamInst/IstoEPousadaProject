@@ -3,16 +3,16 @@ VALUES (1, 'consumo','2023-03-27', '2023-03-29', 2, 1, 1);
 
 
 
-insert into quartos (id, number) VALUES (1, 1);
-insert into quartos (id, number) VALUES (2, 2);
-insert into quartos (id, number) VALUES (3, 3);
-insert into quartos (id, number) VALUES (4, 4);
-insert into quartos (id, number) VALUES (5, 5);
-insert into quartos (id, number) VALUES (6, 6);
-insert into quartos (id, number) VALUES (7, 7);
-insert into quartos (id, number) VALUES (8, 8);
-insert into quartos (id, number) VALUES (9, 9);
-insert into quartos (id, number) VALUES (10, 10);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (1, 2, 'quarto com capacidade para 2 pessoas', 1, 1);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (2, 3, 'quarto com capacidade para 3 pessoas', 2, 1);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (3, 4, 'quarto com capacidade para 4 pessoas', 3, 1);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (4, 5, 'quarto com capacidade para 5 pessoas', 4, 1);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (5, 2, 'quarto com capacidade para 2 pessoas', 5, 1);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (6, 3, 'quarto com capacidade para 3 pessoas', 6, 1);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (7, 4, 'quarto com capacidade para 4 pessoas', 7, 1);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (8, 5, 'quarto com capacidade para 5 pessoas', 8, 1);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (9, 2, 'quarto com capacidade para 2 pessoas', 9, 1);
+insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (10, 3, 'quarto com capacidade para 3 pessoas', 10, 1);
 select * from quartos;
 
 delete from pernoites where id > 0;

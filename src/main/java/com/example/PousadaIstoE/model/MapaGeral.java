@@ -7,7 +7,7 @@ import java.time.LocalTime;
 @Entity
 public class MapaGeral {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate data;
     private String report;
@@ -66,5 +66,14 @@ public class MapaGeral {
         this.report = report;
         this.apartment = apartment;
         this.entrada = entrada;
+    }
+    public MapaGeral(LocalDate data, String report, Integer apartment, Float entrada, Float saida, Float total, LocalTime hora) {
+        this.data = data;
+        this.report = report;
+        this.apartment = apartment;
+        this.entrada = entrada;
+        this.saida = saida;
+        this.total = total;
+        this.hora = hora;
     }
 }

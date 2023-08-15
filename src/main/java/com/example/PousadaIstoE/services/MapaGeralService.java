@@ -25,14 +25,11 @@ public class MapaGeralService {
     }
 
     public MapaGeral add(MapaGeral mapaGeral) {
-        Float total = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
-                .setMaxResults(1)
-                .getSingleResult();
+        Float total = mapaGeralRepository.findLastTotal();
 
         if (total == null){
             throw new EntityNotFound("Não foi criado um mapa hoje ainda");
         }
-
         mapaGeral.setData(LocalDate.now());
         mapaGeral.setHora(LocalTime.now());
         mapaGeral.setTotal(total(mapaGeral));

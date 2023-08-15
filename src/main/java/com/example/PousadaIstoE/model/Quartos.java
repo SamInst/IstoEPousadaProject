@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 @Table(name = "tb_quartos")
 public class Quartos {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer numero;
     private String descricao;

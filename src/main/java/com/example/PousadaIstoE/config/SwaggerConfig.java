@@ -17,15 +17,9 @@ public class SwaggerConfig {
         info.setContact(createContact());
         info.setLicense(createLicense());
         return new OpenAPI()
-                .info(info)
-                .servers(createServer());
+                .info(info);
     }
-    private List<Server> createServer(){
-        var serverLocalHost = new Server();
-        serverLocalHost.setUrl("http://localhost:8080/swagger-ui.html");
-        serverLocalHost.setDescription("Local Host");
-        return List.of(serverLocalHost);
-    }
+
 
     private Info createInfo(){
         var info = new Info();

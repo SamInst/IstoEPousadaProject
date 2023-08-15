@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "tb_pernoites")
 public class Pernoites {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
     private Quartos apartamento;

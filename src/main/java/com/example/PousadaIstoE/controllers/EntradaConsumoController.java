@@ -3,7 +3,6 @@ package com.example.PousadaIstoE.controllers;
 import com.example.PousadaIstoE.model.EntradaConsumo;
 import com.example.PousadaIstoE.services.EntradaConsumoService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,17 +17,26 @@ public class EntradaConsumoController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<EntradaConsumo> buscarTodos(){
         return entradaConsumoService.BuscaTodos();
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
+
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EntradaConsumo criaConsumo(EntradaConsumo entradaConsumo){
         return entradaConsumoService.addConsumo(entradaConsumo);
     }
     @DeleteMapping("/{id_consumo}")
-    public ResponseEntity<Object> deletaConsumoPorEntradaId( @PathVariable ("id_consumo") Long id_consumo){
-        return  entradaConsumoService.deletaConsumoPorEntradaId(id_consumo);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletaConsumoPorEntradaId( @PathVariable ("id_consumo") Long id_consumo){
+         entradaConsumoService.deletaConsumoPorEntradaId(id_consumo);
+    }
+
+    @GetMapping("/findByEntrada")
+    @ResponseStatus(HttpStatus.OK)
+    public List<EntradaConsumo> findEntradaConsumoByEntrada(Long entrada_id){
+        return entradaConsumoService.findEntradaConsumoByEntrada(entrada_id);
     }
 }
