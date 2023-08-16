@@ -18,7 +18,6 @@ public class Client {
     @ManyToOne
     private Employee registeredBy;
 
-
     public Long getId() {
         return id;
     }

@@ -14,7 +14,7 @@ public class Pernoites {
     private Long id;
     @ManyToOne
     private Quartos apartamento;
-    @ManyToOne
+    @OneToOne
     private Client client;
 
     private LocalDate dataEntrada;

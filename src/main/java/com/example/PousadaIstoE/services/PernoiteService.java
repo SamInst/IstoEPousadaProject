@@ -32,13 +32,13 @@ public class PernoiteService {
     private EntityManager manager;
     private final PernoitesRepository pernoitesRepository;
     private final QuartosRepository quartosRepository;
-    private final MapaGeralRepository mapaGeralRepository;
+    private final MapaGeralService mapaGeralService;
     private final PernoiteConsumoRepository pernoiteConsumoRepository;
 
-    protected PernoiteService(PernoitesRepository pernoitesRepository, QuartosRepository quartosRepository, MapaGeralRepository mapaGeralRepository, PernoiteConsumoRepository pernoiteConsumoRepository) {
+    protected PernoiteService(PernoitesRepository pernoitesRepository, QuartosRepository quartosRepository, MapaGeralService mapaGeralService, PernoiteConsumoRepository pernoiteConsumoRepository) {
         this.pernoitesRepository = pernoitesRepository;
         this.quartosRepository = quartosRepository;
-        this.mapaGeralRepository = mapaGeralRepository;
+        this.mapaGeralService = mapaGeralService;
         this.pernoiteConsumoRepository = pernoiteConsumoRepository;
     }
 
@@ -178,10 +178,6 @@ public class PernoiteService {
         List<Pernoites> pernoitesToCheckOut = pernoitesRepository.findByDataSaida(currentDate);
         MapaGeral mapaGeral = new MapaGeral();
 
-        Float totalMapaGeral = manager.createQuery("SELECT m.total FROM MapaGeral m ORDER BY m.id DESC", Float.class)
-                .setMaxResults(1)
-                .getSingleResult();
-
         for (Pernoites pernoiteOut : pernoitesToCheckOut) {
             Quartos quartoOut = pernoiteOut.getApartamento();
             if (pernoiteOut.getDataSaida().equals(currentDate) && LocalTime.now().isAfter(LocalTime.of(12, 0))) {
@@ -205,7 +201,7 @@ public class PernoiteService {
                 mapaGeral.setReport(relatorio);
                 mapaGeral.setSaida(0F);
                 mapaGeral.setHora(LocalTime.now());
-                mapaGeralRepository.save(mapaGeral);
+                mapaGeralService.createMapa(mapaGeral);
             }
         }
     }

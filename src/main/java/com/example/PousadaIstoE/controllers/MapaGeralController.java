@@ -31,7 +31,7 @@ private final MapaGeralService mapaGeralService;
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public MapaGeral add(@RequestBody MapaGeral mapaGeral) {
-        return mapaGeralService.add(mapaGeral);
+        return mapaGeralService.createMapa(mapaGeral);
     }
 
     @GetMapping("/findByDate")

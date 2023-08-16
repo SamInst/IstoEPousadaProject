@@ -24,7 +24,7 @@ public class MapaGeralService {
         return mapaGeralRepository.findAll();
     }
 
-    public MapaGeral add(MapaGeral mapaGeral) {
+    public MapaGeral createMapa(MapaGeral mapaGeral) {
         Float total = mapaGeralRepository.findLastTotal();
 
         if (total == null){
