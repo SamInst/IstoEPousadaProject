@@ -6,7 +6,6 @@ import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.MapaGeral;
 import com.example.PousadaIstoE.model.Pernoites;
 import com.example.PousadaIstoE.model.Quartos;
-import com.example.PousadaIstoE.repository.MapaGeralRepository;
 import com.example.PousadaIstoE.repository.PernoiteConsumoRepository;
 import com.example.PousadaIstoE.repository.PernoitesRepository;
 import com.example.PousadaIstoE.repository.QuartosRepository;
@@ -22,8 +21,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.Period;
 import java.util.List;
+import static java.time.Period.*;
 
 @Service
 public class PernoiteService {
@@ -55,8 +54,7 @@ public class PernoiteService {
                         "SELECT sum(m.total) FROM PernoiteConsumo m where m.pernoites.id = id", Double.class)
                 .getSingleResult();
 
-
-        Integer p1 = Period.between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
+        Integer p1 = between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
         Float valor_total = pernoites.getTotal() * p1;
         final var response = new PernoiteResponse(
                 new PernoiteResponse.Client(
@@ -84,7 +82,7 @@ public class PernoiteService {
         if (pernoites.getClient() == null){
             throw new EntityConflict("É preciso informar o hóspede.");
         }
-        Integer periodoDias = Period.between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
+        Integer periodoDias = between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
 
         quantidadeDePessoas2(pernoites);
         validacaoDeApartamento(pernoites);

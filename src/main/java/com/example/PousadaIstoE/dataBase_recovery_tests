@@ -1,7 +1,5 @@
-insert into pernoites (id, consumo, data_entrada, data_saida, quantidade_pessoa, client_id, room_id)
-VALUES (1, 'consumo','2023-03-27', '2023-03-29', 2, 1, 1);
-
-
+insert into tb_mapa_geral (id, apartment, report, entrada, saida, total, hora, data)
+VALUES (1, 0, 'TRANFERENCIA DE CAIXA', 400, 0, 400 , now(), now());
 
 insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (1, 2, 'quarto com capacidade para 2 pessoas', 1, 1);
 insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (2, 3, 'quarto com capacidade para 3 pessoas', 2, 1);
@@ -13,53 +11,18 @@ insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_qua
 insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (8, 5, 'quarto com capacidade para 5 pessoas', 8, 1);
 insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (9, 2, 'quarto com capacidade para 2 pessoas', 9, 1);
 insert into  tb_quartos (id, capacidade_pessoa, descricao, numero, status_do_quarto) VALUES (10, 3, 'quarto com capacidade para 3 pessoas', 10, 1);
-select * from quartos;
 
-delete from pernoites where id > 0;
-insert into  entradas (id, consumo, apt, hora_entrada, hora_saida, placa)
-VALUES (1, 'consumo', 2, '18:20', '19:30', 'abc1234');
-delete from entradas where id > 0;
-delete from tb_mapa_geral where id > 0;
+insert into tb_itens (id, descricao, valor) VALUES (1, 'agua', 3);
+insert into tb_itens (id, descricao, valor) VALUES (2, 'salgadinho', 3);
+insert into tb_itens (id, descricao, valor) VALUES (3, 'Ice Limão', 10);
+insert into tb_itens (id, descricao, valor) VALUES (4, 'Heineken 600ml', 12);
+insert into tb_itens (id, descricao, valor) VALUES (5, 'Heineken 360ml', 8);
+insert into tb_itens (id, descricao, valor) VALUES (6, 'refrigerante 360ml', 5);
+insert into tb_itens (id, descricao, valor) VALUES (7, 'Cerveja Pilsen', 8);
+insert into tb_itens (id, descricao, valor) VALUES (8, 'Não teve consumo', 0);
 
-insert into tb_mapa_geral (id, apartment, report, entrada, saida, total, hora, data)
-VALUES (1, 0, 'TRANFERENCIA DE CAIXA', 400, 0, 400 , now(), now());
+insert into tb_employees (cpf, name)
+values ('81936087391','Rosilene Nunes');
 
-drop table pernoites;
-insert into pernoites (id, consumo, data_entrada, data_saida, quantidade_pessoa, client_id,apt)
-VALUES(666, 'agua, agua', '2023/04/17', '2023/04/19', 2, 1,24);
-
-
-delete from itens where id >0;
-insert into itens (id, descricao, valor) VALUES (1, 'agua', 3);
-insert into itens (id, descricao, valor) VALUES (2, 'salgadinho', 3);
-insert into itens (id, descricao, valor) VALUES (3, 'Ice Limão', 10);
-insert into itens (id, descricao, valor) VALUES (4, 'Heineken 600ml', 12);
-insert into itens (id, descricao, valor) VALUES (5, 'Heineken 360ml', 8);
-insert into itens (id, descricao, valor) VALUES (6, 'refrigerante 360ml', 5);
-insert into itens (id, descricao, valor) VALUES (7, 'Cerveja Pilsen', 8);
-insert into itens (id, descricao, valor) VALUES (8, 'Não teve consumo', 0);
-
-
-
-insert into tb_entrada_consumo (id, quantidade, entradas_id, itens_id) VALUES (1, 2, 1252, 1);
-select * from tb_entrada_consumo;
-insert into tb_entrada_consumo (id, quantidade, entradas_id, itens_id) VALUES (2, 2, 1302, 1);
-
-delete from entradas where id > 0;
-
-insert into entrada_consumo_itens_list (entrada_consumo_id, itens_list_id)
-VALUES (1, 1);
-
-insert into entrada_consumo (id, quantidade) VALUES (1, 2);
-
-insert into entrada_consumo (id, quantidade, entradas_id, itens_id)
-VALUES (2, 1, 1402, 2);
-
-select sum(m.total) from entrada_consumo m where m.entradas_id = 1452;
-
-delete from tb_registro_de_entradas where id > 0;
-delete from entrada_consumo where id> 0;
-delete from entradas_entrada_consumo where entradas_id > 0;
-delete from entradas where id > 0;
-
-select * from itens m where m."id" = 8;
+insert into tb_clients (address, cpf, job, name, phone, registered_by_id)
+values ('Rua coronel Eurípedes Bezerra','05043226307','Programador','Sam Helson','98984508897',1);
