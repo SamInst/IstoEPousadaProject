@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.AcompanhantesPernoite;
+import com.example.PousadaIstoE.model.AcompanhantePernoite;
 import com.example.PousadaIstoE.services.AcompanhantePernoiteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,20 +18,20 @@ public class AcompanhantesPernoiteController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public AcompanhantesPernoite findById(@PathVariable("id") Long id){
+    public AcompanhantePernoite findById(@PathVariable("id") Long id){
         return acompanhantePernoiteService.findById(id);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<AcompanhantesPernoite> acompanhantesPernoiteList(){
+    public List<AcompanhantePernoite> acompanhantesPernoiteList(){
         return acompanhantePernoiteService.acompanhantePernoiteList();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public AcompanhantesPernoite adicionaAcompanhante(AcompanhantesPernoite acompanhantesPernoite){
-        return acompanhantePernoiteService.addAcompanhante(acompanhantesPernoite);
+    public AcompanhantePernoite adicionaAcompanhante(AcompanhantePernoite acompanhantePernoite){
+        return acompanhantePernoiteService.addAcompanhante(acompanhantePernoite);
     }
 
     @DeleteMapping("/{id}")

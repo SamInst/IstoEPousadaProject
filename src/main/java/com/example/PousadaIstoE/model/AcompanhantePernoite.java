@@ -1,17 +1,15 @@
 package com.example.PousadaIstoE.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.Period;
 
 @Entity
 @Table(name = "tb_acompanhante_pernoite")
-public class AcompanhantesPernoite {
+public class AcompanhantePernoite {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String cpf;
@@ -20,7 +18,7 @@ public class AcompanhantesPernoite {
     @ManyToOne
     private Pernoites pernoites;
 
-    public AcompanhantesPernoite() {
+    public AcompanhantePernoite() {
     }
 
     public String getName() {
@@ -53,6 +51,7 @@ public class AcompanhantesPernoite {
         return age.getYears();
     }
 
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -73,7 +72,7 @@ public class AcompanhantesPernoite {
         this.pernoites = pernoites;
     }
 
-    public AcompanhantesPernoite(String name, String cpf, LocalDate birth, Integer age, Pernoites pernoites) {
+    public AcompanhantePernoite(String name, String cpf, LocalDate birth, Integer age, Pernoites pernoites) {
         this.name = name;
         this.cpf = cpf;
         this.birth = birth;

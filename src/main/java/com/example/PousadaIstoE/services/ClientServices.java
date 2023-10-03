@@ -24,10 +24,6 @@ public class ClientServices {
         this.clientRepository = clientRepository;
     }
 
-    public Client save(Client client) {
-        return clientRepository.save(client);
-    }
-
     public List<Client> findAll(){
         return clientRepository.findAll();
     }
@@ -48,13 +44,21 @@ public class ClientServices {
         }
     }
 
-    public Client registerClient(Client client) {
+    public Client registerClient(Client request) {
+        Client client = new Client(
+                request.getName(),
+                request.getCpf(),
+                request.getPhone(),
+                request.getAddress(),
+                request.getJob(),
+                request.getRegisteredBy()
+        );
         return clientRepository.save(client);
     }
 
-    public Client updateClientData(Long clientId, Client client) {
+    public Client updateClientData(Long clientId, Client request) {
         Client client1 = clientRepository.findById(clientId).get();
-        BeanUtils.copyProperties(client1, client, "id");
+        BeanUtils.copyProperties(client1, request, "id");
         return clientRepository.save(client1);
     }
     public ResponseEntity<Client> removeClient(Long clientId) {

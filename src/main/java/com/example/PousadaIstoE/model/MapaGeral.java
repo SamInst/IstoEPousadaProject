@@ -61,6 +61,14 @@ public class MapaGeral {
     public MapaGeral() {
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public MapaGeral(LocalDate data, String report, Integer apartment, Float entrada) {
         this.data = data;
         this.report = report;

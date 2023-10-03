@@ -26,8 +26,9 @@ public class PernoiteConsumoController {
     public PernoiteConsumo criaConsumo(PernoiteConsumo pernoiteConsumo){
         return pernoiteConsumoService.addConsumo(pernoiteConsumo);
     }
-//    @DeleteMapping("/{id_consumo}")
-//    public ResponseEntity<Object> deletaConsumoPorpernoiteId( @PathVariable ("id_consumo") Long id_consumo){
-//        return  pernoiteConsumoService.deletaConsumoPorEntradaId(id_consumo);
-//    }
+    @DeleteMapping("/{id_consumo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletaConsumoPernoite(@PathVariable ("id_consumo") Long id_consumo){
+         pernoiteConsumoService.deleteConsumoPernoite(id_consumo);
+    }
 }

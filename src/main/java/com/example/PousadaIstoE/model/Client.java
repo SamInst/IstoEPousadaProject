@@ -2,7 +2,6 @@ package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 @Table(name = "tb_clients")
 @Entity
 public class Client {
@@ -17,6 +16,9 @@ public class Client {
 
     @ManyToOne
     private Employee registeredBy;
+
+//    @ManyToOne
+//    private
 
     public Long getId() {
         return id;
@@ -38,4 +40,42 @@ public class Client {
         return job;
     }
     public Employee getRegisteredBy() {return registeredBy; }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setJob(String job) {
+        this.job = job;
+    }
+
+    public void setRegisteredBy(Employee registeredBy) {
+        this.registeredBy = registeredBy;
+    }
+
+
+    public Client(String name, String cpf, String phone, String address, String job, Employee registeredBy) {
+        this.name = name;
+        this.cpf = cpf;
+        this.phone = phone;
+        this.address = address;
+        this.job = job;
+        this.registeredBy = registeredBy;
+    }
 }

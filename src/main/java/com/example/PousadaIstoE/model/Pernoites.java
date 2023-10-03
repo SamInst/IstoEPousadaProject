@@ -16,7 +16,6 @@ public class Pernoites {
     private Quartos apartamento;
     @OneToOne
     private Client client;
-
     private LocalDate dataEntrada;
     private LocalDate dataSaida;
     private Integer quantidadePessoa;
@@ -27,11 +26,9 @@ public class Pernoites {
     public Float getTotal() {
         return total;
     }
-
     public void setTotal(Float total) {
         this.total = total;
     }
-
     public Long getId() {
         return id;
     }
@@ -62,20 +59,31 @@ public class Pernoites {
     public StatusPagamento getStatus_pagamento() {
         return status_pagamento;
     }
-
     public Quartos getApartamento() {
         return apartamento;
     }
-
     public void setApartamento(Quartos apartamento) {
         this.apartamento = apartamento;
     }
-
     public void setTipoPagamento(TipoPagamento tipoPagamento) {
         this.tipoPagamento = tipoPagamento;
     }
-
     public void setStatus_pagamento(StatusPagamento status_pagamento) {
         this.status_pagamento = status_pagamento;
+    }
+
+    public Pernoites(Long id, Quartos apartamento, Client client, LocalDate dataEntrada, LocalDate dataSaida, Integer quantidadePessoa, TipoPagamento tipoPagamento, StatusPagamento status_pagamento, Float total) {
+        this.id = id;
+        this.apartamento = apartamento;
+        this.client = client;
+        this.dataEntrada = dataEntrada;
+        this.dataSaida = dataSaida;
+        this.quantidadePessoa = quantidadePessoa;
+        this.tipoPagamento = tipoPagamento;
+        this.status_pagamento = status_pagamento;
+        this.total = total;
+    }
+
+    public Pernoites() {
     }
 }

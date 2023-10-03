@@ -39,7 +39,7 @@ public class QuartosFixture {
                 1,
                 "qarto rgb",
                 2,
-                StatusDoQuarto.NECESSITA_LIMPEZA
+                StatusDoQuarto.LIMPEZA
         );
     }
     public static List<Quartos> quartosList (){

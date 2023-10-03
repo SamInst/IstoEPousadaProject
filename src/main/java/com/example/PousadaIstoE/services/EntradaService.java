@@ -113,7 +113,7 @@ public class EntradaService {
                 .orElseThrow(()-> new EntityNotFound("Quarto não encontrado"));
         switch (quartoOut.getStatusDoQuarto()) {
             case OCUPADO -> throw new EntityConflict("Quarto Ocupado");
-            case NECESSITA_LIMPEZA -> throw new EntityConflict("Quarto Precisa de limpeza!");
+            case LIMPEZA -> throw new EntityConflict("Quarto Precisa de limpeza!");
             case RESERVADO -> throw new EntityConflict("Quarto Reservado!");
         }
         Entradas request = new Entradas(

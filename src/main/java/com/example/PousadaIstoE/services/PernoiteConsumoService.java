@@ -27,27 +27,6 @@ public class PernoiteConsumoService {
         return pernoiteConsumoRepository.findAll();
     }
 
-    public List<EntradaConsumoResponse> consumoResponse(Long id, List<EntradaConsumoResponse> entradaConsumo) {
-        final var consumo = pernoiteConsumoRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("Consumo não Encontrado"));
-
-
-        entradaConsumo.forEach(a -> {
-            Float valorItem = consumo.getQuantidade() * consumo.getItens().getValor();
-
-            new EntradaConsumoResponse(
-                    consumo.getQuantidade(),
-                    new EntradaConsumoResponse.Item(
-                            consumo.getItens().getDescricao(),
-                            consumo.getItens().getValor(),
-                            valorItem
-                    ),
-                    a.total()
-            );
-        });
-        return entradaConsumo;
-    }
-
     public PernoiteConsumo addConsumo(PernoiteConsumo pernoiteConsumo) {
         if (pernoiteConsumo.getPernoites() == null) {
             throw new EntityNotFound("Nenhum Pernoite associado a esse consumo");
@@ -60,8 +39,7 @@ public class PernoiteConsumoService {
         return pernoiteConsumoRepository.save(pernoiteConsumo1);
     }
 
-    public ResponseEntity<Object> deletaConsumoPorEntradaId(Long id_consumo) {
-        pernoiteConsumoRepository.deleteById(id_consumo);
-        return ResponseEntity.noContent().build();
+    public void deleteConsumoPernoite(Long consumoID){
+        pernoiteConsumoRepository.deleteById(consumoID);
     }
 }

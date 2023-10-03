@@ -30,8 +30,8 @@ public class ClientController {
         return clientServices.findClientById(id);
     }
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
-    public Client register(@RequestBody Client client) {
+    @PostMapping("/create")
+    public Client register(Client client) {
         return clientServices.registerClient(client);
     }
 

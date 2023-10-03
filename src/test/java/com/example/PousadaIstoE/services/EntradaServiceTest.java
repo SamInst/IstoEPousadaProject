@@ -94,7 +94,7 @@ class EntradaServiceTest {
     @Test
     @DisplayName("deve lancar uma exception de quarto Sujo")
     void registerEntradaExceptionLimpesa() {
-        entrada.getQuartos().setStatusDoQuarto(StatusDoQuarto.NECESSITA_LIMPEZA);
+        entrada.getQuartos().setStatusDoQuarto(StatusDoQuarto.LIMPEZA);
         when(entradaRepository.save(any())).thenReturn(entrada);
 
         assertThatExceptionOfType(EntityConflict.class)
