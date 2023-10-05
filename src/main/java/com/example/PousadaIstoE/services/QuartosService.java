@@ -18,7 +18,7 @@ public class QuartosService {
     }
 
     public List<Quartos> quartosList() {
-        return quartosRepository.findAll();
+        return quartosRepository.findAllOrOrderByNumero();
     }
 
     public Quartos findQuarto(Long id) {

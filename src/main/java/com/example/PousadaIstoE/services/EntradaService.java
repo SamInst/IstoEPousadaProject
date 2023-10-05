@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class EntradaService {
-    private final MapaGeralRepository mapaFeing;
-    private final QuartosRepository quartosFeing;
-    private final ItensRepository itensFeing;
+    private final MapaGeralRepository mapaGeralRepository;
+    private final QuartosRepository quartosRepository;
+    private final ItensRepository itensRepository;
     private final EntradaConsumoService entradaConsumoService;
     double totalHorasEntrada;
     double valorEntrada;
@@ -41,10 +41,10 @@ public class EntradaService {
     private final EntradaRepository entradaRepository;
     private final EntradaConsumoRepository entradaConsumoRepository;
 
-    public EntradaService(MapaGeralRepository mapaFeing, QuartosRepository quartosFeing, ItensRepository itensFeing, EntradaConsumoService entradaConsumoService, EntradaRepository entradaRepository, EntradaConsumoRepository entradaConsumoRepository) {
-        this.mapaFeing = mapaFeing;
-        this.quartosFeing = quartosFeing;
-        this.itensFeing = itensFeing;
+    public EntradaService(MapaGeralRepository mapaGeralRepository, QuartosRepository quartosRepository, ItensRepository itensRepository, EntradaConsumoService entradaConsumoService, EntradaRepository entradaRepository, EntradaConsumoRepository entradaConsumoRepository) {
+        this.mapaGeralRepository = mapaGeralRepository;
+        this.quartosRepository = quartosRepository;
+        this.itensRepository = itensRepository;
         this.entradaConsumoService = entradaConsumoService;
         this.entradaRepository = entradaRepository;
         this.entradaConsumoRepository = entradaConsumoRepository;
@@ -109,7 +109,7 @@ public class EntradaService {
     }
 
     public Entradas registerEntrada(Entradas entradas) {
-        Quartos quartoOut = quartosFeing.findById(entradas.getQuartos().getId())
+        Quartos quartoOut = quartosRepository.findById(entradas.getQuartos().getId())
                 .orElseThrow(()-> new EntityNotFound("Quarto não encontrado"));
         switch (quartoOut.getStatusDoQuarto()) {
             case OCUPADO -> throw new EntityConflict("Quarto Ocupado");
@@ -127,7 +127,7 @@ public class EntradaService {
             StatusPagamento.PENDENTE
         );
         quartoOut.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
-        quartosFeing.save(quartoOut);
+        quartosRepository.save(quartoOut);
         return entradaRepository.save(request);
     }
 
@@ -185,7 +185,7 @@ public class EntradaService {
     }
 
     private void validacaoPagamento(Entradas request){
-        totalMapaGeral = mapaFeing.findLastTotal();
+        totalMapaGeral = mapaGeralRepository.findLastTotal();
         Double totalConsumo = entradaRepository.totalConsumo(request.getId());
         if (totalConsumo == null){ totalConsumo = 0D; }
         entradaEConsumo = valorEntrada + totalConsumo;
@@ -195,8 +195,7 @@ public class EntradaService {
     private void validacaoHorario(){
         LocalTime noite = LocalTime.of(18,0,0);
         LocalTime dia = LocalTime.of(6,0,0);
-        relatorio = LocalTime.now().isAfter(noite) || LocalTime.now().isBefore(dia)
-                ? "ENTRADA NOITE" : "ENTRADA DIA";
+        relatorio = LocalTime.now().isAfter(noite) || LocalTime.now().isBefore(dia) ? "ENTRADA NOITE" : "ENTRADA DIA";
     }
 
     private void salvaNoMapa(Entradas request) {
@@ -216,11 +215,11 @@ public class EntradaService {
                              mapaGeral.setSaida(mapaGeral.getEntrada()); }
             case DINHEIRO -> mapaGeral.setReport(relatorio + " (DINHEIRO)");
         }
-        mapaFeing.save(mapaGeral);
+        mapaGeralRepository.save(mapaGeral);
     }
 
     private void consumoVazio(){
-        var semConsumo = itensFeing.getItenVazio();
+        var semConsumo = itensRepository.getItenVazio();
         EntradaConsumo entradaConsumo = new EntradaConsumo(
             0,
             semConsumo,
@@ -244,7 +243,7 @@ public class EntradaService {
     private void atualizaQuarto(Quartos quartos, Entradas entradaAtualizada){
         quartos = entradas.getQuartos();
         quartos.setStatusDoQuarto(StatusDoQuarto.DISPONIVEL);
-        quartosFeing.save(quartos);
+        quartosRepository.save(quartos);
         entradaAtualizada.setStatusEntrada(StatusEntrada.FINALIZADA);
     }
 }

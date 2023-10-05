@@ -46,7 +46,7 @@ public class PernoiteService {
         allPernoites.forEach(pernoite->{
             PernoiteShortResponse pernoiteShortResponse = new PernoiteShortResponse(
                     pernoite.getId(),
-                    new PernoiteShortResponse.Client(pernoite.getClient().getName()),
+                    new PernoiteShortResponse.Client(pernoite.getClientePrincipal().getName()),
                     pernoite.getApartamento().getNumero(),
                     pernoite.getDataEntrada(),
                     pernoite.getDataSaida(),
@@ -60,7 +60,7 @@ public class PernoiteService {
     public PernoiteResponse findById(Long id) {
         final var pernoites = pernoitesRepository.findById(id).orElseThrow(() -> new EntityNotFound("Pernoite não encontrado"));
         final var consumo_pernoite = pernoiteConsumoRepository.findPernoiteConsumoByPernoites_Id(id);
-        final var totalConsumo = pernoiteConsumoRepository.findConsumoTotal(id);
+        final var total_consumo = pernoiteConsumoRepository.findConsumoTotal(id);
         final var acompanhantes = acompanhantePernoiteRepository.findAllByPernoites_Id(id);
         quantidadeDePessoas(pernoites);
 
@@ -75,15 +75,16 @@ public class PernoiteService {
             acompanhantePernoiteShortResponseList.add(acompanhantePernoiteShortResponse);
         });
         Integer days = between(pernoites.getDataEntrada(), pernoites.getDataSaida()).getDays();
-        Float total_diarias = pernoites.getTotal() * days;
-        var valor_total = total_diarias + totalConsumo;
+        float total_diarias = pernoites.getTotal() * days;
+        double consumo = (total_consumo != null) ? total_consumo : 0D;
+        var valor_total = total_diarias + consumo;
 
         return new PernoiteResponse(
             pernoites.getId(),
             new PernoiteResponse.Client(
-                pernoites.getClient().getName(),
-                pernoites.getClient().getCpf(),
-                pernoites.getClient().getPhone()
+                pernoites.getClientePrincipal().getName(),
+                pernoites.getClientePrincipal().getCpf(),
+                pernoites.getClientePrincipal().getPhone()
             ),
             acompanhantePernoiteShortResponseList,
             new PernoiteResponse.Quarto(pernoites.getApartamento().getNumero()),
@@ -94,7 +95,7 @@ public class PernoiteService {
                 pernoites.getQuantidadePessoa(),
                 days,
                 pernoites.getTotal(),
-                totalConsumo,
+                total_consumo,
                 total_diarias,
                 pernoites.getTipoPagamento(),
                 pernoites.getStatus_pagamento(),
@@ -104,7 +105,7 @@ public class PernoiteService {
     }
 
     public Pernoites createPernoite(Pernoites pernoites) {
-        if (pernoites.getClient() == null) throw new EntityConflict("É preciso informar o hóspede.");
+        if (pernoites.getClientePrincipal() == null) throw new EntityConflict("É preciso informar o hóspede.");
         var quarto = quartosRepository.findById(pernoites.getApartamento().getId()).orElseThrow(
                 ()-> new EntityNotFound("quarto não encontrado"));
 
@@ -117,7 +118,7 @@ public class PernoiteService {
 
         pernoites.setStatusPernoite(
         pernoites.getDataEntrada().equals(LocalDate.now()) ? StatusPernoite.ATIVO : StatusPernoite.RESERVA);
-        if (pernoites.getDataEntrada().equals(LocalDate.now())){
+        if (pernoites.getDataEntrada().equals(LocalDate.now()) && LocalTime.now().isAfter(LocalTime.of(12,0))) {
             quarto.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
             quartosRepository.save(quarto);
         }
@@ -133,7 +134,7 @@ public class PernoiteService {
         var pernoiteAtualizado = new Pernoites(
             pernoite.getId(),
             pernoite.getApartamento(),
-            pernoite.getClient(),
+            pernoite.getClientePrincipal(),
             pernoite.getDataEntrada(),
             pernoite.getDataSaida(),
             pernoite.getQuantidadePessoa(),
@@ -168,25 +169,27 @@ public class PernoiteService {
             case MANUTENCAO -> throw new EntityConflict("O apartamento está em manutenção.");
         }
         for (Pernoites pernoiteCadastrado : pernoitesCadastrados) {
-            if (pernoite.getDataEntrada().isBefore(pernoiteCadastrado.getDataSaida())
-            && pernoite.getDataSaida().isAfter(pernoiteCadastrado.getDataEntrada())) {
+            if (pernoite.getDataEntrada().isBefore(pernoiteCadastrado.getDataSaida()) &&
+                pernoite.getDataSaida().isAfter(pernoiteCadastrado.getDataEntrada())) {
                 throw new EntityConflict("O apartamento já está ocupado entre as datas informadas.");
-            } if (pernoite.getDataSaida().isBefore(pernoite.getDataEntrada())) {
+            }
+            if (pernoite.getDataSaida().isBefore(pernoite.getDataEntrada())) {
                 throw new EntityDates("A data de Saída não pode ser inferior a data de entrada");
-            } if (pernoite.getDataEntrada().equals(pernoite.getDataSaida())
-            || pernoite.getDataSaida().equals(pernoite.getDataEntrada())) {
+            }
+            if (pernoite.getDataEntrada().equals(pernoite.getDataSaida()) ||
+                  pernoite.getDataSaida().equals(pernoite.getDataEntrada())) {
                 throw new EntityDates("A data de Entrada/Saída não podem ser iguais");
             }
         }
         pernoitesRepository.save(pernoite);
     }
 
-    public AcompanhantePernoite addAcompanhante(AcompanhantePernoite acompanhantePernoite){
-        var b = acompanhantePernoite.getBirth();
-        Period age = Period.ofYears(Period.between(LocalDate.now(), b).getYears());
-        acompanhantePernoite.setAge(age.getYears());
-        return acompanhantePernoiteRepository.save(acompanhantePernoite);
-    }
+//    public AcompanhantePernoite addAcompanhante(AcompanhantePernoite acompanhantePernoite){
+//        var b = acompanhantePernoite.getBirth();
+//        Period age = Period.ofYears(Period.between(LocalDate.now(), b).getYears());
+//        acompanhantePernoite.setAge(age.getYears());
+//        return acompanhantePernoiteRepository.save(acompanhantePernoite);
+//    }
 
     @Scheduled(cron = "0 * * * * ?") // Tem que executar todos os dias à meia-noite
     public void updateRoomStatus() {

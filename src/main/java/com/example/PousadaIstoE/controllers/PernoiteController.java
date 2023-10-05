@@ -33,9 +33,9 @@ public class PernoiteController {
         return pernoiteService.updatePernoiteData(pernoiteId, pernoites);
     }
 
-    @PostMapping("/acompanhante")
-    @ResponseStatus(HttpStatus.CREATED)
-    public AcompanhantePernoite addAcompanhante(AcompanhantePernoite acompanhantePernoite){
-        return pernoiteService.addAcompanhante(acompanhantePernoite);
-    }
+//    @PostMapping("/acompanhante")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public AcompanhantePernoite addAcompanhante(AcompanhantePernoite acompanhantePernoite){
+//        return pernoiteService.addAcompanhante(acompanhantePernoite);
+//    }
 }

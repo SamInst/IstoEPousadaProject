@@ -5,5 +5,4 @@ public record AcompanhantePernoiteShortResponse(
         String nome,
         String cpf,
         Integer age
-) {
-}
+){}
