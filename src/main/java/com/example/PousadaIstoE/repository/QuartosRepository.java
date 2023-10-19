@@ -12,5 +12,5 @@ import java.util.List;
 public interface QuartosRepository extends JpaRepository<Quartos, Long> {
 
     @Query("select u from Quartos u order by u.numero")
-    List<Quartos> findAllOrOrderByNumero();
+    List<Quartos> findAllOrOrderById();
 }
