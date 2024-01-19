@@ -1,7 +1,6 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.Pernoites;
-import com.example.PousadaIstoE.model.Quartos;
+import com.example.PousadaIstoE.model.Rooms;
 import com.example.PousadaIstoE.services.QuartosService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,23 +17,23 @@ class QuartosController {
     }
 
     @GetMapping
-    public List<Quartos> listAll(){
+    public List<Rooms> listAll(){
         return quartosService.quartosList();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Quartos createQuartos(@RequestBody Quartos quartos){
-        return quartosService.createQuartos(quartos);
+    public Rooms createQuartos(@RequestBody Rooms rooms){
+        return quartosService.createQuartos(rooms);
     }
 
     @PutMapping("/{quartoID}")
-    public Quartos AlterarDadoQuarto(@PathVariable ("quartoID") Long quartoId, @RequestBody Quartos quartos){
-        return quartosService.updateQuartoData(quartoId, quartos);
+    public Rooms AlterarDadoQuarto(@PathVariable ("quartoID") Long quartoId, @RequestBody Rooms rooms){
+        return quartosService.updateQuartoData(quartoId, rooms);
     }
 
     @GetMapping("/find/{id}")
-    public Quartos findById(@PathVariable ("id") Long id){
+    public Rooms findById(@PathVariable ("id") Long id){
         return quartosService.findQuarto(id);
     }
 }

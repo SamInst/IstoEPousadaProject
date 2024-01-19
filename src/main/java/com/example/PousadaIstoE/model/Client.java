@@ -2,23 +2,30 @@ package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
 
-@Table(name = "tb_clients")
+@Table(name = "ip01_clients")
 @Entity
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ip01_id")
     private Long id;
+    @Column(name = "ip01_name")
     private String name;
+
+    @Column(name = "ip01_cpf")
     private String cpf;
+    @Column(name = "ip01_phone")
     private String phone;
+
+    @Column(name = "ip01_address")
     private String address;
+    @Column(name = "ip01_job")
     private String  job;
 
     @ManyToOne
+    @JoinColumn(name = "fkip01ip02_id_employee")
     private Employee registeredBy;
 
-//    @ManyToOne
-//    private
 
     public Long getId() {
         return id;

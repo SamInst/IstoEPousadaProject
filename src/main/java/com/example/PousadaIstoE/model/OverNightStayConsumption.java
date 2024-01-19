@@ -4,23 +4,27 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tb_entrada_consumo")
-public class EntradaConsumo {
+@Table(name = "ip10_overnight_consumption")
+public class OverNightStayConsumption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ip10_id")
     private Long id;
 
+    @Column(name = "ip10_quantidade")
     private Integer quantidade;
 
     @ManyToOne
+    @JoinColumn(name = "fkip10ip07_itens_id")
     private Itens itens;
 
     @JsonIgnore
     @ManyToOne
-    private Entradas entradas;
+    @JoinColumn(name = "fkip10ip08_overnight_stay_id")
+    private OvernightStay overnightStay;
 
+    @Column(name = "ip10_total")
     private Float total;
-
 
     public void setId(Long id) {
         this.id = id;
@@ -40,12 +44,6 @@ public class EntradaConsumo {
     public void setItens(Itens itens) {
         this.itens = itens;
     }
-    public Entradas getEntradas() {
-        return entradas;
-    }
-    public void setEntradas(Entradas entradas) {
-        this.entradas = entradas;
-    }
     public Float getTotal() {
         return total;
     }
@@ -53,12 +51,20 @@ public class EntradaConsumo {
         this.total = total;
     }
 
-    public EntradaConsumo(Integer quantidade, Itens itens, Entradas entradas) {
+    public OvernightStay getPernoites() {
+        return overnightStay;
+    }
+
+    public void setPernoites(OvernightStay overnightStay) {
+        this.overnightStay = overnightStay;
+    }
+
+    public OverNightStayConsumption(Integer quantidade, Itens itens, OvernightStay overnightStay) {
         this.quantidade = quantidade;
         this.itens = itens;
-        this.entradas = entradas;
-        this.total = quantidade.floatValue() * itens.getValor();
+        this.overnightStay = overnightStay;
+        this.total = quantidade.floatValue() * itens.getValue();
     }
-    public EntradaConsumo() {
+    public OverNightStayConsumption() {
     }
 }

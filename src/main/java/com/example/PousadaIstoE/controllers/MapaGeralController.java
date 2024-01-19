@@ -1,7 +1,7 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.MapaGeral;
-import com.example.PousadaIstoE.response.MapaGeralResponse;
+import com.example.PousadaIstoE.model.CashRegister;
+import com.example.PousadaIstoE.response.CashRegisterResponse;
 import com.example.PousadaIstoE.services.MapaGeralService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,23 +19,23 @@ private final MapaGeralService mapaGeralService;
     }
 
     @GetMapping
-    public List<MapaGeral> list(){
+    public List<CashRegister> list(){
         return mapaGeralService.listAllMaps();
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<MapaGeralResponse> findMapaGeral(@PathVariable("userId") Long id) {
+    public ResponseEntity<CashRegisterResponse> findMapaGeral(@PathVariable("userId") Long id) {
         return mapaGeralService.findMapaGeral(id);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public MapaGeral add(@RequestBody MapaGeral mapaGeral) {
-        return mapaGeralService.createMapa(mapaGeral);
+    public CashRegister add(@RequestBody CashRegister cashRegister) {
+        return mapaGeralService.createMapa(cashRegister);
     }
 
     @GetMapping("/findByDate")
-    public List<MapaGeral> findByData(LocalDate date){
+    public List<CashRegister> findByData(LocalDate date){
         return mapaGeralService.findByData(date);
     }
 

@@ -1,7 +1,7 @@
 package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
-import com.example.PousadaIstoE.model.Quartos;
+import com.example.PousadaIstoE.model.Rooms;
 import com.example.PousadaIstoE.repository.QuartosRepository;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 public class QuartosService {
-    Quartos quartos;
+    Rooms rooms;
 
     private final QuartosRepository quartosRepository;
 
@@ -17,26 +17,26 @@ public class QuartosService {
         this.quartosRepository = quartosRepository;
     }
 
-    public List<Quartos> quartosList() {
+    public List<Rooms> quartosList() {
         return quartosRepository.findAll();
     }
 
-    public Quartos findQuarto(Long id) {
+    public Rooms findQuarto(Long id) {
         return quartosRepository.findById(id).orElseThrow(() -> new EntityNotFound("Quarto não existe"));
     }
 
-    public Quartos createQuartos(Quartos quartos) {
-        return quartosRepository.save(quartos);
+    public Rooms createQuartos(Rooms rooms) {
+        return quartosRepository.save(rooms);
     }
 
-    public Quartos updateQuartoData(Long quartoId, Quartos request) {
-        quartos = quartosRepository.findById(quartoId).orElseThrow(() -> new EntityNotFound("Quarto não encontrado"));
+    public Rooms updateQuartoData(Long quartoId, Rooms request) {
+        rooms = quartosRepository.findById(quartoId).orElseThrow(() -> new EntityNotFound("Quarto não encontrado"));
 
-        var quartoAtualizado = new Quartos(
-                quartos.getId(),
-                quartos.getNumero(),
-                quartos.getDescricao(),
-                quartos.getCapacidadePessoa(),
+        var quartoAtualizado = new Rooms(
+                rooms.getId(),
+                rooms.getNumero(),
+                rooms.getDescricao(),
+                rooms.getCapacidadePessoa(),
                 request.getStatusDoQuarto()
         );
         quartosRepository.save(quartoAtualizado);

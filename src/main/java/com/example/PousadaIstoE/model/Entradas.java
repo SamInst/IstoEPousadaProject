@@ -1,8 +1,8 @@
 package com.example.PousadaIstoE.model;
 
-import com.example.PousadaIstoE.response.StatusEntrada;
-import com.example.PousadaIstoE.response.StatusPagamento;
-import com.example.PousadaIstoE.response.TipoPagamento;
+import com.example.PousadaIstoE.response.EntradaStatus;
+import com.example.PousadaIstoE.response.PaymentStatus;
+import com.example.PousadaIstoE.response.PaymentType;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -10,19 +10,20 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Entity
-@Table(name = "tb_entradas")
+@Table(name = "ip03_entradas")
 public class Entradas {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "ip03_id")
     private Long id;
     @ManyToOne(cascade = CascadeType.ALL)
-    private Quartos quartos;
+    private Rooms rooms;
     private LocalTime horaEntrada;
     private LocalTime horaSaida;
     private String placa;
     @OneToMany
-    private List<EntradaConsumo> entradaConsumo;
-    private StatusEntrada statusEntrada;
+    private List<EntradaConsumption> entradaConsumption;
+    private EntradaStatus entradaStatus;
     private LocalDate dataRegistroEntrada;
     private Float total_entrada;
 
@@ -52,41 +53,41 @@ public class Entradas {
     public String getPlaca() {
         return placa;
     }
-    private TipoPagamento tipoPagamento;
-    private StatusPagamento status_pagamento;
+    private PaymentType paymentType;
+    private PaymentStatus status_pagamento;
 
-    public Entradas(Long id, Quartos quartos, LocalTime horaEntrada, LocalTime horaSaida, String placa) {
+    public Entradas(Long id, Rooms rooms, LocalTime horaEntrada, LocalTime horaSaida, String placa) {
         this.id = id;
-        this.quartos = quartos;
+        this.rooms = rooms;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
         this.placa = placa;
     }
 
-    public Entradas(Long id, Quartos quartos, LocalTime horaEntrada, LocalTime horaSaida, String placa, TipoPagamento tipoPagamento, StatusPagamento status_pagamento, StatusEntrada statusEntrada) {
+    public Entradas(Long id, Rooms rooms, LocalTime horaEntrada, LocalTime horaSaida, String placa, PaymentType paymentType, PaymentStatus status_pagamento, EntradaStatus entradaStatus) {
         this.id = id;
-        this.quartos = quartos;
+        this.rooms = rooms;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
         this.placa = placa;
-        this.tipoPagamento = tipoPagamento;
+        this.paymentType = paymentType;
         this.status_pagamento = status_pagamento;
-        this.statusEntrada = statusEntrada;
+        this.entradaStatus = entradaStatus;
     }
 
-    public Entradas(Quartos quartos, LocalTime horaEntrada, LocalTime horaSaida, String placa, StatusEntrada statusEntrada, LocalDate dataRegistroEntrada, TipoPagamento tipoPagamento, StatusPagamento status_pagamento) {
-        this.quartos = quartos;
+    public Entradas(Rooms rooms, LocalTime horaEntrada, LocalTime horaSaida, String placa, EntradaStatus entradaStatus, LocalDate dataRegistroEntrada, PaymentType paymentType, PaymentStatus status_pagamento) {
+        this.rooms = rooms;
         this.horaEntrada = horaEntrada;
         this.horaSaida = horaSaida;
         this.placa = placa;
-        this.statusEntrada = statusEntrada;
+        this.entradaStatus = entradaStatus;
         this.dataRegistroEntrada = dataRegistroEntrada;
-        this.tipoPagamento = tipoPagamento;
+        this.paymentType = paymentType;
         this.status_pagamento = status_pagamento;
     }
 
-    public TipoPagamento getTipoPagamento() {
-        return tipoPagamento;
+    public PaymentType getTipoPagamento() {
+        return paymentType;
     }
 
     public LocalDate getDataRegistroEntrada() {
@@ -97,33 +98,33 @@ public class Entradas {
         this.dataRegistroEntrada = dataRegistroEntrada;
     }
 
-    public void setTipoPagamento(TipoPagamento tipoPagamento) {
-        this.tipoPagamento = tipoPagamento;
+    public void setTipoPagamento(PaymentType paymentType) {
+        this.paymentType = paymentType;
     }
-    public StatusPagamento getStatus_pagamento() {
+    public PaymentStatus getStatus_pagamento() {
         return status_pagamento;
     }
-    public void setStatus_pagamento(StatusPagamento status_pagamento) {
+    public void setStatus_pagamento(PaymentStatus status_pagamento) {
         this.status_pagamento = status_pagamento;
     }
-    public List<EntradaConsumo> getEntradaConsumo() {
-        return entradaConsumo;
+    public List<EntradaConsumption> getEntradaConsumo() {
+        return entradaConsumption;
     }
-    public Quartos getQuartos() {return quartos;}
-    public void setQuartos(Quartos quartos) {
-        this.quartos = quartos;
+    public Rooms getQuartos() {return rooms;}
+    public void setQuartos(Rooms rooms) {
+        this.rooms = rooms;
     }
-    public StatusEntrada getStatusEntrada() {
-        return statusEntrada;
+    public EntradaStatus getStatusEntrada() {
+        return entradaStatus;
     }
-    public void setStatusEntrada(StatusEntrada statusEntrada) {
-        this.statusEntrada = statusEntrada;
+    public void setStatusEntrada(EntradaStatus entradaStatus) {
+        this.entradaStatus = entradaStatus;
     }
     public void setPlaca(String placa) {
         this.placa = placa;
     }
-    public void setEntradaConsumo(List<EntradaConsumo> entradaConsumo) {
-        this.entradaConsumo = entradaConsumo;
+    public void setEntradaConsumo(List<EntradaConsumption> entradaConsumption) {
+        this.entradaConsumption = entradaConsumption;
     }
     public Float getTotal_entrada() {
         return total_entrada;

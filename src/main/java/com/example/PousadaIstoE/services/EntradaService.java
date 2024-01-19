@@ -2,10 +2,10 @@ package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
-import com.example.PousadaIstoE.model.EntradaConsumo;
+import com.example.PousadaIstoE.model.EntradaConsumption;
 import com.example.PousadaIstoE.model.Entradas;
-import com.example.PousadaIstoE.model.MapaGeral;
-import com.example.PousadaIstoE.model.Quartos;
+import com.example.PousadaIstoE.model.CashRegister;
+import com.example.PousadaIstoE.model.Rooms;
 import com.example.PousadaIstoE.repository.*;
 
 import com.example.PousadaIstoE.response.*;
@@ -37,7 +37,7 @@ public class EntradaService {
     Entradas entradas;
     double entradaEConsumo;
     Float totalMapaGeral;
-    List<EntradaConsumo> entradaConsumoList = new ArrayList<>();
+    List<EntradaConsumption> entradaConsumptionList = new ArrayList<>();
     private final EntradaRepository entradaRepository;
     private final EntradaConsumoRepository entradaConsumoRepository;
 
@@ -71,7 +71,7 @@ public class EntradaService {
 
     public AtomicReference<EntradaResponse> findById(Long id) {
         AtomicReference<EntradaResponse> response = new AtomicReference<>();
-        entradaConsumoList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(id);
+        entradaConsumptionList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(id);
         final var entrada = entradaRepository.findById(id).orElseThrow(
                 () -> new EntityNotFound("Entrada não foi Cadastrada ou não existe mais"));
         calcularHora(id);
@@ -80,15 +80,15 @@ public class EntradaService {
         if (totalConsumo == null){ totalConsumo = (double) 0; }
         double soma = totalConsumo + valorEntrada;
 
-        List<ConsumoResponse> consumoResponseList = new ArrayList<>();
-        entradaConsumoList.forEach(consumo -> {
-            ConsumoResponse consumoResponse = new ConsumoResponse(
-                    consumo.getQuantidade(),
-                    consumo.getItens().getDescricao(),
-                    consumo.getItens().getValor(),
+        List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
+        entradaConsumptionList.forEach(consumo -> {
+            ConsumptionResponse consumptionResponse = new ConsumptionResponse(
+                    consumo.getQuantity(),
+                    consumo.getItens().getDescription(),
+                    consumo.getItens().getValue(),
                     consumo.getTotal()
             );
-            consumoResponseList.add(consumoResponse);
+            consumptionResponseList.add(consumptionResponse);
         });
         response.set(new EntradaResponse(
                 entrada.getQuartos().getNumero(),
@@ -99,7 +99,7 @@ public class EntradaService {
                         horas,
                         minutosRestantes
                 ),
-                consumoResponseList,
+                consumptionResponseList,
                 entrada.getStatusEntrada(),
                 totalConsumo,
                 valorEntrada,
@@ -109,7 +109,7 @@ public class EntradaService {
     }
 
     public Entradas registerEntrada(Entradas entradas) {
-        Quartos quartoOut = quartosFeing.findById(entradas.getQuartos().getId())
+        Rooms quartoOut = quartosFeing.findById(entradas.getQuartos().getId())
                 .orElseThrow(()-> new EntityNotFound("Quarto não encontrado"));
         switch (quartoOut.getStatusDoQuarto()) {
             case OCUPADO -> throw new EntityConflict("Quarto Ocupado");
@@ -121,12 +121,12 @@ public class EntradaService {
             LocalTime.now(),
             LocalTime.of(0,0),
             entradas.getPlaca(),
-            StatusEntrada.EM_ANDAMENTO,
+            EntradaStatus.EM_ANDAMENTO,
             LocalDate.now(),
-            TipoPagamento.PENDENTE,
-            StatusPagamento.PENDENTE
+            PaymentType.PENDING,
+            PaymentStatus.PENDENTE
         );
-        quartoOut.setStatusDoQuarto(StatusDoQuarto.OCUPADO);
+        quartoOut.setStatusDoQuarto(RoomStatus.BUSY);
         quartosFeing.save(quartoOut);
         return entradaRepository.save(request);
     }
@@ -150,16 +150,16 @@ public class EntradaService {
         );
         calcularHora(entradaAtualizada.getId());
         validacaoPagamento(entradas);
-        if (request.getTipoPagamento().equals(TipoPagamento.DINHEIRO)){
+        if (request.getTipoPagamento().equals(PaymentType.CASH)){
                 entradaAtualizada.setTotal_entrada((float) entradaEConsumo);
             entradaRepository.save(entradaAtualizada);
         }
-        if (request.getStatus_pagamento().equals(StatusPagamento.CONCLUIDO)) {
-            if (entradaAtualizada.getStatusEntrada().equals(StatusEntrada.FINALIZADA)){
+        if (request.getStatus_pagamento().equals(PaymentStatus.CONCLUIDO)) {
+            if (entradaAtualizada.getStatusEntrada().equals(EntradaStatus.FINALIZADA)){
                 throw new EntityConflict("A Entrada já foi salva no mapa");
             }
-            entradaConsumoList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(entradaId);
-            entradaAtualizada.setEntradaConsumo(entradaConsumoList);
+            entradaConsumptionList = entradaConsumoRepository.findEntradaConsumoByEntradas_Id(entradaId);
+            entradaAtualizada.setEntradaConsumo(entradaConsumptionList);
             if (entradaAtualizada.getEntradaConsumo().isEmpty()) { consumoVazio(); }
 
             validacaoHorario();
@@ -200,7 +200,7 @@ public class EntradaService {
     }
 
     private void salvaNoMapa(Entradas request) {
-        MapaGeral mapaGeral = new MapaGeral(
+        CashRegister cashRegister = new CashRegister(
                 LocalDate.now(),
                 relatorio,
                 entradas.getQuartos().getNumero(),
@@ -210,27 +210,27 @@ public class EntradaService {
                 LocalTime.now()
         );
         switch (request.getTipoPagamento()){
-            case PIX ->    { mapaGeral.setReport(relatorio + " (PIX)");
-                             mapaGeral.setSaida(mapaGeral.getEntrada()); }
-            case CARTAO -> { mapaGeral.setSaida(mapaGeral.getEntrada());
-                             mapaGeral.setSaida(mapaGeral.getEntrada()); }
-            case DINHEIRO -> mapaGeral.setReport(relatorio + " (DINHEIRO)");
+            case PIX ->    { cashRegister.setReport(relatorio + " (PIX)");
+                             cashRegister.setSaida(cashRegister.getEntrada()); }
+            case CREDIT_CARD -> { cashRegister.setSaida(cashRegister.getEntrada());
+                             cashRegister.setSaida(cashRegister.getEntrada()); }
+            case CASH -> cashRegister.setReport(relatorio + " (DINHEIRO)");
         }
-        mapaFeing.save(mapaGeral);
+        mapaFeing.save(cashRegister);
     }
 
     private void consumoVazio(){
         var semConsumo = itensFeing.getItenVazio();
-        EntradaConsumo entradaConsumo = new EntradaConsumo(
+        EntradaConsumption entradaConsumption = new EntradaConsumption(
             0,
             semConsumo,
             entradas
         );
-        entradaConsumoService.addConsumo(entradaConsumo);
+        entradaConsumoService.addConsumo(entradaConsumption);
     }
 
-    public List<Entradas> findByStatusEntrada(StatusEntrada statusEntrada){
-        return entradaRepository.findEntradasByStatusEntrada(statusEntrada);
+    public List<Entradas> findByStatusEntrada(EntradaStatus entradaStatus){
+        return entradaRepository.findEntradasByStatusEntrada(entradaStatus);
     }
 
     public List<Entradas> findEntradaByToday(){
@@ -241,10 +241,10 @@ public class EntradaService {
         return entradaRepository.findEntradasByDataRegistroEntrada(data);
     }
 
-    private void atualizaQuarto(Quartos quartos, Entradas entradaAtualizada){
-        quartos = entradas.getQuartos();
-        quartos.setStatusDoQuarto(StatusDoQuarto.DISPONIVEL);
-        quartosFeing.save(quartos);
-        entradaAtualizada.setStatusEntrada(StatusEntrada.FINALIZADA);
+    private void atualizaQuarto(Rooms rooms, Entradas entradaAtualizada){
+        rooms = entradas.getQuartos();
+        rooms.setStatusDoQuarto(RoomStatus.AVAIABLE);
+        quartosFeing.save(rooms);
+        entradaAtualizada.setStatusEntrada(EntradaStatus.FINALIZADA);
     }
 }

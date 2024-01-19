@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.response;
 
-public enum StatusEntrada {
+public enum EntradaStatus {
     EM_ANDAMENTO,
     FINALIZADA
 }

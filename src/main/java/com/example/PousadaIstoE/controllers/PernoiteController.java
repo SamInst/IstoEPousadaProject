@@ -1,8 +1,8 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.AcompanhantePernoite;
-import com.example.PousadaIstoE.model.Pernoites;
-import com.example.PousadaIstoE.response.PernoiteResponse;
+import com.example.PousadaIstoE.model.OvernightStayCompanion;
+import com.example.PousadaIstoE.model.OvernightStay;
+import com.example.PousadaIstoE.response.OvernightStayResponse;
 import com.example.PousadaIstoE.response.PernoiteShortResponse;
 import com.example.PousadaIstoE.services.PernoiteService;
 import org.springframework.http.HttpStatus;
@@ -22,20 +22,20 @@ public class PernoiteController {
 
     @GetMapping("/{pernoiteId}")
     @ResponseStatus(HttpStatus.OK)
-    public PernoiteResponse findbyId(@PathVariable ("pernoiteId") Long id){ return pernoiteService.findById(id); }
+    public OvernightStayResponse findbyId(@PathVariable ("pernoiteId") Long id){ return pernoiteService.findById(id); }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Pernoites createPernoite(Pernoites pernoites){ return pernoiteService.createPernoite(pernoites); }
+    public OvernightStay createPernoite(OvernightStay overnightStay){ return pernoiteService.createPernoite(overnightStay); }
 
     @PutMapping("/{pernoiteId}")
-    public Pernoites AlterarDadosPernoite(@PathVariable ("pernoiteId") Long pernoiteId, Pernoites pernoites){
-        return pernoiteService.updatePernoiteData(pernoiteId, pernoites);
+    public OvernightStay AlterarDadosPernoite(@PathVariable ("pernoiteId") Long pernoiteId, OvernightStay overnightStay){
+        return pernoiteService.updatePernoiteData(pernoiteId, overnightStay);
     }
 
     @PostMapping("/acompanhante")
     @ResponseStatus(HttpStatus.CREATED)
-    public AcompanhantePernoite addAcompanhante(AcompanhantePernoite acompanhantePernoite){
-        return pernoiteService.addAcompanhante(acompanhantePernoite);
+    public OvernightStayCompanion addAcompanhante(OvernightStayCompanion overnightStayCompanion){
+        return pernoiteService.addAcompanhante(overnightStayCompanion);
     }
 }

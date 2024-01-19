@@ -6,19 +6,30 @@ import java.time.LocalDate;
 import java.time.Period;
 
 @Entity
-@Table(name = "tb_acompanhante_pernoite")
-public class AcompanhantePernoite {
+@Table(name = "ip09_overnight_stay_companion")
+public class OvernightStayCompanion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ip09_id")
     private Long id;
-    private String name;
-    private String cpf;
-    private LocalDate birth;
-    private Integer age;
-    @ManyToOne
-    private Pernoites pernoites;
 
-    public AcompanhantePernoite() {
+    @Column(name = "ip09_name")
+    private String name;
+
+    @Column(name = "ip09_cpf")
+    private String cpf;
+
+    @Column(name = "ip09_birth")
+    private LocalDate birth;
+
+    @Column(name = "ip09_age")
+    private Integer age;
+
+    @ManyToOne
+    @JoinColumn(name = "fkip09ip08_overnight_stay_id")
+    private OvernightStay overnightStay;
+
+    public OvernightStayCompanion() {
     }
 
     public String getName() {
@@ -52,6 +63,8 @@ public class AcompanhantePernoite {
     }
 
 
+
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -64,19 +77,19 @@ public class AcompanhantePernoite {
         this.age = age;
     }
 
-    public Pernoites getPernoites() {
-        return pernoites;
+    public OvernightStay getPernoites() {
+        return overnightStay;
     }
 
-    public void setPernoites(Pernoites pernoites) {
-        this.pernoites = pernoites;
+    public void setPernoites(OvernightStay overnightStay) {
+        this.overnightStay = overnightStay;
     }
 
-    public AcompanhantePernoite(String name, String cpf, LocalDate birth, Integer age, Pernoites pernoites) {
+    public OvernightStayCompanion(String name, String cpf, LocalDate birth, Integer age, OvernightStay overnightStay) {
         this.name = name;
         this.cpf = cpf;
         this.birth = birth;
         this.age = age;
-        this.pernoites = pernoites;
+        this.overnightStay = overnightStay;
     }
 }

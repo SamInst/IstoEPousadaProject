@@ -3,7 +3,7 @@ package com.example.PousadaIstoE.controllers;
 import com.example.PousadaIstoE.model.Entradas;
 import com.example.PousadaIstoE.response.EntradaResponse;
 import com.example.PousadaIstoE.response.EntradaSimplesResponse;
-import com.example.PousadaIstoE.response.StatusEntrada;
+import com.example.PousadaIstoE.response.EntradaStatus;
 import com.example.PousadaIstoE.services.EntradaService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,8 +55,8 @@ public class EntradaController {
     }
     @GetMapping("/findByStatusEntrada")
     @ResponseStatus(HttpStatus.OK)
-    public List<Entradas> findByStatus(StatusEntrada statusEntrada){
-        return entradaService.findByStatusEntrada(statusEntrada);
+    public List<Entradas> findByStatus(EntradaStatus entradaStatus){
+        return entradaService.findByStatusEntrada(entradaStatus);
     }
     @GetMapping("/findEntradaHoje")
     @ResponseStatus(HttpStatus.OK)

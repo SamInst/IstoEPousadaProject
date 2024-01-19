@@ -3,7 +3,7 @@ package com.example.PousadaIstoE.response;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public record MapaGeralResponse(
+public record CashRegisterResponse(
         LocalDate data,
         LocalTime hora,
         String relatorio,

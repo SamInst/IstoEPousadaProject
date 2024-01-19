@@ -4,14 +4,18 @@ import jakarta.persistence.*;
 
 
 @Entity
-@Table(name = "tb_itens")
+@Table(name = "ip07_itens")
 public class Itens {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ip07_id")
     private Long id;
 
-    private String descricao;
-    private Float valor;
+    @Column(name = "ip07_description")
+    private String description;
+
+    @Column(name = "ip07_value")
+    private Float value;
 
     public void setId(Long id) {
         this.id = id;
@@ -21,31 +25,31 @@ public class Itens {
         return id;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public Float getValor() {
-        return valor;
+    public Float getValue() {
+        return value;
     }
 
-    public void setValor(Float valor) {
-        this.valor = valor;
+    public void setValue(Float value) {
+        this.value = value;
     }
 
-    public Itens(String descricao, Float valor) {
-        this.descricao = descricao;
-        this.valor = valor;
+    public Itens(String description, Float value) {
+        this.description = description;
+        this.value = value;
     }
 
-    public Itens(Long id, String descricao, Float valor) {
+    public Itens(Long id, String description, Float value) {
         this.id = id;
-        this.descricao = descricao;
-        this.valor = valor;
+        this.description = description;
+        this.value = value;
     }
 
     public Itens() {

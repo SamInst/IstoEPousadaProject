@@ -2,12 +2,12 @@ package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
-import com.example.PousadaIstoE.model.EntradaConsumo;
+import com.example.PousadaIstoE.model.EntradaConsumption;
 import com.example.PousadaIstoE.model.Entradas;
 import com.example.PousadaIstoE.repository.EntradaConsumoRepository;
 import com.example.PousadaIstoE.repository.EntradaRepository;
 import com.example.PousadaIstoE.response.EntradaConsumoResponse;
-import com.example.PousadaIstoE.response.StatusEntrada;
+import com.example.PousadaIstoE.response.EntradaStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -26,7 +26,7 @@ public class EntradaConsumoService {
         this.entradaRepository = entradaRepository;
     }
 
-    public List<EntradaConsumo> BuscaTodos() {
+    public List<EntradaConsumption> BuscaTodos() {
         return entradaConsumoRepository.findAll();
     }
 
@@ -34,13 +34,13 @@ public class EntradaConsumoService {
         final var consumo = entradaConsumoRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("Consumo não Encontrado"));
         entradaConsumo.forEach(a -> {
-            Float valorItem = consumo.getQuantidade() * consumo.getItens().getValor();
+            Float valorItem = consumo.getQuantity() * consumo.getItens().getValue();
 
             new EntradaConsumoResponse(
-                    consumo.getQuantidade(),
+                    consumo.getQuantity(),
                     new EntradaConsumoResponse.Item(
-                            consumo.getItens().getDescricao(),
-                            consumo.getItens().getValor(),
+                            consumo.getItens().getDescription(),
+                            consumo.getItens().getValue(),
                             valorItem
                     ),
                     a.total()
@@ -49,29 +49,29 @@ public class EntradaConsumoService {
         return entradaConsumo;
     }
 
-    public EntradaConsumo addConsumo(EntradaConsumo entradaConsumo) {
-        if (entradaConsumo.getEntradas() == null) {
+    public EntradaConsumption addConsumo(EntradaConsumption entradaConsumption) {
+        if (entradaConsumption.getEntradas() == null) {
             throw new EntityNotFound("Nenhuma entrada associada a esse consumo");
         }
-        if (entradaConsumo.getEntradas().getStatusEntrada().equals(StatusEntrada.FINALIZADA)){
+        if (entradaConsumption.getEntradas().getStatusEntrada().equals(EntradaStatus.FINALIZADA)){
             throw new EntityConflict("Não é possivel inserir consumo em uma entrada já finalizada");
         }
-        final var item = itensFeing.findItensById(entradaConsumo.getItens().getId());
-        Entradas entrada = entradaRepository.findById(entradaConsumo.getEntradas().getId())
+        final var item = itensFeing.findItensById(entradaConsumption.getItens().getId());
+        Entradas entrada = entradaRepository.findById(entradaConsumption.getEntradas().getId())
                 .orElseThrow(()-> new EntityNotFound("entrada não encontrada"));
-        EntradaConsumo entradaConsumo1 = new EntradaConsumo(
-                entradaConsumo.getQuantidade(),
+        EntradaConsumption entradaConsumption1 = new EntradaConsumption(
+                entradaConsumption.getQuantity(),
                 item,
                 entrada
         );
-        return entradaConsumoRepository.save(entradaConsumo1);
+        return entradaConsumoRepository.save(entradaConsumption1);
     }
 
     public void deletaConsumoPorEntradaId(Long id_consumo) {
         entradaConsumoRepository.deleteById(id_consumo);
     }
 
-    public List<EntradaConsumo> findEntradaConsumoByEntrada(Long entrada_id){
+    public List<EntradaConsumption> findEntradaConsumoByEntrada(Long entrada_id){
         return entradaConsumoRepository.findEntradaConsumoByEntradas_Id(entrada_id);
     }
 }

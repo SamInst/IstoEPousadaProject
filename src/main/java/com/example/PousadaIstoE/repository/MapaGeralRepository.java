@@ -1,19 +1,18 @@
 package com.example.PousadaIstoE.repository;
 
-import com.example.PousadaIstoE.model.MapaGeral;
+import com.example.PousadaIstoE.model.CashRegister;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface MapaGeralRepository extends JpaRepository<MapaGeral, Long> {
-    @Query("select u from MapaGeral u where u.data = :data")
-    List<MapaGeral> findByData(LocalDate data);
+public interface MapaGeralRepository extends JpaRepository<CashRegister, Long> {
+    @Query("select u from CashRegister u where u.data = :data")
+    List<CashRegister> findByData(LocalDate data);
 
-    @Query("SELECT m.total FROM MapaGeral m WHERE m.id = (SELECT MAX(mg.id) FROM MapaGeral mg)")
+    @Query("SELECT m.total FROM CashRegister m WHERE m.id = (SELECT MAX(mg.id) FROM CashRegister mg)")
     Float findLastTotal();
 }

@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.response;
 
-public enum StatusPagamento {
+public enum PaymentStatus {
     PENDENTE,
     CONCLUIDO
 }

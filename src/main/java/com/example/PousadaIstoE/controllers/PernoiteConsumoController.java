@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.PernoiteConsumo;
+import com.example.PousadaIstoE.model.OverNightStayConsumption;
 import com.example.PousadaIstoE.services.PernoiteConsumoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,14 +17,14 @@ public class PernoiteConsumoController {
     }
 
     @GetMapping
-    public List<PernoiteConsumo> buscarTodos(){
+    public List<OverNightStayConsumption> buscarTodos(){
         return pernoiteConsumoService.BuscaTodos();
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public PernoiteConsumo criaConsumo(PernoiteConsumo pernoiteConsumo){
-        return pernoiteConsumoService.addConsumo(pernoiteConsumo);
+    public OverNightStayConsumption criaConsumo(OverNightStayConsumption overNightStayConsumption){
+        return pernoiteConsumoService.addConsumo(overNightStayConsumption);
     }
     @DeleteMapping("/{id_consumo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

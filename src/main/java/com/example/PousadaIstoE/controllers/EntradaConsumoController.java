@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.EntradaConsumo;
+import com.example.PousadaIstoE.model.EntradaConsumption;
 import com.example.PousadaIstoE.services.EntradaConsumoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,15 +18,15 @@ public class EntradaConsumoController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<EntradaConsumo> buscarTodos(){
+    public List<EntradaConsumption> buscarTodos(){
         return entradaConsumoService.BuscaTodos();
     }
 
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EntradaConsumo criaConsumo(EntradaConsumo entradaConsumo){
-        return entradaConsumoService.addConsumo(entradaConsumo);
+    public EntradaConsumption criaConsumo(EntradaConsumption entradaConsumption){
+        return entradaConsumoService.addConsumo(entradaConsumption);
     }
     @DeleteMapping("/{id_consumo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -36,7 +36,7 @@ public class EntradaConsumoController {
 
     @GetMapping("/findByEntrada")
     @ResponseStatus(HttpStatus.OK)
-    public List<EntradaConsumo> findEntradaConsumoByEntrada(Long entrada_id){
+    public List<EntradaConsumption> findEntradaConsumoByEntrada(Long entrada_id){
         return entradaConsumoService.findEntradaConsumoByEntrada(entrada_id);
     }
 }

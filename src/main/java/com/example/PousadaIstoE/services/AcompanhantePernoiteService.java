@@ -1,7 +1,7 @@
 package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
-import com.example.PousadaIstoE.model.AcompanhantePernoite;
+import com.example.PousadaIstoE.model.OvernightStayCompanion;
 import com.example.PousadaIstoE.repository.AcompanhantePernoiteRepository;
 import com.example.PousadaIstoE.repository.PernoitesRepository;
 import org.springframework.stereotype.Service;
@@ -19,16 +19,16 @@ public class AcompanhantePernoiteService {
         this.pernoitesRepository = pernoitesRepository;
     }
 
-    public List<AcompanhantePernoite> acompanhantePernoiteList(){
+    public List<OvernightStayCompanion> acompanhantePernoiteList(){
         return acompanhantePernoiteRepository.findAll();
     }
 
-    public AcompanhantePernoite findById(Long id){
+    public OvernightStayCompanion findById(Long id){
         return acompanhantePernoiteRepository.findById(id).orElseThrow(
                 ()-> new EntityNotFound("Acompanhante não encontrado"));
     }
 
-    public AcompanhantePernoite addAcompanhante(AcompanhantePernoite acompanhante){
+    public OvernightStayCompanion addAcompanhante(OvernightStayCompanion acompanhante){
         var pernoite = pernoitesRepository.findById(acompanhante.getPernoites().getId()).orElseThrow(
                 ()-> new EntityNotFound("Pernoite não encontrado"));
         acompanhante.setPernoites(pernoite);

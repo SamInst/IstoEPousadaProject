@@ -9,8 +9,8 @@ public record EntradaResponse(
         LocalTime hora_saida,
         String placa,
         TempoPermanecido tempo_permanecido,
-        List<ConsumoResponse> consumo,
-        StatusEntrada statusEntrada,
+        List<ConsumptionResponse> consumo,
+        EntradaStatus entradaStatus,
 
         double total_consumo,
         double valor_entrada,
