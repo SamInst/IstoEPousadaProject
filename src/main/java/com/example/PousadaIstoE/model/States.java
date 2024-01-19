@@ -10,6 +10,7 @@ public class States {
     @Column(name = "id", nullable = false)
     private Long id;
 
+
     private String description;
 
     public Long getId() {
