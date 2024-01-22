@@ -6,8 +6,11 @@ import jakarta.persistence.*;
 public class Country {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "ip14_id", nullable = false)
     private Long id;
+
+    @Column("ip14_description")
+    private String description;
 
     public Long getId() {
         return id;

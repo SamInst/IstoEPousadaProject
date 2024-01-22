@@ -1,7 +1,7 @@
 package com.example.PousadaIstoE.model;
 
-import com.example.PousadaIstoE.response.PaymentStatus;
-import com.example.PousadaIstoE.response.PaymentType;
+import com.example.PousadaIstoE.Enums.PaymentStatus;
+import com.example.PousadaIstoE.Enums.PaymentType;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -41,54 +41,76 @@ public class OvernightStay {
     @Column(name = "ip08_total")
     private Float total;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Rooms getRoom() {
+        return room;
+    }
+
+    public void setRoom(Rooms room) {
+        this.room = room;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public Integer getAmountPeople() {
+        return amountPeople;
+    }
+
+    public void setAmountPeople(Integer amountPeople) {
+        this.amountPeople = amountPeople;
+    }
+
+    public PaymentType getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(PaymentType paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
 
     public Float getTotal() {
         return total;
     }
+
     public void setTotal(Float total) {
         this.total = total;
-    }
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {this.id = id;}
-    public Integer getAmountPeople() {return amountPeople;}
-    public void setAmountPeople(Integer amountPeople) {this.amountPeople = amountPeople;}
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-    public Client getClient() {
-        return client;
-    }
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
-    public void setClient(Client client) {
-        this.client = client;
-    }
-    public PaymentType getTipoPagamento() {
-        return paymentType;
-    }
-    public PaymentStatus getPaymentStatus() {
-        return paymentStatus;
-    }
-    public Rooms getRoom() {
-        return room;
-    }
-    public void setRoom(Rooms room) {
-        this.room = room;
-    }
-    public void setTipoPagamento(PaymentType paymentType) {
-        this.paymentType = paymentType;
-    }
-    public void setPaymentStatus(PaymentStatus paymentStatus) {
-        this.paymentStatus = paymentStatus;
     }
 
     public OvernightStay(Long id, Rooms room, Client client, LocalDate startDate, LocalDate endDate, Integer amountPeople, PaymentType paymentType, PaymentStatus paymentStatus, Float total) {

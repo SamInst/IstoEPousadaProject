@@ -11,12 +11,12 @@ public class OverNightStayConsumption {
     @Column(name = "ip10_id")
     private Long id;
 
-    @Column(name = "ip10_quantidade")
-    private Integer quantidade;
+    @Column(name = "ip10_amount")
+    private Integer amount;
 
     @ManyToOne
     @JoinColumn(name = "fkip10ip07_itens_id")
-    private Itens itens;
+    private Item item;
 
     @JsonIgnore
     @ManyToOne
@@ -32,17 +32,17 @@ public class OverNightStayConsumption {
     public Long getId() {
         return id;
     }
-    public Integer getQuantidade() {
-        return quantidade;
+    public Integer getAmount() {
+        return amount;
     }
-    public void setQuantidade(Integer quantidade) {
-        this.quantidade = quantidade;
+    public void setAmount(Integer amount) {
+        this.amount = amount;
     }
-    public Itens getItens() {
-        return itens;
+    public Item getItens() {
+        return item;
     }
-    public void setItens(Itens itens) {
-        this.itens = itens;
+    public void setItens(Item item) {
+        this.item = item;
     }
     public Float getTotal() {
         return total;
@@ -59,11 +59,11 @@ public class OverNightStayConsumption {
         this.overnightStay = overnightStay;
     }
 
-    public OverNightStayConsumption(Integer quantidade, Itens itens, OvernightStay overnightStay) {
-        this.quantidade = quantidade;
-        this.itens = itens;
+    public OverNightStayConsumption(Integer amount, Item item, OvernightStay overnightStay) {
+        this.amount = amount;
+        this.item = item;
         this.overnightStay = overnightStay;
-        this.total = quantidade.floatValue() * itens.getValue();
+        this.total = amount.floatValue() * item.getValue();
     }
     public OverNightStayConsumption() {
     }

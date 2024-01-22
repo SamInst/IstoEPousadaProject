@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.model;
 
-import com.example.PousadaIstoE.response.RoomStatus;
+import com.example.PousadaIstoE.Enums.RoomStatus;
 import jakarta.persistence.*;
 
 @Entity
