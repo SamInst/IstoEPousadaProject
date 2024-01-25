@@ -1,0 +1,32 @@
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (2, 'quarto com capacidade para 2 pessoas', 1, 1);
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (3, 'quarto com capacidade para 3 pessoas', 2, 1);
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (4, 'quarto com capacidade para 4 pessoas', 3, 1);
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (5, 'quarto com capacidade para 5 pessoas', 4, 1);
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (2, 'quarto com capacidade para 2 pessoas', 5, 1);
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (3, 'quarto com capacidade para 3 pessoas', 6, 1);
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (4, 'quarto com capacidade para 4 pessoas', 7, 1);
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (5, 'quarto com capacidade para 5 pessoas', 8, 1);
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (2, 'quarto com capacidade para 2 pessoas', 9, 1);
+insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (3, 'quarto com capacidade para 3 pessoas', 10, 1);
+
+insert into ip07_itens (ip07_description, ip07_value)  VALUES ('agua', 3);
+insert into ip07_itens (ip07_description, ip07_value)  VALUES ('salgadinho', 3);
+insert into ip07_itens (ip07_description, ip07_value)  VALUES ('Ice Limão', 10);
+insert into ip07_itens (ip07_description, ip07_value)  VALUES ('Heineken 600ml', 12);
+insert into ip07_itens (ip07_description, ip07_value)  VALUES ('Heineken 360ml', 8);
+insert into ip07_itens (ip07_description, ip07_value)  VALUES ('refrigerante 360ml', 5);
+insert into ip07_itens (ip07_description, ip07_value)  VALUES ('Cerveja Pilsen', 8);
+insert into ip07_itens (ip07_description, ip07_value)  VALUES ('Não teve consumo', 0);
+
+insert into ip02_employees (ip02_name, ip02_cpf) VALUES ('SAM EMPLOYEE 0', '000.000.000-00');
+insert into ip02_employees (ip02_name, ip02_cpf) VALUES ('SAM EMPLOYEE 1', '111.111.111-11');
+
+insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 0', '000.000.000-00', '(00)90000-0000', 'Street test number zero', 'DEVELOPER', 1);
+insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 1', '111.111.111-11', '(11)91111-1111', 'Street test number one', 'LAWER', 1);
+insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 3', '333.333.333-33', '(33)93333-3333', 'Street test number three', 'DOCTOR', 1);
+insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 4', '444.444.444-44', '(44)94444-4444', 'Street test number four', 'ARCHITECT', 1);
+insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 5', '555.555.555-55', '(55)95555-5555', 'Street test number five', 'TEACHER', 1);
+insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 6', '666.666.666-66', '(66)96666-6666', 'Street test number six', 'ACCOUNTANT', 1);
+insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 7', '777.777.777-77', '(77)97777-7777', 'Street test number seven', 'ARTIST', 1);
+insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 8', '888.888.888-88', '(88)98888-8888', 'Street test number eight', 'NURSE', 1);
+insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 9', '999.999.999-99', '(99)99999-9999', 'Street test number nine', 'POLICE OFFICER', 1);

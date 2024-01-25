@@ -4,15 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ip06_entrada_consumption")
+@Table(name = "ip06_entry_consumption")
 public class EntryConsumption {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ip06_id")
     private Long id;
 
-    @Column(name = "ip06_quantidade")
-    private Integer quantity;
+    @Column(name = "ip06_amount")
+    private Integer amount;
 
     @ManyToOne
     @JoinColumn(name = "fkip06ip07_itens_id")
@@ -20,7 +20,7 @@ public class EntryConsumption {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "fkip06ip03_entradas_id")
+    @JoinColumn(name = "fkip06ip03_entry_id")
     private Entry entry;
 
     @Column(name = "ip06_total")
@@ -33,11 +33,11 @@ public class EntryConsumption {
     public Long getId() {
         return id;
     }
-    public Integer getQuantity() {
-        return quantity;
+    public Integer getAmount() {
+        return amount;
     }
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setAmount(Integer amount) {
+        this.amount = amount;
     }
     public Item getItens() {
         return item;
@@ -58,11 +58,11 @@ public class EntryConsumption {
         this.total = total;
     }
 
-    public EntryConsumption(Integer quantity, Item item, Entry entry) {
-        this.quantity = quantity;
+    public EntryConsumption(Integer amount, Item item, Entry entry) {
+        this.amount = amount;
         this.item = item;
         this.entry = entry;
-        this.total = quantity.floatValue() * item.getValue();
+        this.total = amount.floatValue() * item.getValue();
     }
     public EntryConsumption() {
     }

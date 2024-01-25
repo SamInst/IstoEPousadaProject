@@ -67,7 +67,7 @@ public class EntryService {
                     entradas.getRooms().getNumber(),
                     entradas.getStartTime(),
                     entradas.getEndTime(),
-                    entradas.getPlaca(),
+                    entradas.getLicensePlate(),
                     entradas.getEntryStatus()
             );
             simpleEntryResponseList.add(simpleEntryResponse);
@@ -89,7 +89,7 @@ public class EntryService {
         List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
         entryConsumptionList.forEach(consumo -> {
             ConsumptionResponse consumptionResponse = new ConsumptionResponse(
-                    consumo.getQuantity(),
+                    consumo.getAmount(),
                     consumo.getItens().getDescription(),
                     consumo.getItens().getValue(),
                     consumo.getTotal()
@@ -100,7 +100,7 @@ public class EntryService {
                 entrada.getRooms().getNumber(),
                 entrada.getStartTime(),
                 entrada.getEndTime(),
-                entrada.getPlaca(),
+                entrada.getLicensePlate(),
                 new EntryResponse.TempoPermanecido(
                         hours,
                         minutesRemaining
@@ -126,7 +126,7 @@ public class EntryService {
             quartoOut,
             LocalTime.now(),
             LocalTime.of(0,0),
-            entry.getPlaca(),
+            entry.getLicensePlate(),
             EntryStatus.IN_PROGRESS,
             LocalDate.now(),
             PaymentType.PENDING,
@@ -146,26 +146,26 @@ public class EntryService {
                 entry.getRooms(),
                 entry.getStartTime(),
                 LocalTime.now(),
-                entry.getPlaca(),
+                entry.getLicensePlate(),
                 request.getPaymentType(),
-                request.getStatus_pagamento(),
+                request.getPaymentStatus(),
                 entry.getEntryStatus()
         );
-        entradaAtualizada.setDataRegistroEntrada(LocalDate.now());
+        entradaAtualizada.setEntryDataRegister(LocalDate.now());
         entryRepository.save(entradaAtualizada
         );
         calcularHora(entradaAtualizada.getId());
         validacaoPagamento(entry);
         if (request.getPaymentType().equals(CASH)){
-                entradaAtualizada.setTotal_entrada((float) entryAndConsumption);
+                entradaAtualizada.setTotalEntry((float) entryAndConsumption);
             entryRepository.save(entradaAtualizada);
         }
-        if (request.getStatus_pagamento().equals(PaymentStatus.CONCLUIDO)) {
+        if (request.getPaymentStatus().equals(PaymentStatus.CONCLUIDO)) {
             if (entradaAtualizada.getEntryStatus().equals(EntryStatus.FINISH)){
                 throw new EntityConflict("A Entrada já foi salva no mapa");
             }
             entryConsumptionList = entryConsumptionRepository.findEntradaConsumoByEntradas_Id(entradaId);
-            entradaAtualizada.setEntryConsumption(entryConsumptionList);
+            entradaAtualizada.setEn(entryConsumptionList);
             if (entradaAtualizada.getEntryConsumption().isEmpty()) { emptyConsumption(); }
 
             validacaoHorario();

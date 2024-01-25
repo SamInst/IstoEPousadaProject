@@ -34,10 +34,10 @@ public class EntryConsumptionService {
         final var consumo = entryConsumptionRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("Consumo não Encontrado"));
         entradaConsumo.forEach(a -> {
-            Float valorItem = consumo.getQuantity() * consumo.getItens().getValue();
+            Float valorItem = consumo.getAmount() * consumo.getItens().getValue();
 
             new EntryConsumptionResponse(
-                    consumo.getQuantity(),
+                    consumo.getAmount(),
                     new EntryConsumptionResponse.Item(
                             consumo.getItens().getDescription(),
                             consumo.getItens().getValue(),
@@ -60,7 +60,7 @@ public class EntryConsumptionService {
         Entry entrada = entryRepository.findById(entryConsumption.getEntradas().getId())
                 .orElseThrow(()-> new EntityNotFound("entrada não encontrada"));
         EntryConsumption entryConsumption1 = new EntryConsumption(
-                entryConsumption.getQuantity(),
+                entryConsumption.getAmount(),
                 item,
                 entrada
         );

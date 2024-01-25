@@ -9,7 +9,7 @@ public record EntryResponse(
         Integer apartamento,
         LocalTime hora_entrada,
         LocalTime hora_saida,
-        String placa,
+        String licensePlate,
         TempoPermanecido tempo_permanecido,
         List<ConsumptionResponse> consumo,
         EntryStatus entryStatus,
