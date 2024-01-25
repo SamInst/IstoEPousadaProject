@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select m from Item m where m.id = 8")
-    Item getItenVazio();
+    Item getEmptyItem();
 }

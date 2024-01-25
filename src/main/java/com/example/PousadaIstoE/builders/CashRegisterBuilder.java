@@ -7,7 +7,7 @@ import java.time.LocalTime;
 
 public class CashRegisterBuilder {
     private Long id;
-    private LocalDate data;
+    private LocalDate date;
     private String report;
     private Integer apartment;
     private Float cashIn;
@@ -20,8 +20,8 @@ public class CashRegisterBuilder {
         return this;
     }
 
-    public CashRegisterBuilder data(LocalDate data) {
-        this.data = data;
+    public CashRegisterBuilder date(LocalDate data) {
+        this.date = data;
         return this;
     }
 
@@ -58,7 +58,7 @@ public class CashRegisterBuilder {
     public CashRegister build() {
         CashRegister cashRegister = new CashRegister();
         cashRegister.setId(this.id);
-        cashRegister.setData(this.data);
+        cashRegister.setDate(this.date);
         cashRegister.setReport(this.report);
         cashRegister.setApartment(this.apartment);
         cashRegister.setCashIn(this.cashIn);

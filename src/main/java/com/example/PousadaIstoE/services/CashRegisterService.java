@@ -30,7 +30,7 @@ public class CashRegisterService {
         if (total == null){
             throw new EntityNotFound("Não foi criado um mapa hoje ainda");
         }
-        cashRegister.setData(LocalDate.now());
+        cashRegister.setDate(LocalDate.now());
         cashRegister.setHora(LocalTime.now());
         cashRegister.setTotal(total(cashRegister));
         return cashRegisterRepository.save(cashRegister);
@@ -39,7 +39,7 @@ public class CashRegisterService {
     public ResponseEntity<CashRegisterResponse> findMapaGeral(Long id) {
         final var mapaGeral = cashRegisterRepository.findById(id).orElseThrow(() -> new EntityNotFound("Mapa não encontrado"));
         final var response = new CashRegisterResponse(
-                mapaGeral.getData(),
+                mapaGeral.getDate(),
                 mapaGeral.getHour(),
                 mapaGeral.getReport(),
                 mapaGeral.getApartment(),

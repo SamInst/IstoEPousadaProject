@@ -2,7 +2,6 @@ package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.PaymentType;
-import com.example.PousadaIstoE.Enums.RoomStatus;
 import com.example.PousadaIstoE.builders.CashRegisterBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityDates;
@@ -243,7 +242,7 @@ public class OvernightStayService {
                 }
                 CashRegister cashRegister = new CashRegisterBuilder()
                         .apartment(overnightOut.getRoom().getNumber())
-                        .data(currentDate)
+                        .date(currentDate)
                         .cashIn(overnightOut.getTotal())
                         .report(report)
                         .cashOut(EMPTY)

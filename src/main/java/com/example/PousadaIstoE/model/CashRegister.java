@@ -12,7 +12,7 @@ public class CashRegister {
     private Long id;
 
     @Column(name = "ip05_data")
-    private LocalDate data;
+    private LocalDate date;
 
     @Column(name = "ip05_report")
     private String report;
@@ -32,72 +32,21 @@ public class CashRegister {
     @Column(name = "ip05_hour")
     private LocalTime hour;
 
-
-
-    public CashRegister() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getData() {
-        return data;
-    }
-
-    public void setData(LocalDate data) {
-        this.data = data;
-    }
-
-    public String getReport() {
-        return report;
-    }
-
-    public void setReport(String report) {
-        this.report = report;
-    }
-
-    public Integer getApartment() {
-        return apartment;
-    }
-
-    public void setApartment(Integer apartment) {
-        this.apartment = apartment;
-    }
-
-    public Float getCashIn() {
-        return cashIn;
-    }
-
-    public void setCashIn(Float cashIn) {
-        this.cashIn = cashIn;
-    }
-
-    public Float getCashOut() {
-        return cashOut;
-    }
-
-    public void setCashOut(Float cashOut) {
-        this.cashOut = cashOut;
-    }
-
-    public Float getTotal() {
-        return total;
-    }
-
-    public void setTotal(Float total) {
-        this.total = total;
-    }
-
-    public LocalTime getHour() {
-        return hour;
-    }
-
-    public void setHour(LocalTime hour) {
-        this.hour = hour;
-    }
+    public CashRegister() {}
+    public Long getId() {return id;}
+    public void setId(Long id) {this.id = id;}
+    public LocalDate getDate() {return date;}
+    public void setDate(LocalDate date) {this.date = date;}
+    public String getReport() {return report;}
+    public void setReport(String report) {this.report = report;}
+    public Integer getApartment() {return apartment;}
+    public void setApartment(Integer apartment) {this.apartment = apartment;}
+    public Float getCashIn() {return cashIn;}
+    public void setCashIn(Float cashIn) {this.cashIn = cashIn;}
+    public Float getCashOut() {return cashOut;}
+    public void setCashOut(Float cashOut) {this.cashOut = cashOut;}
+    public Float getTotal() {return total;}
+    public void setTotal(Float total) {this.total = total;}
+    public LocalTime getHour() {return hour;}
+    public void setHour(LocalTime hour) {this.hour = hour;}
 }

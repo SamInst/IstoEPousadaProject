@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record CashRegisterResponse(
-        LocalDate data,
+        LocalDate date,
         LocalTime hora,
         String relatorio,
         Integer apartamento,
