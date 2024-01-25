@@ -18,7 +18,6 @@ public class OverNightStayConsumption {
     @JoinColumn(name = "fkip10ip07_itens_id")
     private Item item;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "fkip10ip08_overnight_stay_id")
     private OvernightStay overnightStay;

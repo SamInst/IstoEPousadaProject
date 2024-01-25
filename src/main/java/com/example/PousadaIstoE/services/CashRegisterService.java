@@ -31,7 +31,7 @@ public class CashRegisterService {
             throw new EntityNotFound("Não foi criado um mapa hoje ainda");
         }
         cashRegister.setDate(LocalDate.now());
-        cashRegister.setHora(LocalTime.now());
+        cashRegister.setHour(LocalTime.now());
         cashRegister.setTotal(total(cashRegister));
         return cashRegisterRepository.save(cashRegister);
     }

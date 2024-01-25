@@ -164,9 +164,9 @@ public class EntryService {
             if (entradaAtualizada.getEntryStatus().equals(EntryStatus.FINISH)){
                 throw new EntityConflict("A Entrada já foi salva no mapa");
             }
-            entryConsumptionList = entryConsumptionRepository.findEntradaConsumoByEntradas_Id(entradaId);
-            entradaAtualizada.setEn(entryConsumptionList);
-            if (entradaAtualizada.getEntryConsumption().isEmpty()) { emptyConsumption(); }
+//            entryConsumptionList = entryConsumptionRepository.findEntradaConsumoByEntradas_Id(entradaId);
+//            entradaAtualizada.setEn(entryConsumptionList);
+//            if (entradaAtualizada.getEntryConsumption().isEmpty()) { emptyConsumption(); }
 
             validacaoHorario();
             salvaNoMapa(request);
@@ -211,7 +211,7 @@ public class EntryService {
                 .date(LocalDate.now())
                 .report(report)
                 .apartment(request.getRooms().getNumber())
-                .cashIn(request.getTotal_entrada())
+                .cashIn(request.getTotalEntry())
                 .cashOut(0F)
                 .hour(LocalTime.now())
                 .build();

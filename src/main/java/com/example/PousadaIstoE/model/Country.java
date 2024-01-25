@@ -9,7 +9,7 @@ public class Country {
     @Column(name = "ip14_id", nullable = false)
     private Long id;
 
-    @Column("ip14_description")
+    @Column(name = "ip14_description")
     private String description;
 
     public Long getId() {

@@ -59,4 +59,12 @@ public class Rooms {
 
     public Rooms() {
     }
+
+    public Rooms(Long id, Integer number, String description, Integer personCapacity, RoomStatus roomStatus) {
+        this.id = id;
+        this.number = number;
+        this.description = description;
+        this.personCapacity = personCapacity;
+        this.roomStatus = roomStatus;
+    }
 }
