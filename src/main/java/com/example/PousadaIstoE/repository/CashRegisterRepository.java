@@ -10,8 +10,8 @@ import java.util.List;
 
 @Repository
 public interface CashRegisterRepository extends JpaRepository<CashRegister, Long> {
-    @Query("select u from CashRegister u where u.data = :data")
-    List<CashRegister> findByData(LocalDate data);
+    @Query("select u from CashRegister u where u.date = :date")
+    List<CashRegister> findByData(LocalDate date);
 
     @Query("SELECT m.total FROM CashRegister m WHERE m.id = (SELECT MAX(mg.id) FROM CashRegister mg)")
     Float findLastTotal();

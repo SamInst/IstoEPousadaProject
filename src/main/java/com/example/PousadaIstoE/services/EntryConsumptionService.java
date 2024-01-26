@@ -72,6 +72,6 @@ public class EntryConsumptionService {
     }
 
     public List<EntryConsumption> findEntradaConsumoByEntrada(Long entrada_id){
-        return entryConsumptionRepository.findEntradaConsumoByEntradas_Id(entrada_id);
+        return entryConsumptionRepository.findEntryConsumptionByEntry_Id(entrada_id);
     }
 }

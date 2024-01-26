@@ -77,11 +77,11 @@ public class EntryService {
 
     public AtomicReference<EntryResponse> findById(Long id) {
         AtomicReference<EntryResponse> response = new AtomicReference<>();
-        entryConsumptionList = entryConsumptionRepository.findEntradaConsumoByEntradas_Id(id);
+        entryConsumptionList = entryConsumptionRepository.findEntryConsumptionByEntry_Id(id);
         final var entrada = entryRepository.findById(id).orElseThrow(
                 () -> new EntityNotFound("Entrada não foi Cadastrada ou não existe mais"));
         calcularHora(id);
-        Double totalConsumo = entryRepository.totalConsumo(id);
+        Double totalConsumo = entryRepository.totalConsumption(id);
 
         if (totalConsumo == null){ totalConsumo = (double) 0; }
         double soma = totalConsumo + entryValue;
@@ -192,7 +192,7 @@ public class EntryService {
 
     private void validacaoPagamento(Entry request){
         totalCashRegister = cashRegisterFeing.findLastTotal();
-        Double totalConsumo = entryRepository.totalConsumo(request.getId());
+        Double totalConsumo = entryRepository.totalConsumption(request.getId());
         if (totalConsumo == null){ totalConsumo = 0D; }
         entryAndConsumption = entryValue + totalConsumo;
         totalValue = totalCashRegister + entryAndConsumption;
@@ -237,15 +237,15 @@ public class EntryService {
     }
 
     public List<Entry> findByStatusEntrada(EntryStatus entryStatus){
-        return entryRepository.findEntradasByStatusEntrada(entryStatus);
+        return entryRepository.findEntriesByEntryStatus(entryStatus);
     }
 
     public List<Entry> findEntradaByToday(){
        LocalDate today = LocalDate.now();
-       return entryRepository.findEntradasByDataRegistroEntrada(today);
+       return entryRepository.findEntriesByEntryDataRegister(today);
     }
     public List<Entry> findEntradaByDate(LocalDate data){
-        return entryRepository.findEntradasByDataRegistroEntrada(data);
+        return entryRepository.findEntriesByEntryDataRegister(data);
     }
 
     private void atualizaQuarto(Rooms rooms, Entry entradaAtualizada){

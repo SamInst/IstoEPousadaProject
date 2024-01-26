@@ -64,9 +64,9 @@ public class OvernightStayService {
 
     public OvernightStayResponse findById(Long id) {
         final var pernoites = overnightStayRepository.findById(id).orElseThrow(() -> new EntityNotFound("Pernoite não encontrado"));
-        final var consumo_pernoite = overnightStayComsuptionRepository.findPernoiteConsumoByPernoites_Id(id);
-        final var totalConsumo = overnightStayComsuptionRepository.findConsumoTotal(id);
-        final var acompanhantes = overnightStayCompanionRepository.findAllByPernoites_Id(id);
+        final var consumo_pernoite = overnightStayComsuptionRepository.findOverNightStayConsumptionByOvernightStay_Id(id);
+        final var totalConsumo = overnightStayComsuptionRepository.findTotalConsumption(id);
+        final var acompanhantes = overnightStayCompanionRepository.findAllByOvernightStay_Id(id);
         amountPeoplePrice(pernoites);
 
         List<OvernightStayCompanionShortResponse> overnightStayCompanionShortResponseList = new ArrayList<>();

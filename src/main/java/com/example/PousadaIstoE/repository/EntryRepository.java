@@ -10,10 +10,10 @@ import java.util.List;
 
 @Repository
 public interface EntryRepository extends JpaRepository<Entry, Long> {
-    List<Entry> findEntradasByStatusEntrada(EntryStatus entryStatus);
-    List<Entry> findEntradasByDataRegistroEntrada(LocalDate localDate);
-    @Query("select sum(m.total) from EntryConsumption m where m.entradas.id = :id_entrada")
-    Double totalConsumo(Long id_entrada);
-    @Query("select u from Entry u where u.dataRegistroEntrada = :data")
-    List<Entry> findEntradasByData(LocalDate data);
+    List<Entry> findEntriesByEntryStatus(EntryStatus entryStatus);
+
+    List<Entry> findEntriesByEntryDataRegister(LocalDate localDate);
+
+    @Query("select sum(m.total) from EntryConsumption m where m.entry.id = :entry_id")
+    Double totalConsumption(Long entry_id);
 }

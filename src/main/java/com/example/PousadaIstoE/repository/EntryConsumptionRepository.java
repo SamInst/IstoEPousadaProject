@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface EntryConsumptionRepository extends JpaRepository<EntryConsumption, Long> {
-    List<EntryConsumption> findEntradaConsumoByEntradas_Id(Long id);
+    List<EntryConsumption> findEntryConsumptionByEntry_Id(Long id);
 }

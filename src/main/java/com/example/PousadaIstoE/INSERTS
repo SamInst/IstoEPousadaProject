@@ -30,3 +30,36 @@ insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_jo
 insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 7', '777.777.777-77', '(77)97777-7777', 'Street test number seven', 'ARTIST', 1);
 insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 8', '888.888.888-88', '(88)98888-8888', 'Street test number eight', 'NURSE', 1);
 insert into ip01_clients (ip01_name, ip01_cpf, ip01_phone, ip01_address, ip01_job, fkip01ip02_id_employee) VALUES ('SAM CLIENT 9', '999.999.999-99', '(99)99999-9999', 'Street test number nine', 'POLICE OFFICER', 1);
+
+insert into ip14_country (description) values ('BRASIL');
+insert into ip14_country (description) values ('ESTADOS UNIDOS');
+insert into ip14_country (description) values ('CANADA');
+
+insert into ip12_states (description, fkip11ip14_id_country) VALUES ('MARANHAO', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('ACRE', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('ALAGOAS', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('AMAPA', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('AMAZONAS', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('BAHIA', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('CEARA', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('DISTRITO FEDERAL', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('ESPIRITO SANTO', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('GOIAS', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('MATO GROSSO', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('MATO GROSSO DO SUL', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('MINAS GERAIS', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('PARA', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('PARAIBA', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('PARANA', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('PERNAMBUCO', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('PIAUI', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('RIO DE JANEIRO', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('RIO GRANDE DO NORTE', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('RIO GRANDE DO SUL', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('RONDONIA', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('RORAIMA', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('SANTA CATARINA', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('SAO PAULO', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('SERGIPE', 1);
+INSERT INTO ip12_states (description, fkip11ip14_id_country) VALUES ('TOCANTINS', 1);
+
