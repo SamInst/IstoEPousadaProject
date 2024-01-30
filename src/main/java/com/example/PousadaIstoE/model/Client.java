@@ -26,7 +26,6 @@ public class Client {
     @JoinColumn(name = "fkip01ip02_id_employee")
     private Employee registeredBy;
 
-
     public Long getId() {
         return id;
     }

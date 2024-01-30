@@ -3,18 +3,18 @@ package com.example.PousadaIstoE.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ip11_county")
+@Table(name = "county")
 public class County {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ip11_id")
+    @Column(name = "county_id")
     private Long id;
 
-    @Column(name = "ip11_description")
+    @Column(name = "county_description")
     private String description;
 
     @ManyToOne
-    @JoinColumn (name = "fkip11ip12_id_state")
+    @JoinColumn (name = "county_state_id")
     private States state;
 
     public Long getId() {
