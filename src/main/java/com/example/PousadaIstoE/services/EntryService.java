@@ -130,7 +130,7 @@ public class EntryService {
             EntryStatus.IN_PROGRESS,
             LocalDate.now(),
             PaymentType.PENDING,
-            PaymentStatus.PENDENTE
+            PaymentStatus.PENDING
         );
         quartoOut.setRoomStatus(RoomStatus.BUSY);
         roomFeing.save(quartoOut);
@@ -160,7 +160,7 @@ public class EntryService {
                 entradaAtualizada.setTotalEntry((float) entryAndConsumption);
             entryRepository.save(entradaAtualizada);
         }
-        if (request.getPaymentStatus().equals(PaymentStatus.CONCLUIDO)) {
+        if (request.getPaymentStatus().equals(PaymentStatus.COMPLETED)) {
             if (entradaAtualizada.getEntryStatus().equals(EntryStatus.FINISH)){
                 throw new EntityConflict("A Entrada já foi salva no mapa");
             }

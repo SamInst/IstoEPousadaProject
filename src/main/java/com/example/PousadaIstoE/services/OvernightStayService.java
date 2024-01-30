@@ -127,7 +127,7 @@ public class OvernightStayService {
         Float a = overnightStay.getTotal() * periodoDias;
         overnightStay.setTotal(a);
         if (overnightStay.getPaymentStatus() == null) {
-            overnightStay.setPaymentStatus(PaymentStatus.PENDENTE);
+            overnightStay.setPaymentStatus(PaymentStatus.PENDING);
         }
         if (overnightStay.getPaymentType() == null) {
             overnightStay.setPaymentType(PaymentType.PENDING);
@@ -181,7 +181,7 @@ public class OvernightStayService {
                 throw new EntityConflict("O apartment já está ocupado entre as datas informadas.");
             }
             if (overnight.getEndDate().isBefore(overnight.getStartDate())) {
-                throw new EntityDates("A data de Saída não pode ser inferior a data de entrada");
+                throw new EntityDates("A data de Saída não pode ser inferior a data de cashIn");
             }
             if (overnight.getStartDate().equals(overnight.getEndDate()) || overnight.getEndDate().equals(overnight.getStartDate())) {
                 throw new EntityDates("A data de Entrada/Saída não podem ser iguais");
@@ -197,7 +197,7 @@ public class OvernightStayService {
         return overnightStayCompanionRepository.save(overnightStayCompanion);
     }
 
-    @Scheduled(cron = "0 * * * * ?") // Needs to be executed at twelve o'clock (midnight)
+    @Scheduled(cron = "0 * * * * ?") // Needs to be executed at midnight
     public void updateRoomStatus() {
         LocalDate currentDate = LocalDate.now();
         List<OvernightStay> overnightStayToCheckIn = overnightStayRepository.findByStartDate(currentDate);
@@ -222,7 +222,7 @@ public class OvernightStayService {
 
     @Scheduled(cron = "0 1 12 * * ?")
     public void updateRoomStatusOut() {
-        String report = "Pernoite";
+        String report = "PERNOITE";
         LocalDate currentDate = LocalDate.now();
         List<OvernightStay> overnightStayToCheckOut = overnightStayRepository.findByEndDate(currentDate);
 
@@ -233,12 +233,12 @@ public class OvernightStayService {
                 roomRepository.save(roomsOut);
             }
             if (overnightOut.getEndDate().equals(currentDate)
-                    && overnightOut.getPaymentStatus().equals(PaymentStatus.CONCLUIDO)) {
+                    && overnightOut.getPaymentStatus().equals(PaymentStatus.COMPLETED)) {
 
                 switch (overnightOut.getPaymentType()){
                     case PIX -> report += " (PIX)";
                     case CREDIT_CARD ->  report += " (CARTÃO)";
-                    case CASH ->  report += "(DINHEIRO)";
+                    case CASH ->  report += " (DINHEIRO)";
                 }
                 CashRegister cashRegister = new CashRegisterBuilder()
                         .apartment(overnightOut.getRoom().getNumber())
@@ -249,7 +249,7 @@ public class OvernightStayService {
                         .hour(LocalTime.now())
                         .build();
 
-                cashRegisterService.createMapa(cashRegister);
+//                cashRegisterService.createMapa(cashRegister);
             }
         }
     }

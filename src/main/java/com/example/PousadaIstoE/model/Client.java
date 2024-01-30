@@ -2,6 +2,8 @@ package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Table(name = "ip01_clients")
 @Entity
 public class Client {
@@ -14,6 +16,9 @@ public class Client {
 
     @Column(name = "ip01_cpf")
     private String cpf;
+
+    @Column(name = "ip01_birth")
+    private LocalDate birth;
     @Column(name = "ip01_phone")
     private String phone;
 
@@ -75,6 +80,13 @@ public class Client {
         this.registeredBy = registeredBy;
     }
 
+    public LocalDate getBirth() {
+        return birth;
+    }
+
+    public void setBirth(LocalDate birth) {
+        this.birth = birth;
+    }
 
     public Client(String name, String cpf, String phone, String address, String job, Employee registeredBy) {
         this.name = name;

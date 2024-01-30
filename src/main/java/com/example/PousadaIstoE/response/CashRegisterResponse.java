@@ -4,12 +4,13 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record CashRegisterResponse(
+        Long id,
         LocalDate date,
-        LocalTime hora,
-        String relatorio,
-        Integer apartamento,
-        Float entrada,
-        Float saida,
+        LocalTime hour,
+        String report,
+        Integer apartment,
+        Float cashIn,
+        Float cashOut,
         Float total
 
 ) {

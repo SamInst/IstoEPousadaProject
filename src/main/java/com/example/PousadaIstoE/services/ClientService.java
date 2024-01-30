@@ -1,9 +1,12 @@
 package com.example.PousadaIstoE.services;
 
+import com.example.PousadaIstoE.builders.ClientBuilder;
 import com.example.PousadaIstoE.exceptions.EntityInUse;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.Client;
 import com.example.PousadaIstoE.repository.ClientRepository;
+import com.example.PousadaIstoE.repository.EmployeeRepository;
+import com.example.PousadaIstoE.request.ClientRequest;
 import com.example.PousadaIstoE.response.ClientResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,9 +20,11 @@ import java.util.List;
 @Service
 public class ClientService {
     private final ClientRepository clientRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public ClientService(ClientRepository clientRepository) {
+    public ClientService(ClientRepository clientRepository, EmployeeRepository employeeRepository) {
         this.clientRepository = clientRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     public List<Client> findAll(){
@@ -42,15 +47,18 @@ public class ClientService {
         }
     }
 
-    public Client registerClient(Client request) {
-        Client client = new Client(
-                request.getName(),
-                request.getCpf(),
-                request.getPhone(),
-                request.getAddress(),
-                request.getJob(),
-                request.getRegisteredBy()
-        );
+    public Client registerClient(ClientRequest request, Long employee_id) {
+        var employee = employeeRepository.findById(employee_id).orElseThrow(()-> new EntityNotFound("Employee not Found"));
+
+        Client client = new ClientBuilder()
+                .name(request.name())
+                .cpf(request.cpf())
+                .phone(request.phone())
+                .birth(request.birth())
+                .address(request.address())
+                .job(request.job())
+                .registeredBy(employee)
+                .build();
         return clientRepository.save(client);
     }
 

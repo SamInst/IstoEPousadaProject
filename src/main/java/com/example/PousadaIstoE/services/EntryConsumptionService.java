@@ -51,14 +51,14 @@ public class EntryConsumptionService {
 
     public EntryConsumption addConsumo(EntryConsumption entryConsumption) {
         if (entryConsumption.getEntradas() == null) {
-            throw new EntityNotFound("Nenhuma entrada associada a esse consumption");
+            throw new EntityNotFound("Nenhuma cashIn associada a esse consumption");
         }
         if (entryConsumption.getEntradas().getEntryStatus().equals(EntryStatus.FINISH)){
-            throw new EntityConflict("Não é possivel inserir consumption em uma entrada já finalizada");
+            throw new EntityConflict("Não é possivel inserir consumption em uma cashIn já finalizada");
         }
         final var item = itensFeing.findItensById(entryConsumption.getItens().getId());
         Entry entrada = entryRepository.findById(entryConsumption.getEntradas().getId())
-                .orElseThrow(()-> new EntityNotFound("entrada não encontrada"));
+                .orElseThrow(()-> new EntityNotFound("cashIn não encontrada"));
         EntryConsumption entryConsumption1 = new EntryConsumption(
                 entryConsumption.getAmount(),
                 item,
