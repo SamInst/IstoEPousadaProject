@@ -2,7 +2,6 @@ package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.PaymentType;
-import com.example.PousadaIstoE.builders.CashRegisterBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityDates;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
@@ -11,6 +10,7 @@ import com.example.PousadaIstoE.repository.OvernightStayCompanionRepository;
 import com.example.PousadaIstoE.repository.OvernightStayComsuptionRepository;
 import com.example.PousadaIstoE.repository.OvernightStayRepository;
 import com.example.PousadaIstoE.repository.RoomRepository;
+import com.example.PousadaIstoE.request.CashRegisterRequest;
 import com.example.PousadaIstoE.response.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -137,7 +137,7 @@ public class OvernightStayService {
 
     public OvernightStay updatePernoiteData(Long pernoiteId, OvernightStay request) {
         OvernightStay pernoite = overnightStayRepository.findById(pernoiteId)
-                .orElseThrow(()-> new EntityNotFound("Pernoite não encontrado"));
+                .orElseThrow(()-> new EntityNotFound("Overnight Stay not Found."));
 
         var pernoiteAtualizado = new OvernightStay(
             pernoite.getId(),
@@ -240,16 +240,12 @@ public class OvernightStayService {
                     case CREDIT_CARD ->  report += " (CARTÃO)";
                     case CASH ->  report += " (DINHEIRO)";
                 }
-                CashRegister cashRegister = new CashRegisterBuilder()
-                        .apartment(overnightOut.getRoom().getNumber())
-                        .date(currentDate)
-                        .cashIn(overnightOut.getTotal())
-                        .report(report)
-                        .cashOut(EMPTY)
-                        .hour(LocalTime.now())
-                        .build();
-
-//                cashRegisterService.createMapa(cashRegister);
+                CashRegisterRequest request = new CashRegisterRequest(
+                        report,
+                        overnightOut.getRoom().getNumber(),
+                        overnightOut.getTotal(),
+                        EMPTY);
+                cashRegisterService.createMapa(request);
             }
         }
     }

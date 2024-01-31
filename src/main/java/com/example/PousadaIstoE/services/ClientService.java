@@ -8,32 +8,39 @@ import com.example.PousadaIstoE.repository.ClientRepository;
 import com.example.PousadaIstoE.repository.EmployeeRepository;
 import com.example.PousadaIstoE.request.ClientRequest;
 import com.example.PousadaIstoE.response.ClientResponse;
-import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
     private final ClientRepository clientRepository;
+    private final Finder find;
     private final EmployeeRepository employeeRepository;
 
-    public ClientService(ClientRepository clientRepository, EmployeeRepository employeeRepository) {
+    public ClientService(ClientRepository clientRepository, Finder find, EmployeeRepository employeeRepository) {
         this.clientRepository = clientRepository;
+        this.find = find;
         this.employeeRepository = employeeRepository;
     }
 
-    public List<Client> findAll(){
-        return clientRepository.findAll();
-    }
-    public ResponseEntity<ClientResponse> findClientById(Long id){
-        final var client = clientRepository.findById(id).orElseThrow(() -> new EntityNotFound("Client not found"));
-        if (client != null) {
-            final var response = new ClientResponse(
+    public Page<ClientResponse> findAll(Pageable pageable){
+        var clients = clientRepository.findAll(pageable);
+
+        List<ClientResponse> clientResponseList = new ArrayList<>();
+
+        clients.forEach(client -> {
+            ClientResponse clientResponse = new ClientResponse(
                     client.getName(),
                     client.getCpf(),
                     client.getPhone(),
@@ -41,49 +48,57 @@ public class ClientService {
                     client.getJob(),
                     client.getRegisteredBy().getName()
             );
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+            clientResponseList.add(clientResponse);
+        });
+        clients.stream().sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
+
+        return new PageImpl<>(clientResponseList, pageable, clients.getTotalElements());
+    }
+    public ClientResponse findClientById(Long client_id){
+        final var client = find.clientById(client_id);
+
+            return new ClientResponse(
+                    client.getName() != null ? client.getName() : "",
+                    client.getCpf() != null ? client.getCpf() : "",
+                    client.getPhone() != null ? client.getPhone() : "",
+                    client.getAddress() != null ? client.getAddress() : "",
+                    client.getJob() != null ? client.getJob() : "",
+                    client.getRegisteredBy().getName() != null ? client.getRegisteredBy().getName() : ""
+            );
     }
 
     public Client registerClient(ClientRequest request, Long employee_id) {
-        var employee = employeeRepository.findById(employee_id).orElseThrow(()-> new EntityNotFound("Employee not Found"));
+        var employee = find.employeeById(employee_id);
 
         Client client = new ClientBuilder()
+                .name(request.name().toUpperCase())
+                .cpf(request.cpf())
+                .phone(request.phone())
+                .birth(request.birth())
+                .address(request.address().toUpperCase())
+                .job(request.job().toUpperCase())
+                .registeredBy(employee)
+                .build();
+        return clientRepository.save(client);
+    }
+
+    public void updateClientData(ClientRequest request, Long client_id) {
+        var client = find.clientById(client_id);
+
+        Client updatedClient = new ClientBuilder()
+                .id(client.getId())
                 .name(request.name())
                 .cpf(request.cpf())
                 .phone(request.phone())
                 .birth(request.birth())
                 .address(request.address())
                 .job(request.job())
-                .registeredBy(employee)
+                .registeredBy(client.getRegisteredBy())
                 .build();
-        return clientRepository.save(client);
+                clientRepository.save(updatedClient);
     }
 
-    public Client updateClientData(Long clientId, Client request) {
-        Client client1 = clientRepository.findById(clientId).get();
-        BeanUtils.copyProperties(client1, request, "id");
-        return clientRepository.save(client1);
-    }
-    public ResponseEntity<Client> removeClient(Long clientId) {
-        try {
-            exclude(clientId);
-            return ResponseEntity.noContent().build();
-        } catch (EntityNotFound e) {
-            return ResponseEntity.notFound().build();
-        } catch (EntityInUse e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-    }
-    public void exclude(Long clientId) {
-        try {
-            clientRepository.deleteById(clientId);
-        } catch (EmptyResultDataAccessException e){
-            throw new EntityNotFound("Client code % not found" + clientId);
-        } catch (DataIntegrityViolationException e) {
-            throw new EntityInUse("Client code % could be not removed," + clientId);
-        }
+    public void removeClient(Long client_id) {
+        clientRepository.deleteById(client_id);
     }
 }

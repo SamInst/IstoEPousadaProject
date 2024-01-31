@@ -62,7 +62,7 @@ public class CashRegisterService {
     }
 
     public List<CashRegister> findByDate(LocalDate date){
-      return cashRegisterRepository.findByData(date);
+      return cashRegisterRepository.findByDate(date);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -79,6 +80,10 @@ public class OvernightStayCompanion {
 
     public OvernightStay getPernoites() {
         return overnightStay;
+    }
+
+    public void setOvernightStay(OvernightStay overnightStay) {
+        this.overnightStay = overnightStay;
     }
 
     public void setPernoites(OvernightStay overnightStay) {

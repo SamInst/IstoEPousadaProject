@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface CashRegisterRepository extends JpaRepository<CashRegister, Long> {
     @Query(value = "select * from ip05_cash_register cr where cr.ip05_data = :date", nativeQuery = true)
-    List<CashRegister> findByData(@Param("date") LocalDate date);
+    List<CashRegister> findByDate(@Param("date") LocalDate date);
 
 
     @Query(value = """
