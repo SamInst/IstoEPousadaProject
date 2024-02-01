@@ -16,6 +16,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
@@ -45,10 +46,10 @@ public class OvernightStayService {
     }
 
     public List<OvernightStayShortResponse> findAll() {
-        var allPernoites =  overnightStayRepository.findAll();
+        var allPernoites = overnightStayRepository.findAll();
         List<OvernightStayShortResponse> overnightStayShortResponseList = new ArrayList<>();
 
-        allPernoites.forEach(pernoite->{
+        allPernoites.forEach(pernoite -> {
             OvernightStayShortResponse overnightStayShortResponse = new OvernightStayShortResponse(
                     pernoite.getId(),
                     new OvernightStayShortResponse.Client(pernoite.getClient().getName()),
@@ -108,16 +109,19 @@ public class OvernightStayService {
         );
     }
 
-    public Double valorTotal(Long id, OvernightStay overnightStay, Integer p1, Float total_diarias){
+    public Double valorTotal(Long id, OvernightStay overnightStay, Integer p1, Float total_diarias) {
         Double totalConsumo = manager.createQuery(
-        "SELECT sum(m.total) FROM OverNightStayConsumption m where m.overnightStay.id = :id", Double.class)
-        .setParameter("id", id)
-        .getSingleResult(); if (totalConsumo == null){ totalConsumo = 0D; }
+                        "SELECT sum(m.total) FROM OverNightStayConsumption m where m.overnightStay.id = :id", Double.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        if (totalConsumo == null) {
+            totalConsumo = 0D;
+        }
         return total_diarias + totalConsumo;
     }
 
     public OvernightStay createPernoite(OvernightStay overnightStay) {
-        if (overnightStay.getClient() == null){
+        if (overnightStay.getClient() == null) {
             throw new EntityConflict("É preciso informar o hóspede.");
         }
         Integer periodoDias = between(overnightStay.getStartDate(), overnightStay.getEndDate()).getDays();
@@ -137,18 +141,18 @@ public class OvernightStayService {
 
     public OvernightStay updatePernoiteData(Long pernoiteId, OvernightStay request) {
         OvernightStay pernoite = overnightStayRepository.findById(pernoiteId)
-                .orElseThrow(()-> new EntityNotFound("Overnight Stay not Found."));
+                .orElseThrow(() -> new EntityNotFound("Overnight Stay not Found."));
 
         var pernoiteAtualizado = new OvernightStay(
-            pernoite.getId(),
-            pernoite.getRoom(),
-            pernoite.getClient(),
-            pernoite.getStartDate(),
-            pernoite.getEndDate(),
-            pernoite.getAmountPeople(),
-            request.getPaymentType(),
-            request.getPaymentStatus(),
-            pernoite.getTotal()
+                pernoite.getId(),
+                pernoite.getRoom(),
+                pernoite.getClient(),
+                pernoite.getStartDate(),
+                pernoite.getEndDate(),
+                pernoite.getAmountPeople(),
+                request.getPaymentType(),
+                request.getPaymentStatus(),
+                pernoite.getTotal()
         );
         return overnightStayRepository.save(pernoiteAtualizado);
     }
@@ -170,11 +174,11 @@ public class OvernightStayService {
         if (overnight.getStartDate().isBefore(LocalDate.now()) || overnight.getEndDate().isBefore(LocalDate.now())) {
             throw new EntityDates("A data inserida não pode ser inferior a hoje");
         }
-        switch (overnight.getRoom().getRoomStatus()){
-            case BUSY           -> throw new EntityConflict("O apartment já está ocupado.");
+        switch (overnight.getRoom().getRoomStatus()) {
+            case BUSY -> throw new EntityConflict("O apartment já está ocupado.");
             case NEEDS_CLEANING -> throw new EntityConflict("O apartment necessita de limpeza.");
-            case RESERVED       -> throw new EntityConflict("O apartment está reservado.");
-            case MAINTENANCE    -> throw new EntityConflict("O apartment está em manutenção.");
+            case RESERVED -> throw new EntityConflict("O apartment está reservado.");
+            case MAINTENANCE -> throw new EntityConflict("O apartment está em manutenção.");
         }
         for (OvernightStay pernoiteCadastrado : overnightStayCadastrados) {
             if (overnight.getStartDate().isBefore(pernoiteCadastrado.getEndDate()) && overnight.getEndDate().isAfter(pernoiteCadastrado.getStartDate())) {
@@ -190,7 +194,7 @@ public class OvernightStayService {
         overnightStayRepository.save(overnight);
     }
 
-    public OvernightStayCompanion addCompanion(OvernightStayCompanion overnightStayCompanion){
+    public OvernightStayCompanion addCompanion(OvernightStayCompanion overnightStayCompanion) {
         var birth = overnightStayCompanion.getBirth();
         Period age = Period.ofYears(Period.between(LocalDate.now(), birth).getYears());
         overnightStayCompanion.setAge(age.getYears());
@@ -206,14 +210,14 @@ public class OvernightStayService {
             Rooms roomsIn = pernoiteIn.getRoom();
 
             if (pernoiteIn.getStartDate().equals(currentDate)
-                    && LocalTime.now().isAfter(LocalTime.of(6,0))
-                    && LocalTime.now().isBefore(LocalTime.of(12,0))){
+                    && LocalTime.now().isAfter(LocalTime.of(6, 0))
+                    && LocalTime.now().isBefore(LocalTime.of(12, 0))) {
                 roomsIn.setRoomStatus(RESERVED);
                 roomRepository.save(roomsIn);
             }
             if (pernoiteIn.getStartDate().equals(currentDate)
-            && LocalTime.now().isAfter(LocalTime.of(12,0))
-            ){
+                    && LocalTime.now().isAfter(LocalTime.of(12, 0))
+            ) {
                 roomsIn.setRoomStatus(BUSY);
                 roomRepository.save(roomsIn);
             }
@@ -235,10 +239,10 @@ public class OvernightStayService {
             if (overnightOut.getEndDate().equals(currentDate)
                     && overnightOut.getPaymentStatus().equals(PaymentStatus.COMPLETED)) {
 
-                switch (overnightOut.getPaymentType()){
+                switch (overnightOut.getPaymentType()) {
                     case PIX -> report += " (PIX)";
-                    case CREDIT_CARD ->  report += " (CARTÃO)";
-                    case CASH ->  report += " (DINHEIRO)";
+                    case CREDIT_CARD -> report += " (CARTÃO)";
+                    case CASH -> report += " (DINHEIRO)";
                 }
                 CashRegisterRequest request = new CashRegisterRequest(
                         report,

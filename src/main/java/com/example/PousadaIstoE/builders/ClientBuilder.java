@@ -14,6 +14,7 @@ public class ClientBuilder {
     private String address;
     private String job;
     private Employee registeredBy;
+    private Boolean active;
 
     public ClientBuilder id(Long id) {
         this.id = id;
@@ -55,6 +56,11 @@ public class ClientBuilder {
         return this;
     }
 
+    public ClientBuilder active(Boolean active) {
+        this.active = active;
+        return this;
+    }
+
     public Client build() {
         Client client = new Client();
         client.setId(this.id);
@@ -65,6 +71,7 @@ public class ClientBuilder {
         client.setAddress(this.address);
         client.setJob(this.job);
         client.setRegisteredBy(this.registeredBy);
+        client.setActive(this.active);
         return client;
     }
 }

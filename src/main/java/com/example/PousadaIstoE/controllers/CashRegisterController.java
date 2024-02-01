@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/maps")
+@RequestMapping("/cashRegister")
 public class CashRegisterController {
     private final CashRegisterService cashRegisterService;
 

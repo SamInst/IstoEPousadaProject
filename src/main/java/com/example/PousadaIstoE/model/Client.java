@@ -31,6 +31,9 @@ public class Client {
     @JoinColumn(name = "fkip01ip02_id_employee")
     private Employee registeredBy;
 
+    @Column(name = "ip01_active")
+    private boolean active;
+
     public Long getId() {
         return id;
     }
@@ -66,6 +69,14 @@ public class Client {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public void setAddress(String address) {
