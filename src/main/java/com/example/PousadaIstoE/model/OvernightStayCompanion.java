@@ -26,9 +26,10 @@ public class OvernightStayCompanion {
     @Column(name = "ip09_age")
     private Integer age;
 
+    @Getter
     @ManyToOne
-    @JoinColumn(name = "fkip09ip08_overnight_stay_id")
-    private OvernightStay overnightStay;
+    @JoinColumn(name = "fkip09ip08_client_id")
+    private Client client;
 
     public OvernightStayCompanion() {
     }
@@ -63,9 +64,6 @@ public class OvernightStayCompanion {
         return age.getYears();
     }
 
-
-
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -78,23 +76,7 @@ public class OvernightStayCompanion {
         this.age = age;
     }
 
-    public OvernightStay getPernoites() {
-        return overnightStay;
-    }
-
-    public void setOvernightStay(OvernightStay overnightStay) {
-        this.overnightStay = overnightStay;
-    }
-
-    public void setPernoites(OvernightStay overnightStay) {
-        this.overnightStay = overnightStay;
-    }
-
-    public OvernightStayCompanion(String name, String cpf, LocalDate birth, Integer age, OvernightStay overnightStay) {
-        this.name = name;
-        this.cpf = cpf;
-        this.birth = birth;
-        this.age = age;
-        this.overnightStay = overnightStay;
+    public void setClient(Client client) {
+        this.client = client;
     }
 }

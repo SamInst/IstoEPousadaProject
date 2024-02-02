@@ -76,4 +76,16 @@ public class OvernightStayReservation {
     public void setRoom(Integer room) {
         this.room = room;
     }
+
+    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, Client client, List<OvernightStayCompanion> companion, Integer room) {
+        this.id = id;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.client = client;
+        this.companion = companion;
+        this.room = room;
+    }
+
+    public OvernightStayReservation() {
+    }
 }
