@@ -10,6 +10,8 @@ public class QueryClient {
             """
             select ip01.ip01_name as name
             from ip01_clients ip01
-            where ip01.ip01_name ilike '%""".concat(name).concat("%'");
+            where 1=1
+            and ip01.ip01_active = true
+            and ip01.ip01_name ilike '%""".concat(name).concat("%'");
     }
 }

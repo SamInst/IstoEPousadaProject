@@ -60,4 +60,10 @@ public class ClientController {
     public List<AutoCompleteNameResponse> autoCompleteNameResponse(String name){
         return clientService.autoCompleteNameResponse(name);
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/find_by_cpf")
+    public ClientResponse findByCpf(String cpf){
+        return clientService.findByCPF(cpf);
+    }
 }

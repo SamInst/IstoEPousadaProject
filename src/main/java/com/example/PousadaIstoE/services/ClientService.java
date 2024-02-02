@@ -4,7 +4,6 @@ import com.example.PousadaIstoE.builders.ClientBuilder;
 import com.example.PousadaIstoE.custom.QueryClient;
 import com.example.PousadaIstoE.model.Client;
 import com.example.PousadaIstoE.repository.ClientRepository;
-import com.example.PousadaIstoE.repository.EmployeeRepository;
 import com.example.PousadaIstoE.request.ClientRequest;
 import com.example.PousadaIstoE.response.AutoCompleteNameResponse;
 import com.example.PousadaIstoE.response.ClientResponse;
@@ -14,8 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,12 +38,11 @@ public class ClientService {
             rs.getString("name"));
 
     public Page<ClientResponse> findAll(Pageable pageable) {
-        var clients = clientRepository.findAll(pageable);
-        List<ClientResponse> clientResponseList = new ArrayList<>();
+        var clients = clientRepository.findAllOrderByName(pageable);
 
-        clients.forEach(client -> clientResponseList.add(clientResponse(client)));
-        clients.stream().sorted(Comparator.comparing(Client::getName)).collect(Collectors.toList());
-
+        List<ClientResponse> clientResponseList = clients.stream()
+                .map(this::clientResponse)
+                .collect(Collectors.toList());
         return new PageImpl<>(clientResponseList, pageable, clients.getTotalElements());
     }
 
@@ -60,7 +56,7 @@ public class ClientService {
 
         Client client = new ClientBuilder()
                 .name(request.name().toUpperCase())
-                .cpf(request.cpf())
+                .cpf(replaceCPF(request.cpf()))
                 .phone(request.phone())
                 .birth(request.birth())
                 .address(request.address().toUpperCase())
@@ -77,7 +73,7 @@ public class ClientService {
         Client updatedClient = new ClientBuilder()
                 .id(client.getId())
                 .name(request.name())
-                .cpf(request.cpf())
+                .cpf(replaceCPF(request.cpf()))
                 .phone(request.phone())
                 .birth(request.birth())
                 .address(request.address())
@@ -107,8 +103,17 @@ public class ClientService {
         );
     }
 
+    public ClientResponse findByCPF (String cpf){
+        var client = clientRepository.findClientByCpf(replaceCPF(cpf));
+        return clientResponse(client);
+    }
+
     public List<AutoCompleteNameResponse> autoCompleteNameResponse(String name){
         var sql = queryClient.autoCompleteName(name.toUpperCase());
         return jdbcTemplate.query(sql, rowMapperAutoCompleteName);
+    }
+
+    public String replaceCPF(String cpf){
+        return cpf.replaceAll("[.-]", "");
     }
 }
