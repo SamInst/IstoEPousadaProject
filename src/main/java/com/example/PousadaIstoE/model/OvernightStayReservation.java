@@ -1,5 +1,6 @@
 package com.example.PousadaIstoE.model;
 
+import com.example.PousadaIstoE.Enums.PaymentType;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -28,6 +29,10 @@ public class OvernightStayReservation {
 
     @Column(name = "ip13_room")
     private Integer room;
+
+    @Column(name = "ip13_payment_type")
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
 
     public Long getId() {
         return id;
@@ -77,13 +82,22 @@ public class OvernightStayReservation {
         this.room = room;
     }
 
-    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, Client client, List<OvernightStayCompanion> companion, Integer room) {
+    public PaymentType getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(PaymentType paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, Client client, List<OvernightStayCompanion> companion, Integer room, PaymentType paymentType) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.client = client;
         this.companion = companion;
         this.room = room;
+        this.paymentType = paymentType;
     }
 
     public OvernightStayReservation() {

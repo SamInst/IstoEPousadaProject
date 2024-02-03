@@ -28,12 +28,12 @@ public class OvernightStayCompanionService {
                 ()-> new EntityNotFound("Acompanhante não encontrado"));
     }
 
-    public OvernightStayCompanion addAcompanhante(OvernightStayCompanion acompanhante){
-        var pernoite = overnightStayRepository.findById(acompanhante.getPernoites().getId()).orElseThrow(
-                ()-> new EntityNotFound("Pernoite não encontrado"));
-        acompanhante.setPernoites(pernoite);
-        return overnightStayCompanionRepository.save(acompanhante);
-    }
+//    public OvernightStayCompanion addAcompanhante(OvernightStayCompanion acompanhante){
+//        var pernoite = overnightStayRepository.findById(acompanhante.getPernoites().getId()).orElseThrow(
+//                ()-> new EntityNotFound("Pernoite não encontrado"));
+//        acompanhante.setPernoites(pernoite);
+//        return overnightStayCompanionRepository.save(acompanhante);
+//    }
     public void removeAcompanhante(Long id){
         overnightStayCompanionRepository.deleteById(id);
     }

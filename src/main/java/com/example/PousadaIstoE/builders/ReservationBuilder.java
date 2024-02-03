@@ -1,5 +1,6 @@
 package com.example.PousadaIstoE.builders;
 
+import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.model.Client;
 import com.example.PousadaIstoE.model.OvernightStayCompanion;
 import com.example.PousadaIstoE.model.OvernightStayReservation;
@@ -15,6 +16,7 @@ public class ReservationBuilder {
     private Client client;
     private List<OvernightStayCompanion> companionList;
     private Integer room;
+    private PaymentType paymentType;
 
     public ReservationBuilder id(Long id) {
         this.id = id;
@@ -44,6 +46,12 @@ public class ReservationBuilder {
         return this;
     }
 
+
+    public ReservationBuilder paymentType(PaymentType paymentType) {
+        this.paymentType = paymentType;
+        return this;
+    }
+
     public OvernightStayReservation build(){
         return new OvernightStayReservation(
                 id,
@@ -51,6 +59,7 @@ public class ReservationBuilder {
                 endDate,
                 client,
                 companionList,
-                room);
+                room,
+                paymentType);
     }
 }

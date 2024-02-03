@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface OvernightStayCompanionRepository extends JpaRepository<OvernightStayCompanion, Long> {
-    List<OvernightStayCompanion> findAllByOvernightStay_Id(Long id);
+    List<OvernightStayCompanion> findAllByClient_Id(Long id);
 }

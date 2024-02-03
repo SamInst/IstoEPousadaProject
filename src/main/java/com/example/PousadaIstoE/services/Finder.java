@@ -13,6 +13,8 @@ public class Finder {
     private final RoomRepository roomRepository;
     private final OvernightStayCompanionRepository overnightStayCompanionRepository;
     private final OvernightStayRepository overnightStayRepository;
+    private final OvernightStayReservationRepository reservationRepository;
+    private final OvernightStayCompanionRepository companionRepository;
 
     public Finder(
             CashRegisterRepository cashRegisterRepository,
@@ -20,13 +22,15 @@ public class Finder {
             EmployeeRepository employeeRepository,
             RoomRepository roomRepository,
             OvernightStayCompanionRepository overnightStayCompanionRepository,
-            OvernightStayRepository overnightStayRepository) {
+            OvernightStayRepository overnightStayRepository, OvernightStayReservationRepository reservationRepository, OvernightStayCompanionRepository companionRepository) {
         this.cashRegisterRepository = cashRegisterRepository;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
         this.roomRepository = roomRepository;
         this.overnightStayCompanionRepository = overnightStayCompanionRepository;
         this.overnightStayRepository = overnightStayRepository;
+        this.reservationRepository = reservationRepository;
+        this.companionRepository = companionRepository;
     }
 
     public Client clientById(Long client_id){
@@ -46,6 +50,15 @@ public class Finder {
     public OvernightStay overnightStayById(Long overNightStay_id){
         return overnightStayRepository.findById(overNightStay_id)
                 .orElseThrow(()-> new EntityNotFound("OverNight Stay not found"));
+    }
+
+    public OvernightStayReservation reservationById(Long reservation_id){
+        return reservationRepository.findById(reservation_id)
+                .orElseThrow(()-> new EntityNotFound("Reservation not found"));
+    }
+    public OvernightStayCompanion companionById(Long companion_id){
+        return overnightStayCompanionRepository.findById(companion_id)
+                .orElseThrow(()-> new EntityNotFound("Companion not found"));
     }
 
 

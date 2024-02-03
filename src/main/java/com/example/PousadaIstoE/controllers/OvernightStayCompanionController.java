@@ -28,11 +28,11 @@ public class OvernightStayCompanionController {
         return overnightStayCompanionService.acompanhantePernoiteList();
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public OvernightStayCompanion adicionaAcompanhante(OvernightStayCompanion overnightStayCompanion){
-        return overnightStayCompanionService.addAcompanhante(overnightStayCompanion);
-    }
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.ACCEPTED)
+//    public OvernightStayCompanion adicionaAcompanhante(OvernightStayCompanion overnightStayCompanion){
+//        return overnightStayCompanionService.addAcompanhante(overnightStayCompanion);
+//    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
