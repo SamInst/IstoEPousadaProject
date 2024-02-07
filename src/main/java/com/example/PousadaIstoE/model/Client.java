@@ -22,6 +22,18 @@ public class Client {
     @Column(name = "ip01_phone")
     private String phone;
 
+    @ManyToOne
+    @JoinColumn(name = "fkip01_id_country")
+    private Country country;
+
+    @ManyToOne
+    @JoinColumn(name = "fkip01_id_state")
+    private States state;
+
+    @ManyToOne
+    @JoinColumn(name = "fkip01_id_county")
+    private County county;
+
     @Column(name = "ip01_address")
     private String address;
     @Column(name = "ip01_job")
@@ -37,6 +49,31 @@ public class Client {
     public Long getId() {
         return id;
     }
+
+    public Country getCountry() {
+        return country;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
+    public States getState() {
+        return state;
+    }
+
+    public void setState(States state) {
+        this.state = state;
+    }
+
+    public County getCounty() {
+        return county;
+    }
+
+    public void setCounty(County county) {
+        this.county = county;
+    }
+
     public Client (){}
     public String getName() {
         return name;
