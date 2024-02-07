@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface CountyRepository extends JpaRepository<County,Long> {
     List<County> findCountiesByState_Id(Long state_id);
+
+
 }
