@@ -8,10 +8,11 @@ import java.util.List;
 
 public record ReservationResponse(
     Long id,
-    List<ClientResponse> clientResponseList,
-    LocalDate startDate,
-    LocalDate endDate,
+    List<ClientResponse> client_response_list,
+    LocalDate start_date,
+    LocalDate end_date,
     Integer room,
-    PaymentType paymentType,
-    PaymentStatus paymentStatus
+    PaymentType payment_type,
+    PaymentStatus payment_status,
+    Integer amount_people
 ){}

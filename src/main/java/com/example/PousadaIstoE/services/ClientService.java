@@ -34,6 +34,7 @@ public class ClientService {
         this.find = find;
     }
     static RowMapper<AutoCompleteNameResponse> rowMapperAutoCompleteName = (rs, rowNum) -> new AutoCompleteNameResponse(
+            rs.getString("cpf"),
             rs.getString("name"));
 
     public Page<ClientResponse> findAll(Pageable pageable) {
@@ -60,7 +61,7 @@ public class ClientService {
                 .birth(request.birth())
                 .address(request.address().toUpperCase())
                 .job(request.job().toUpperCase())
-                .isHosted(true)
+                .isHosted(false)
                 .registeredBy(employee)
                 .build();
         return clientRepository.save(client);
@@ -97,7 +98,7 @@ public class ClientService {
                 client.getPhone() != null ? client.getPhone() : "",
                 client.getAddress() != null ? client.getAddress() : "",
                 client.getJob() != null ? client.getJob() : "",
-                client.getRegisteredBy().getName() != null ? client.getRegisteredBy().getName() : "",
+                client.getRegisteredBy() != null ? client.getRegisteredBy().getName() : "",
                 client.isHosted()
         );
     }

@@ -7,6 +7,6 @@ public record ClientResponse(
         String phone,
         String address,
         String job,
-        String registeredBy,
-        Boolean isHosted
+        String registered_by,
+        Boolean is_hosted
 ){}

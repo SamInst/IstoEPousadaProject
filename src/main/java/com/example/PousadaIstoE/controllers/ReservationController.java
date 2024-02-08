@@ -28,14 +28,16 @@ public class ReservationController {
         reservationService.alterReservation(reservation_id, request);
     }
 
-    @DeleteMapping("/remove_companion/{companion_id}")
-    public void removeCompanion(@PathVariable Long companion_id){
-        reservationService.removeClientFromReservation(companion_id);
-    }
-
     @GetMapping("/find/{reservation_id}")
+    @ResponseStatus(HttpStatus.OK)
     public ReservationResponse findById(@PathVariable Long reservation_id){
         return reservationService.findReservationById(reservation_id);
+    }
+
+    @DeleteMapping("/remove_client/{reservation_id}/{client_id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeClientFromReservation(@PathVariable Long reservation_id, @PathVariable Long client_id) {
+        reservationService.removeClientFromReservation(reservation_id, client_id);
     }
 
 }

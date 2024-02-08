@@ -3,6 +3,7 @@ package com.example.PousadaIstoE.services;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.builders.ClientBuilder;
 import com.example.PousadaIstoE.builders.ReservationBuilder;
+import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.Client;
 import com.example.PousadaIstoE.model.OvernightStayReservation;
 import com.example.PousadaIstoE.repository.ClientRepository;
@@ -15,12 +16,13 @@ import com.example.PousadaIstoE.response.ClientResponse;
 import com.example.PousadaIstoE.response.ReservationResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class OvernightStayReservationService {
-    private static final String NE = "NÃO ESPECIFICADO";
+    private static final String NE = "Not Specified";
     private final OvernightStayReservationRepository overnightStayReservationRepository;
     private final OvernightStayCompanionRepository overnightStayCompanionRepository;
     private final ClientRepository clientRepository;
@@ -42,12 +44,25 @@ public class OvernightStayReservationService {
         return reservationResponse(reservation);
     }
 
+    public List<ReservationResponse> allReservationsByDate(LocalDate date) {
+        List<ReservationResponse> reservationResponseList = new ArrayList<>();
+        var reservations = overnightStayReservationRepository.findAllByStartDate(date);
+
+        for (OvernightStayReservation reservation : reservations) {
+            reservationResponseList.add(reservationResponse(reservation));
+        }
+        return reservationResponseList;
+    }
+
 
     public void createReservation(ReservationRequest request) {
         List<Client> clientList = new ArrayList<>();
 
-        request.client().forEach(client -> {
+        request.clients().forEach(client -> {
             Client findClient = clientRepository.findClientByCpf(client.cpf());
+
+            if (request.clients().contains(client)) throw new EntityConflict("The customer has already been added to this list.");
+
             if (findClient == null) {
                 findClient = clientBuilder(client);
                 Client newClient = clientRepository.save(findClient);
@@ -72,11 +87,18 @@ public class OvernightStayReservationService {
 
         List<Client> clientListUpdated = new ArrayList<>(reservation.getClientList());
 
-        if(!request.clientList().isEmpty()){
+        if(!request.clientList().isEmpty()) {
             request.clientList().forEach(client -> {
-               Client findClient = clientBuilder(client);
-                var newClient = clientRepository.save(findClient);
-                clientListUpdated.add(newClient);
+                var findClient = clientRepository.findClientByCpf(replace(client.cpf()));
+                if (clientListUpdated.contains(findClient))
+                    throw new EntityConflict("The customer has already been added to this list.");
+                if (findClient == null) {
+                    findClient = clientBuilder(client);
+                    Client newClient = clientRepository.save(findClient);
+                    clientListUpdated.add(newClient);
+                } else {
+                    clientListUpdated.add(findClient);
+                }
             });
         }
         OvernightStayReservation updateReservation = new ReservationBuilder()
@@ -103,9 +125,14 @@ public class OvernightStayReservationService {
                 .build();
     }
 
-    public void removeClientFromReservation(Long companion_id){
-        var companion = find.companionById(companion_id);
-        overnightStayCompanionRepository.delete(companion);
+    public void removeClientFromReservation(Long reservation_id, Long client_id) {
+        var client = find.clientById(client_id);
+        var reservation = find.reservationById(reservation_id);
+
+        if (reservation != null && !reservation.getClientList().isEmpty()) {
+             reservation.getClientList().remove(client);
+             overnightStayReservationRepository.save(reservation);
+        }
     }
 
     private ReservationResponse reservationResponse(OvernightStayReservation reservation){
@@ -133,12 +160,20 @@ public class OvernightStayReservationService {
                 reservation.getEndDate(),
                 reservation.getRoom(),
                 reservation.getPaymentType(),
-                reservation.getPaymentStatus());
+                reservation.getPaymentStatus(),
+                clientResponseList.size()
+                );
     }
 
     public static String replace(String string) {
         String regex = "[^a-zA-Z0-9\\s]";
         String newString = string.replaceAll(regex, "");
         return newString.toUpperCase();
+    }
+
+
+    private void dataValidation(LocalDate startDate, LocalDate endDate){
+        if (startDate.equals(endDate)) throw new EntityConflict("The data inserted cannot be in the same day");
+        if (endDate.isBefore(startDate)) throw new EntityConflict("The data inserted cannot be less than today");
     }
 }
