@@ -14,7 +14,7 @@ public class ClientBuilder {
     private String address;
     private String job;
     private Employee registeredBy;
-    private Boolean active;
+    private Boolean hosted;
 
     public ClientBuilder id(Long id) {
         this.id = id;
@@ -27,7 +27,7 @@ public class ClientBuilder {
     }
 
     public ClientBuilder cpf(String cpf) {
-        this.cpf = cpf;
+        this.cpf = cpf.replaceAll(".-","");
         return this;
     }
 
@@ -56,8 +56,8 @@ public class ClientBuilder {
         return this;
     }
 
-    public ClientBuilder active(Boolean active) {
-        this.active = active;
+    public ClientBuilder isHosted(Boolean hosted) {
+        this.hosted = hosted;
         return this;
     }
 
@@ -71,7 +71,7 @@ public class ClientBuilder {
         client.setAddress(this.address);
         client.setJob(this.job);
         client.setRegisteredBy(this.registeredBy);
-        client.setActive(this.active);
+        client.setHosted(this.hosted);
         return client;
     }
 }

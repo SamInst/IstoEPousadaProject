@@ -16,10 +16,10 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PostMapping("/create/{client_id}")
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public void createReservation(@PathVariable Long client_id, @RequestBody ReservationRequest request){
-        reservationService.createReservation(client_id, request);
+    public void createReservation(@RequestBody ReservationRequest request){
+        reservationService.createReservation(request);
     }
 
     @PutMapping("/update/{reservation_id}")
@@ -30,7 +30,7 @@ public class ReservationController {
 
     @DeleteMapping("/remove_companion/{companion_id}")
     public void removeCompanion(@PathVariable Long companion_id){
-        reservationService.removeCompanion(companion_id);
+        reservationService.removeClientFromReservation(companion_id);
     }
 
     @GetMapping("/find/{reservation_id}")

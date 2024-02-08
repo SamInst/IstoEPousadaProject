@@ -43,8 +43,8 @@ public class Client {
     @JoinColumn(name = "fkip01ip02_id_employee")
     private Employee registeredBy;
 
-    @Column(name = "ip01_active")
-    private boolean active;
+    @Column(name = "ip01_hosted")
+    private boolean isHosted;
 
     public Long getId() {
         return id;
@@ -108,12 +108,12 @@ public class Client {
         this.phone = phone;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isHosted() {
+        return isHosted;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setHosted(boolean hosted) {
+        this.isHosted = hosted;
     }
 
     public void setAddress(String address) {

@@ -8,5 +8,5 @@ public record ClientResponse(
         String address,
         String job,
         String registeredBy,
-        Boolean active
+        Boolean isHosted
 ){}

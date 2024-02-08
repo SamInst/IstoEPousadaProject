@@ -14,7 +14,8 @@ public class OvernightStayCompanionService {
 
     private final OvernightStayRepository overnightStayRepository;
 
-    public OvernightStayCompanionService(OvernightStayCompanionRepository overnightStayCompanionRepository, OvernightStayRepository overnightStayRepository) {
+    public OvernightStayCompanionService(OvernightStayCompanionRepository overnightStayCompanionRepository,
+                                         OvernightStayRepository overnightStayRepository) {
         this.overnightStayCompanionRepository = overnightStayCompanionRepository;
         this.overnightStayRepository = overnightStayRepository;
     }

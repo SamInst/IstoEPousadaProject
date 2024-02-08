@@ -2,7 +2,7 @@ package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
 
-@Entity(name = "country")
+@Entity(name = "a00_country")
 public class Country {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

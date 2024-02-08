@@ -3,7 +3,7 @@ package com.example.PousadaIstoE.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "county")
+@Table(name = "a02_county")
 public class County {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record UpdateReservationRequest(
-        List<CompanionRequest> companions,
+        List<ClientRequest> clientList,
         LocalDate startDate,
         LocalDate endDate,
         Integer room,

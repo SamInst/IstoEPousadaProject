@@ -34,5 +34,4 @@ public class PlaceController {
         return placeService.findAllStatesByCountryId(country_id);
     }
 
-
 }

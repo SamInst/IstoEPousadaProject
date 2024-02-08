@@ -3,13 +3,14 @@ package com.example.PousadaIstoE.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "ip12_states")
+@Table(name = "a01_states")
 public class States {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Column(name = "description")
     private String description;
 
     public Long getId() {

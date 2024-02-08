@@ -1,22 +1,20 @@
 package com.example.PousadaIstoE.builders;
 
+import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.model.Client;
-import com.example.PousadaIstoE.model.OvernightStayCompanion;
 import com.example.PousadaIstoE.model.OvernightStayReservation;
-
 import java.time.LocalDate;
 import java.util.List;
 
 public class ReservationBuilder {
-
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Client client;
-    private List<OvernightStayCompanion> companionList;
+    private List<Client> clientList;
     private Integer room;
     private PaymentType paymentType;
+    private PaymentStatus paymentStatus;
 
     public ReservationBuilder id(Long id) {
         this.id = id;
@@ -32,23 +30,23 @@ public class ReservationBuilder {
         this.endDate = endDate;
         return this;
     }
-    public ReservationBuilder client(Client client) {
-        this.client = client;
+    public ReservationBuilder clientList(List<Client> clientList) {
+        this.clientList = clientList;
         return this;
     }
 
-    public ReservationBuilder companions(List<OvernightStayCompanion> companionList) {
-        this.companionList = companionList;
-        return this;
-    }
     public ReservationBuilder room(Integer room) {
         this.room = room;
         return this;
     }
 
-
     public ReservationBuilder paymentType(PaymentType paymentType) {
         this.paymentType = paymentType;
+        return this;
+    }
+
+    public ReservationBuilder paymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
         return this;
     }
 
@@ -57,9 +55,9 @@ public class ReservationBuilder {
                 id,
                 startDate,
                 endDate,
-                client,
-                companionList,
+                clientList,
                 room,
-                paymentType);
+                paymentType,
+                paymentStatus);
     }
 }

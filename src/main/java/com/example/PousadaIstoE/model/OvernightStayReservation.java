@@ -1,5 +1,6 @@
 package com.example.PousadaIstoE.model;
 
+import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.PaymentType;
 import jakarta.persistence.*;
 
@@ -20,12 +21,9 @@ public class OvernightStayReservation {
     @Column(name = "ip13_end_date")
     private LocalDate endDate;
 
-    @ManyToOne
-    @JoinColumn(name = "fkip13ip01_id_client")
-    private Client client;
     @OneToMany
-    @JoinColumn(name = "fkip13ip12_id_companion")
-    private List<OvernightStayCompanion> companion;
+    @JoinColumn(name = "fkip13ip01_id_client")
+    private List<Client> clientList;
 
     @Column(name = "ip13_room")
     private Integer room;
@@ -33,6 +31,10 @@ public class OvernightStayReservation {
     @Column(name = "ip13_payment_type")
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
+
+    @Column(name = "ip13_payment_status")
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus;
 
     public Long getId() {
         return id;
@@ -58,20 +60,12 @@ public class OvernightStayReservation {
         this.endDate = endDate;
     }
 
-    public Client getClient() {
-        return client;
+    public List<Client> getClientList() {
+        return clientList;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public List<OvernightStayCompanion> getCompanion() {
-        return companion;
-    }
-
-    public void setCompanion(List<OvernightStayCompanion> companion) {
-        this.companion = companion;
+    public void setClientList(List<Client> clientList) {
+        this.clientList = clientList;
     }
 
     public Integer getRoom() {
@@ -90,16 +84,24 @@ public class OvernightStayReservation {
         this.paymentType = paymentType;
     }
 
-    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, Client client, List<OvernightStayCompanion> companion, Integer room, PaymentType paymentType) {
-        this.id = id;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.client = client;
-        this.companion = companion;
-        this.room = room;
-        this.paymentType = paymentType;
+    public PaymentStatus getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 
     public OvernightStayReservation() {
+    }
+
+    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, List<Client> clientList, Integer room, PaymentType paymentType, PaymentStatus paymentStatus) {
+        this.id = id;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.clientList = clientList;
+        this.room = room;
+        this.paymentType = paymentType;
+        this.paymentStatus = paymentStatus;
     }
 }

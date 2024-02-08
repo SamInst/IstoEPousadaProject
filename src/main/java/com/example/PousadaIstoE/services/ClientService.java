@@ -60,7 +60,7 @@ public class ClientService {
                 .birth(request.birth())
                 .address(request.address().toUpperCase())
                 .job(request.job().toUpperCase())
-                .active(true)
+                .isHosted(true)
                 .registeredBy(employee)
                 .build();
         return clientRepository.save(client);
@@ -77,7 +77,7 @@ public class ClientService {
                 .birth(request.birth())
                 .address(request.address())
                 .job(request.job())
-                .active(client.isActive())
+                .isHosted(client.isHosted())
                 .registeredBy(client.getRegisteredBy())
                 .build();
         clientRepository.save(updatedClient);
@@ -85,7 +85,7 @@ public class ClientService {
 
     public void inactivateClient(Long client_id) {
         var client = find.clientById(client_id);
-        client.setActive(false);
+        client.setHosted(false);
         clientRepository.save(client);
     }
 
@@ -98,7 +98,7 @@ public class ClientService {
                 client.getAddress() != null ? client.getAddress() : "",
                 client.getJob() != null ? client.getJob() : "",
                 client.getRegisteredBy().getName() != null ? client.getRegisteredBy().getName() : "",
-                client.isActive()
+                client.isHosted()
         );
     }
 
