@@ -7,14 +7,14 @@ import jakarta.persistence.*;
 public class County {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "county_id")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "county_description")
+    @Column(name = "description")
     private String description;
 
     @ManyToOne
-    @JoinColumn (name = "county_state_id")
+    @JoinColumn (name = "state_id")
     private States state;
 
     public Long getId() {

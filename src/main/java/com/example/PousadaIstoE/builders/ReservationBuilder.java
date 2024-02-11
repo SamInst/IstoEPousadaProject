@@ -15,6 +15,7 @@ public class ReservationBuilder {
     private Integer room;
     private PaymentType paymentType;
     private PaymentStatus paymentStatus;
+    private Boolean isActive;
 
     public ReservationBuilder id(Long id) {
         this.id = id;
@@ -50,6 +51,11 @@ public class ReservationBuilder {
         return this;
     }
 
+    public ReservationBuilder isActive(Boolean isActive) {
+        this.isActive = isActive;
+        return this;
+    }
+
     public OvernightStayReservation build(){
         return new OvernightStayReservation(
                 id,
@@ -58,6 +64,7 @@ public class ReservationBuilder {
                 clientList,
                 room,
                 paymentType,
-                paymentStatus);
+                paymentStatus,
+                isActive);
     }
 }

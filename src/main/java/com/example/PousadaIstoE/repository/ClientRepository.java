@@ -23,6 +23,11 @@ public interface ClientRepository extends JpaRepository <Client, Long> {
 
     Client findClientByCpf(String cpf);
 
+    @Query(value = """
+            select ip01_cpf from ip01_clients
+            """, nativeQuery = true)
+    List<Client> findallCpfs(String cpf);
+
 
     @Query(value = """
             select * from ip01_clients ip01 order by ip01.ip01_name

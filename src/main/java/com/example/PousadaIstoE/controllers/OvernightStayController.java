@@ -1,6 +1,5 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.OvernightStayCompanion;
 import com.example.PousadaIstoE.model.OvernightStay;
 import com.example.PousadaIstoE.response.OvernightStayResponse;
 import com.example.PousadaIstoE.response.OvernightStayShortResponse;
@@ -33,9 +32,4 @@ public class OvernightStayController {
         return overnightStayService.updatePernoiteData(pernoiteId, overnightStay);
     }
 
-    @PostMapping("/acompanhante")
-    @ResponseStatus(HttpStatus.CREATED)
-    public OvernightStayCompanion addAcompanhante(OvernightStayCompanion overnightStayCompanion){
-        return overnightStayService.addCompanion(overnightStayCompanion);
-    }
 }

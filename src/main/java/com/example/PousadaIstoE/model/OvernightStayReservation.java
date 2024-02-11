@@ -36,6 +36,17 @@ public class OvernightStayReservation {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    @Column(name = "ip13_is_active")
+    private Boolean isActive;
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     public Long getId() {
         return id;
     }
@@ -95,7 +106,7 @@ public class OvernightStayReservation {
     public OvernightStayReservation() {
     }
 
-    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, List<Client> clientList, Integer room, PaymentType paymentType, PaymentStatus paymentStatus) {
+    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, List<Client> clientList, Integer room, PaymentType paymentType, PaymentStatus paymentStatus, Boolean isActive) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -103,5 +114,6 @@ public class OvernightStayReservation {
         this.room = room;
         this.paymentType = paymentType;
         this.paymentStatus = paymentStatus;
+        this.isActive = isActive;
     }
 }

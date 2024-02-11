@@ -7,6 +7,9 @@ import com.example.PousadaIstoE.services.OvernightStayReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
@@ -38,6 +41,18 @@ public class ReservationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeClientFromReservation(@PathVariable Long reservation_id, @PathVariable Long client_id) {
         reservationService.removeClientFromReservation(reservation_id, client_id);
+    }
+
+    @GetMapping("/find_by_start_date/{start_date}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ReservationResponse> allReservationsByStartDate(@PathVariable LocalDate start_date) {
+        return reservationService.allReservationsByStartDate(start_date);
+    }
+
+    @DeleteMapping("/cancel/{reservation_id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancelReservation(@PathVariable Long reservation_id){
+        reservationService.cancelReservation(reservation_id);
     }
 
 }

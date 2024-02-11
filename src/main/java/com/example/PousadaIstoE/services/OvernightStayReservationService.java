@@ -7,7 +7,6 @@ import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.Client;
 import com.example.PousadaIstoE.model.OvernightStayReservation;
 import com.example.PousadaIstoE.repository.ClientRepository;
-import com.example.PousadaIstoE.repository.OvernightStayCompanionRepository;
 import com.example.PousadaIstoE.repository.OvernightStayReservationRepository;
 import com.example.PousadaIstoE.request.ClientRequest;
 import com.example.PousadaIstoE.request.ReservationRequest;
@@ -15,26 +14,24 @@ import com.example.PousadaIstoE.request.UpdateReservationRequest;
 import com.example.PousadaIstoE.response.ClientResponse;
 import com.example.PousadaIstoE.response.ReservationResponse;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class OvernightStayReservationService {
     private static final String NE = "Not Specified";
     private final OvernightStayReservationRepository overnightStayReservationRepository;
-    private final OvernightStayCompanionRepository overnightStayCompanionRepository;
     private final ClientRepository clientRepository;
     private final Finder find;
 
     public OvernightStayReservationService(
             OvernightStayReservationRepository overnightStayReservationRepository,
-            OvernightStayCompanionRepository overnightStayCompanionRepository,
             ClientRepository clientRepository,
             Finder find) {
         this.overnightStayReservationRepository = overnightStayReservationRepository;
-        this.overnightStayCompanionRepository = overnightStayCompanionRepository;
         this.clientRepository = clientRepository;
         this.find = find;
     }
@@ -44,9 +41,9 @@ public class OvernightStayReservationService {
         return reservationResponse(reservation);
     }
 
-    public List<ReservationResponse> allReservationsByDate(LocalDate date) {
+    public List<ReservationResponse> allReservationsByStartDate(LocalDate startDate) {
         List<ReservationResponse> reservationResponseList = new ArrayList<>();
-        var reservations = overnightStayReservationRepository.findAllByStartDate(date);
+        var reservations = overnightStayReservationRepository.findAllByStartDateAndActiveIsTrue(startDate);
 
         for (OvernightStayReservation reservation : reservations) {
             reservationResponseList.add(reservationResponse(reservation));
@@ -54,22 +51,26 @@ public class OvernightStayReservationService {
         return reservationResponseList;
     }
 
-
     public void createReservation(ReservationRequest request) {
         List<Client> clientList = new ArrayList<>();
+        dataValidation(request.startDate(), request.endDate());
 
         request.clients().forEach(client -> {
-            Client findClient = clientRepository.findClientByCpf(client.cpf());
-
-            if (request.clients().contains(client)) throw new EntityConflict("The customer has already been added to this list.");
+            var replacedCpf = replace(client.cpf());
+            Client findClient = clientRepository.findClientByCpf(replacedCpf);
 
             if (findClient == null) {
                 findClient = clientBuilder(client);
-                Client newClient = clientRepository.save(findClient);
-                clientList.add(newClient);
-
-            } else clientList.add(findClient);
+                clientList.add(findClient);
+                clientRepository.save(findClient);
+            } else {
+                clientList.add(findClient);
+            }
         });
+        Set<Client> uniqueClients = new HashSet<>(clientList);
+        if (uniqueClients.size() < clientList.size()) {
+            throw new EntityConflict("The customer has already been added to this list.");
+        }
         OvernightStayReservation reservation = new ReservationBuilder()
                 .startDate(request.startDate())
                 .endDate(request.endDate())
@@ -77,13 +78,14 @@ public class OvernightStayReservationService {
                 .room(request.room())
                 .paymentType(request.paymentType())
                 .paymentStatus(PaymentStatus.PENDING)
+                .isActive(true)
                 .build();
         overnightStayReservationRepository.save(reservation);
     }
 
-
     public void alterReservation(Long reservation_id, UpdateReservationRequest request){
         var reservation = find.reservationById(reservation_id);
+        dataValidation(reservation.getStartDate(), reservation.getEndDate());
 
         List<Client> clientListUpdated = new ArrayList<>(reservation.getClientList());
 
@@ -109,6 +111,7 @@ public class OvernightStayReservationService {
             .room(request.room())
             .paymentType(request.paymentType())
             .paymentStatus(reservation.getPaymentStatus())
+            .isActive(reservation.getActive())
             .build();
         overnightStayReservationRepository.save(updateReservation);
     }
@@ -171,9 +174,14 @@ public class OvernightStayReservationService {
         return newString.toUpperCase();
     }
 
-
     private void dataValidation(LocalDate startDate, LocalDate endDate){
-        if (startDate.equals(endDate)) throw new EntityConflict("The data inserted cannot be in the same day");
-        if (endDate.isBefore(startDate)) throw new EntityConflict("The data inserted cannot be less than today");
+        if (startDate.equals(endDate)) throw new EntityConflict("The dates entered cannot be on the same day");
+        if (endDate.isBefore(startDate)) throw new EntityConflict("The date entered cannot be less than today");
+    }
+
+    public void cancelReservation(Long reservation_id){
+        var reservation = find.reservationById(reservation_id);
+        reservation.setActive(false);
+        overnightStayReservationRepository.save(reservation);
     }
 }

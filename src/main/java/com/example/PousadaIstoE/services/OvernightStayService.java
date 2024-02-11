@@ -6,7 +6,6 @@ import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.exceptions.EntityDates;
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.*;
-import com.example.PousadaIstoE.repository.OvernightStayCompanionRepository;
 import com.example.PousadaIstoE.repository.OvernightStayComsuptionRepository;
 import com.example.PousadaIstoE.repository.OvernightStayRepository;
 import com.example.PousadaIstoE.repository.RoomRepository;
@@ -35,14 +34,19 @@ public class OvernightStayService {
     private final RoomRepository roomRepository;
     private final CashRegisterService cashRegisterService;
     private final OvernightStayComsuptionRepository overnightStayComsuptionRepository;
-    private final OvernightStayCompanionRepository overnightStayCompanionRepository;
 
-    protected OvernightStayService(OvernightStayRepository overnightStayRepository, RoomRepository roomRepository, CashRegisterService cashRegisterService, OvernightStayComsuptionRepository overnightStayComsuptionRepository, OvernightStayCompanionRepository overnightStayCompanionRepository) {
+
+    protected OvernightStayService(
+            OvernightStayRepository overnightStayRepository,
+            RoomRepository roomRepository,
+            CashRegisterService cashRegisterService,
+            OvernightStayComsuptionRepository overnightStayComsuptionRepository
+            ){
         this.overnightStayRepository = overnightStayRepository;
         this.roomRepository = roomRepository;
         this.cashRegisterService = cashRegisterService;
         this.overnightStayComsuptionRepository = overnightStayComsuptionRepository;
-        this.overnightStayCompanionRepository = overnightStayCompanionRepository;
+
     }
 
     public List<OvernightStayShortResponse> findAll() {
@@ -67,19 +71,9 @@ public class OvernightStayService {
         final var pernoites = overnightStayRepository.findById(id).orElseThrow(() -> new EntityNotFound("Pernoite não encontrado"));
         final var consumo_pernoite = overnightStayComsuptionRepository.findOverNightStayConsumptionByOvernightStay_Id(id);
         final var totalConsumo = overnightStayComsuptionRepository.findTotalConsumption(id);
-        final var acompanhantes = overnightStayCompanionRepository.findAllByClient_Id(id);
         amountPeoplePrice(pernoites);
 
         List<OvernightStayCompanionShortResponse> overnightStayCompanionShortResponseList = new ArrayList<>();
-        acompanhantes.forEach(acompanhantePernoite -> {
-            OvernightStayCompanionShortResponse overnightStayCompanionShortResponse = new OvernightStayCompanionShortResponse(
-                    acompanhantePernoite.getId(),
-                    acompanhantePernoite.getName(),
-                    acompanhantePernoite.getCpf(),
-                    acompanhantePernoite.getAge()
-            );
-            overnightStayCompanionShortResponseList.add(overnightStayCompanionShortResponse);
-        });
         Integer p1 = between(pernoites.getStartDate(), pernoites.getEndDate()).getDays();
         Float total_diarias = pernoites.getTotal() * p1;
         var valor_total = valorTotal(id, pernoites, p1, total_diarias);
@@ -192,13 +186,6 @@ public class OvernightStayService {
             }
         }
         overnightStayRepository.save(overnight);
-    }
-
-    public OvernightStayCompanion addCompanion(OvernightStayCompanion overnightStayCompanion) {
-        var birth = overnightStayCompanion.getBirth();
-        Period age = Period.ofYears(Period.between(LocalDate.now(), birth).getYears());
-        overnightStayCompanion.setAge(age.getYears());
-        return overnightStayCompanionRepository.save(overnightStayCompanion);
     }
 
     @Scheduled(cron = "0 * * * * ?") // Needs to be executed at midnight
