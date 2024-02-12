@@ -75,44 +75,44 @@ public class EntryService {
         return new PageImpl<>(simpleEntryResponseList, pageable, page.getTotalElements());
     }
 
-    public AtomicReference<EntryResponse> findById(Long id) {
-        AtomicReference<EntryResponse> response = new AtomicReference<>();
-        entryConsumptionList = entryConsumptionRepository.findEntryConsumptionByEntry_Id(id);
-        final var entrada = entryRepository.findById(id).orElseThrow(
-                () -> new EntityNotFound("Entrada não foi Cadastrada ou não existe mais"));
-        calcularHora(id);
-        Double totalConsumo = entryRepository.totalConsumption(id);
-
-        if (totalConsumo == null){ totalConsumo = (double) 0; }
-        double soma = totalConsumo + entryValue;
-
-        List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
-        entryConsumptionList.forEach(consumo -> {
-            ConsumptionResponse consumptionResponse = new ConsumptionResponse(
-                    consumo.getAmount(),
-                    consumo.getItens().getDescription(),
-                    consumo.getItens().getValue(),
-                    consumo.getTotal()
-            );
-            consumptionResponseList.add(consumptionResponse);
-        });
-        response.set(new EntryResponse(
-                entrada.getRooms().getNumber(),
-                entrada.getStartTime(),
-                entrada.getEndTime(),
-                entrada.getLicensePlate(),
-                new EntryResponse.TempoPermanecido(
-                        hours,
-                        minutesRemaining
-                ),
-                consumptionResponseList,
-                entrada.getEntryStatus(),
-                totalConsumo,
-                entryValue,
-                soma
-        ));
-        return response;
-    }
+//    public AtomicReference<EntryResponse> findById(Long id) {
+//        AtomicReference<EntryResponse> response = new AtomicReference<>();
+//        entryConsumptionList = entryConsumptionRepository.findEntryConsumptionByEntry_Id(id);
+//        final var entrada = entryRepository.findById(id).orElseThrow(
+//                () -> new EntityNotFound("Entrada não foi Cadastrada ou não existe mais"));
+//        calcularHora(id);
+//        Double totalConsumo = entryRepository.totalConsumptionByEntryId(id);
+//
+//        if (totalConsumo == null){ totalConsumo = (double) 0; }
+//        double soma = totalConsumo + entryValue;
+//
+//        List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
+//        entryConsumptionList.forEach(consumo -> {
+//            ConsumptionResponse consumptionResponse = new ConsumptionResponse(
+//                    consumo.getAmount(),
+//                    consumo.getItens().getDescription(),
+//                    consumo.getItens().getValue(),
+//                    consumo.getTotal()
+//            );
+//            consumptionResponseList.add(consumptionResponse);
+//        });
+//        response.set(new EntryResponse(
+//                entrada.getRooms().getNumber(),
+//                entrada.getStartTime(),
+//                entrada.getEndTime(),
+//                entrada.getLicensePlate(),
+//                new EntryResponse.(
+//                        hours,
+//                        minutesRemaining
+//                ),
+//                consumptionResponseList,
+//                entrada.getEntryStatus(),
+//                totalConsumo,
+//                entryValue,
+//                soma
+//        ));
+//        return response;
+//    }
 
     public Entry registerEntrada(Entry entry) {
         Rooms quartoOut = roomFeing.findById(entry.getRooms().getId())
@@ -192,7 +192,7 @@ public class EntryService {
 
     private void validacaoPagamento(Entry request){
         totalCashRegister = cashRegisterFeing.findLastTotal();
-        Double totalConsumo = entryRepository.totalConsumption(request.getId());
+        Double totalConsumo = entryRepository.totalConsumptionByEntryId(request.getId());
         if (totalConsumo == null){ totalConsumo = 0D; }
         entryAndConsumption = entryValue + totalConsumo;
         totalValue = totalCashRegister + entryAndConsumption;

@@ -1,9 +1,9 @@
 package com.example.PousadaIstoE.response;
 
 public record ConsumptionResponse(
-        Integer quantidade,
+        Integer amount,
         String item,
-        Float valor,
+        Float value,
         Float total
 ) {
 }

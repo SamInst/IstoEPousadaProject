@@ -159,4 +159,17 @@ public class Entry {
         this.paymentType = paymentType;
         this.paymentStatus = status_pagamento;
     }
+
+    public Entry(Long id, Rooms rooms, LocalTime startTime, LocalTime endTime, String licensePlate, EntryStatus entryStatus, LocalDate entryDataRegister, Float totalEntry, PaymentType paymentType, PaymentStatus paymentStatus) {
+        this.id = id;
+        this.rooms = rooms;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.licensePlate = licensePlate;
+        this.entryStatus = entryStatus;
+        this.entryDataRegister = entryDataRegister;
+        this.totalEntry = totalEntry;
+        this.paymentType = paymentType;
+        this.paymentStatus = paymentStatus;
+    }
 }

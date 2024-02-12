@@ -1,25 +1,23 @@
 package com.example.PousadaIstoE.response;
 
 import com.example.PousadaIstoE.Enums.EntryStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
 public record EntryResponse(
-        Integer apartamento,
-        LocalTime hora_entrada,
-        LocalTime hora_saida,
-        String licensePlate,
-        TempoPermanecido tempo_permanecido,
-        List<ConsumptionResponse> consumo,
-        EntryStatus entryStatus,
-
-        double total_consumo,
-        double valor_entrada,
+        Long id,
+        Integer apartment_number,
+        LocalDate date_register,
+        @JsonFormat(pattern = "HH:mm") LocalTime entry_time,
+        @JsonFormat(pattern = "HH:mm") LocalTime departure_time,
+        String license_plate,
+        String time_spent,
+        List<ConsumptionResponse> consumptionResponseList,
+        EntryStatus entry_status,
+        double total_consumption,
+        double entry_value,
         double total
-) {
-    public record TempoPermanecido(
-            int horas,
-            int minutos
-    ){}
-}
+){}

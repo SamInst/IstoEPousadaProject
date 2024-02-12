@@ -36,11 +36,11 @@ public class EntryController {
         return entryService.findAll(pageable);
     }
 
-    @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public AtomicReference<EntryResponse> findById(@PathVariable ("id") Long id){
-        return entryService.findById(id);
-    }
+//    @GetMapping("/{id}")
+//    @ResponseStatus(HttpStatus.OK)
+//    public AtomicReference<EntryResponse> findById(@PathVariable ("id") Long id){
+//        return entryService.findById(id);
+//    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")

@@ -13,22 +13,24 @@ public class Finder {
     private final RoomRepository roomRepository;
     private final OvernightStayRepository overnightStayRepository;
     private final OvernightStayReservationRepository reservationRepository;
-
+    private final EntryRepository entryRepository;
 
     public Finder(
+            EntryRepository entryRepository,
             CashRegisterRepository cashRegisterRepository,
             ClientRepository clientRepository,
             EmployeeRepository employeeRepository,
             RoomRepository roomRepository,
             OvernightStayRepository overnightStayRepository,
-            OvernightStayReservationRepository reservationRepository
-      ){
+            OvernightStayReservationRepository reservationRepository,
+            EntryRepository entryRepository1){
         this.cashRegisterRepository = cashRegisterRepository;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
         this.roomRepository = roomRepository;
         this.overnightStayRepository = overnightStayRepository;
         this.reservationRepository = reservationRepository;
+        this.entryRepository = entryRepository1;
     }
 
     public Client clientById(Long client_id){
@@ -54,6 +56,12 @@ public class Finder {
         return reservationRepository.findById(reservation_id)
                 .orElseThrow(()-> new EntityNotFound("Reservation not found"));
     }
+
+    public Entry entryById(Long entry_id){
+        return entryRepository.findById(entry_id)
+                .orElseThrow(()-> new EntityNotFound("Entry not found"));
+    }
+
     public String replace(String string) {
         String regex = "[^a-zA-Z0-9\\s]";
         String newString = string.replaceAll(regex, "");

@@ -6,9 +6,9 @@ import java.time.LocalTime;
 
 public record SimpleEntryResponse(
         Long id,
-        Integer apartamento,
-        LocalTime hora_entrada,
-        LocalTime hora_saida,
-        String placa,
+        Integer apartment,
+        LocalTime hour_entry,
+        LocalTime hour_out,
+        String plate,
         EntryStatus entryStatus
 ){}
