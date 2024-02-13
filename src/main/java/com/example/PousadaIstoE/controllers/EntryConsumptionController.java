@@ -1,14 +1,12 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.EntryConsumption;
+import com.example.PousadaIstoE.request.EntryConsumptionRequest;
 import com.example.PousadaIstoE.services.EntryConsumptionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/entrada-consumo")
+@RequestMapping("/entry-consumption")
 public class EntryConsumptionController {
     private final EntryConsumptionService entryConsumptionService;
 
@@ -16,27 +14,17 @@ public class EntryConsumptionController {
         this.entryConsumptionService = entryConsumptionService;
     }
 
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<EntryConsumption> buscarTodos(){
-        return entryConsumptionService.BuscaTodos();
-    }
 
-
-    @PostMapping
+    @PostMapping("/add/{entry_id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public EntryConsumption criaConsumo(EntryConsumption entryConsumption){
-        return entryConsumptionService.addConsumo(entryConsumption);
+    public void addConsumption(
+            @PathVariable Long entry_id,
+            @RequestBody EntryConsumptionRequest request) {
+         entryConsumptionService.addConsumption(entry_id, request);
     }
-    @DeleteMapping("/{id_consumo}")
+    @DeleteMapping("/remove/{consumption_id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletaConsumoPorEntradaId( @PathVariable ("id_consumo") Long id_consumo){
-         entryConsumptionService.deletaConsumoPorEntradaId(id_consumo);
-    }
-
-    @GetMapping("/findByEntrada")
-    @ResponseStatus(HttpStatus.OK)
-    public List<EntryConsumption> findEntradaConsumoByEntrada(Long entrada_id){
-        return entryConsumptionService.findEntradaConsumoByEntrada(entrada_id);
+    public void removeConsumption(@PathVariable Long consumption_id){
+         entryConsumptionService.removeConsumption(consumption_id);
     }
 }

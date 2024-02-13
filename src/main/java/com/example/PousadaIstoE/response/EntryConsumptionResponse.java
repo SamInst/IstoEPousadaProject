@@ -1,13 +1,13 @@
 package com.example.PousadaIstoE.response;
 
 public record EntryConsumptionResponse(
-        Integer quantidade,
+        Integer amount,
         Item item,
         Float total
 ){
     public record Item (
-            String descricao,
-            Float valor,
+            String description,
+            Float value,
             Float subTotal
     ){}
 }

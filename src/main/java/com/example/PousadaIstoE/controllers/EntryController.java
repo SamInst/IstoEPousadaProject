@@ -1,7 +1,6 @@
 package com.example.PousadaIstoE.controllers;
 
 import com.example.PousadaIstoE.model.Entry;
-import com.example.PousadaIstoE.response.EntryResponse;
 import com.example.PousadaIstoE.response.SimpleEntryResponse;
 import com.example.PousadaIstoE.Enums.EntryStatus;
 import com.example.PousadaIstoE.services.EntryService;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/entradas")

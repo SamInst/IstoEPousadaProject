@@ -14,6 +14,7 @@ public class Finder {
     private final OvernightStayRepository overnightStayRepository;
     private final OvernightStayReservationRepository reservationRepository;
     private final EntryRepository entryRepository;
+    private final ItemRepository itemRepository;
 
     public Finder(
             EntryRepository entryRepository,
@@ -23,7 +24,7 @@ public class Finder {
             RoomRepository roomRepository,
             OvernightStayRepository overnightStayRepository,
             OvernightStayReservationRepository reservationRepository,
-            EntryRepository entryRepository1){
+            EntryRepository entryRepository1, ItemRepository itemRepository){
         this.cashRegisterRepository = cashRegisterRepository;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
@@ -31,6 +32,7 @@ public class Finder {
         this.overnightStayRepository = overnightStayRepository;
         this.reservationRepository = reservationRepository;
         this.entryRepository = entryRepository1;
+        this.itemRepository = itemRepository;
     }
 
     public Client clientById(Long client_id){
@@ -60,6 +62,11 @@ public class Finder {
     public Entry entryById(Long entry_id){
         return entryRepository.findById(entry_id)
                 .orElseThrow(()-> new EntityNotFound("Entry not found"));
+    }
+
+    public Item itemById(Long item_id){
+        return itemRepository.findById(item_id)
+                .orElseThrow(()-> new EntityNotFound("Item not found"));
     }
 
     public String replace(String string) {

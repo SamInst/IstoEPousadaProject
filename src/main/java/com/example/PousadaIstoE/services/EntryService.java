@@ -2,7 +2,6 @@ package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.Enums.EntryStatus;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
-import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.Enums.RoomStatus;
 import com.example.PousadaIstoE.builders.CashRegisterBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
@@ -224,16 +223,6 @@ public class EntryService {
             case CASH -> cashRegister.setReport(report + CASH);
         }
         cashRegisterFeing.save(cashRegister);
-    }
-
-    private void emptyConsumption(){
-        var withoutConsumption = itemFeing.getEmptyItem();
-        EntryConsumption entryConsumption = new EntryConsumption(
-            0,
-            withoutConsumption,
-                entry
-        );
-        entryConsumptionService.addConsumo(entryConsumption);
     }
 
     public List<Entry> findByStatusEntrada(EntryStatus entryStatus){
