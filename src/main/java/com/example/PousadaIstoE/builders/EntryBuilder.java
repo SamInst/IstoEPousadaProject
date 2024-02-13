@@ -6,13 +6,13 @@ import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.model.Entry;
 import com.example.PousadaIstoE.model.Rooms;
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public class EntryBuilder {
     private Long id;
     private Rooms rooms;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String licensePlate;
     private EntryStatus entryStatus;
     private LocalDate entryDataRegister;
@@ -30,12 +30,12 @@ public class EntryBuilder {
         return this;
     }
 
-    public EntryBuilder startTime(LocalTime startTime) {
+    public EntryBuilder startTime(LocalDateTime startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public EntryBuilder endTime(LocalTime endTime) {
+    public EntryBuilder endTime(LocalDateTime endTime) {
         this.endTime = endTime;
         return this;
     }

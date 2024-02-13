@@ -32,7 +32,7 @@ public class CashRegisterController {
 
     @PostMapping("/create")
     public void createMapa(@RequestBody CashRegisterRequest request) {
-        cashRegisterService.createMapa(request);
+        cashRegisterService.createCashRegister(request);
     }
 
     @GetMapping("/find-by-date")

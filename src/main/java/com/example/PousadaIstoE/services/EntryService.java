@@ -21,10 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.example.PousadaIstoE.Enums.PaymentType.*;
 
@@ -114,28 +114,28 @@ public class EntryService {
 //        return response;
 //    }
 
-    public Entry registerEntrada(Entry entry) {
-        Rooms quartoOut = roomFeing.findById(entry.getRooms().getId())
-                .orElseThrow(()-> new EntityNotFound("Quarto não encontrado"));
-        switch (quartoOut.getRoomStatus()) {
-            case BUSY -> throw new EntityConflict("Quarto Ocupado");
-            case NEEDS_CLEANING -> throw new EntityConflict("Quarto Precisa de limpeza!");
-            case RESERVED -> throw new EntityConflict("Quarto Reservado!");
-        }
-        Entry request = new Entry(
-            quartoOut,
-            LocalTime.now(),
-            LocalTime.of(0,0),
-            entry.getLicensePlate(),
-            EntryStatus.IN_PROGRESS,
-            LocalDate.now(),
-            PaymentType.PENDING,
-            PaymentStatus.PENDING
-        );
-        quartoOut.setRoomStatus(RoomStatus.BUSY);
-        roomFeing.save(quartoOut);
-        return entryRepository.save(request);
-    }
+//    public Entry registerEntrada(Entry entry) {
+//        Rooms quartoOut = roomFeing.findById(entry.getRooms().getId())
+//                .orElseThrow(()-> new EntityNotFound("Quarto não encontrado"));
+//        switch (quartoOut.getRoomStatus()) {
+//            case BUSY -> throw new EntityConflict("Quarto Ocupado");
+//            case NEEDS_CLEANING -> throw new EntityConflict("Quarto Precisa de limpeza!");
+//            case RESERVED -> throw new EntityConflict("Quarto Reservado!");
+//        }
+//        Entry request = new Entry(
+//            quartoOut,
+//            LocalDateTime.now(),
+//            LocalTime.of(0,0),
+//            entry.getLicensePlate(),
+//            EntryStatus.IN_PROGRESS,
+//            LocalDate.now(),
+//            PaymentType.PENDING,
+//            PaymentStatus.PENDING
+//        );
+//        quartoOut.setRoomStatus(RoomStatus.BUSY);
+//        roomFeing.save(quartoOut);
+//        return entryRepository.save(request);
+//    }
 
     public void updateEntradaData(Long entradaId, Entry request) {
         entry = entryRepository.findById(entradaId).orElseThrow(
@@ -145,7 +145,7 @@ public class EntryService {
                 entry.getId(),
                 entry.getRooms(),
                 entry.getStartTime(),
-                LocalTime.now(),
+                LocalDateTime.now(),
                 entry.getLicensePlate(),
                 request.getPaymentType(),
                 request.getPaymentStatus(),

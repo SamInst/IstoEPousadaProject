@@ -45,7 +45,7 @@ public class CashRegisterService {
         return new PageImpl<>(cashRegisterResponseList, pageable, allRegisters.getTotalElements());
     }
 
-    public void createMapa(CashRegisterRequest request) {
+    public void createCashRegister(CashRegisterRequest request) {
         Float lastTotal = cashRegisterRepository.findLastTotal() != null ? cashRegisterRepository.findLastTotal() : 0F;
         var total = lastTotal + request.cashIn() - request.cashOut();
 

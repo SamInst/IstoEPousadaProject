@@ -6,7 +6,7 @@ import com.example.PousadaIstoE.Enums.PaymentType;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "ip03_entry")
@@ -21,10 +21,10 @@ public class Entry {
     private Rooms rooms;
 
     @Column(name = "ip03_start_time")
-    private LocalTime startTime;
+    private LocalDateTime startTime;
 
     @Column(name = "ip03_end_time")
-    private LocalTime endTime;
+    private LocalDateTime endTime;
 
     @Column(name = "ip03_license_plate")
     private String licensePlate;
@@ -63,19 +63,19 @@ public class Entry {
         this.rooms = rooms;
     }
 
-    public LocalTime getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalTime startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalTime getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 
@@ -130,7 +130,7 @@ public class Entry {
     public Entry() {
     }
 
-    public Entry(Long id, Rooms rooms, LocalTime startTime, LocalTime endTime, String licensePlate) {
+    public Entry(Long id, Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate) {
         this.id = id;
         this.rooms = rooms;
         this.startTime = startTime;
@@ -138,7 +138,7 @@ public class Entry {
         this.licensePlate = licensePlate;
     }
 
-    public Entry(Long id, Rooms rooms, LocalTime startTime, LocalTime endTime, String licensePlate, PaymentType paymentType, PaymentStatus status_pagamento, EntryStatus entryStatus) {
+    public Entry(Long id, Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate, PaymentType paymentType, PaymentStatus status_pagamento, EntryStatus entryStatus) {
         this.id = id;
         this.rooms = rooms;
         this.startTime = startTime;
@@ -149,7 +149,7 @@ public class Entry {
         this.entryStatus = entryStatus;
     }
 
-    public Entry(Rooms rooms, LocalTime startTime, LocalTime endTime, String licensePlate, EntryStatus entryStatus, LocalDate dataRegistroEntrada, PaymentType paymentType, PaymentStatus status_pagamento) {
+    public Entry(Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate, EntryStatus entryStatus, LocalDate dataRegistroEntrada, PaymentType paymentType, PaymentStatus status_pagamento) {
         this.rooms = rooms;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -160,7 +160,7 @@ public class Entry {
         this.paymentStatus = status_pagamento;
     }
 
-    public Entry(Long id, Rooms rooms, LocalTime startTime, LocalTime endTime, String licensePlate, EntryStatus entryStatus, LocalDate entryDataRegister, Float totalEntry, PaymentType paymentType, PaymentStatus paymentStatus) {
+    public Entry(Long id, Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate, EntryStatus entryStatus, LocalDate entryDataRegister, Float totalEntry, PaymentType paymentType, PaymentStatus paymentStatus) {
         this.id = id;
         this.rooms = rooms;
         this.startTime = startTime;

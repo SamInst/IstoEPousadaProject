@@ -42,11 +42,11 @@ public class EntryController {
 //        return entryService.findById(id);
 //    }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/register")
-    public Entry entradas(Entry entry){
-        return entryService.registerEntrada(entry);
-    }
+//    @ResponseStatus(HttpStatus.CREATED)
+//    @PostMapping("/register")
+//    public Entry entradas(Entry entry){
+//        return entryService.registerEntrada(entry);
+//    }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)

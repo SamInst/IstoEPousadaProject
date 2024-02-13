@@ -1,6 +1,7 @@
 package com.example.PousadaIstoE.controllers;
 
 import com.example.PousadaIstoE.request.EntryRequest;
+import com.example.PousadaIstoE.request.UpdateEntryRequest;
 import com.example.PousadaIstoE.response.EntryResponse;
 import com.example.PousadaIstoE.response.SimpleEntryResponse;
 import com.example.PousadaIstoE.services.EntryService2;
@@ -30,13 +31,23 @@ public class EntryController2 {
 
 
     @GetMapping("/find_by_id/{entry_id}")
+    @ResponseStatus(HttpStatus.OK)
     public EntryResponse findById(@PathVariable Long entry_id){
         return entryService2.findById(entry_id);
     }
 
     @PostMapping("/create")
+    @ResponseStatus(HttpStatus.CREATED)
     public void createEntry(@RequestBody EntryRequest request){
         entryService2.createEntry(request);
     }
+
+    @PutMapping("/update/{entry_id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void updateEntry(@PathVariable Long entry_id, @RequestBody UpdateEntryRequest request){
+        entryService2.updateEntry(entry_id, request);
+    }
+
+
 
 }
