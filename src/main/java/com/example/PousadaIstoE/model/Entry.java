@@ -4,7 +4,6 @@ import com.example.PousadaIstoE.Enums.EntryStatus;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.PaymentType;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -46,6 +45,14 @@ public class Entry {
     @Enumerated(EnumType.STRING)
     @Column(name = "ip03_payment_status")
     private PaymentStatus paymentStatus;
+
+    @Column(name = "ip03_obs")
+    private String obs;
+
+    @Column(name = "ip03_entry_value")
+    private Float entryValue;
+    @Column(name = "ip03_consumption_value")
+    private Float consumptionValue;
 
     public Long getId() {
         return id;
@@ -127,40 +134,34 @@ public class Entry {
         this.paymentStatus = paymentStatus;
     }
 
+    public String getObs() {
+        return obs;
+    }
+
+    public void setObs(String obs) {
+        this.obs = obs;
+    }
+
+    public Float getEntryValue() {
+        return entryValue;
+    }
+
+    public void setEntryValue(Float entryValue) {
+        this.entryValue = entryValue;
+    }
+
+    public Float getConsumptionValue() {
+        return consumptionValue;
+    }
+
+    public void setConsumptionValue(Float consumptionValue) {
+        this.consumptionValue = consumptionValue;
+    }
+
     public Entry() {
     }
 
-    public Entry(Long id, Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate) {
-        this.id = id;
-        this.rooms = rooms;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.licensePlate = licensePlate;
-    }
-
-    public Entry(Long id, Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate, PaymentType paymentType, PaymentStatus status_pagamento, EntryStatus entryStatus) {
-        this.id = id;
-        this.rooms = rooms;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.licensePlate = licensePlate;
-        this.paymentType = paymentType;
-        this.paymentStatus = status_pagamento;
-        this.entryStatus = entryStatus;
-    }
-
-    public Entry(Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate, EntryStatus entryStatus, LocalDate dataRegistroEntrada, PaymentType paymentType, PaymentStatus status_pagamento) {
-        this.rooms = rooms;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.licensePlate = licensePlate;
-        this.entryStatus = entryStatus;
-        this.entryDataRegister = dataRegistroEntrada;
-        this.paymentType = paymentType;
-        this.paymentStatus = status_pagamento;
-    }
-
-    public Entry(Long id, Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate, EntryStatus entryStatus, LocalDate entryDataRegister, Float totalEntry, PaymentType paymentType, PaymentStatus paymentStatus) {
+    public Entry(Long id, Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate, EntryStatus entryStatus, LocalDate entryDataRegister, Float totalEntry, PaymentType paymentType, PaymentStatus paymentStatus, String obs, Float entryValue, Float consumptionValue) {
         this.id = id;
         this.rooms = rooms;
         this.startTime = startTime;
@@ -171,5 +172,8 @@ public class Entry {
         this.totalEntry = totalEntry;
         this.paymentType = paymentType;
         this.paymentStatus = paymentStatus;
+        this.obs = obs;
+        this.entryValue = entryValue;
+        this.consumptionValue = consumptionValue;
     }
 }

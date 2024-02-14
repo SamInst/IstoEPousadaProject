@@ -9,5 +9,6 @@ public record UpdateEntryRequest(
         String vehicle_plate,
         EntryStatus entry_status,
         PaymentType payment_type,
-        PaymentStatus payment_status
+        PaymentStatus payment_status,
+        String obs
 ){}

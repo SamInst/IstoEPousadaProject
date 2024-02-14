@@ -7,7 +7,6 @@ import com.example.PousadaIstoE.Enums.RoomStatus;
 import com.example.PousadaIstoE.builders.EntryBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.Entry;
-import com.example.PousadaIstoE.model.EntryConsumption;
 import com.example.PousadaIstoE.model.Rooms;
 import com.example.PousadaIstoE.repository.EntryConsumptionRepository;
 import com.example.PousadaIstoE.repository.EntryRepository;
@@ -26,11 +25,10 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.example.PousadaIstoE.Enums.PaymentType.*;
 
 @Service
 public class EntryService2 {
@@ -64,6 +62,7 @@ public class EntryService2 {
 
     public EntryResponse findById(Long entry_id){
         var entry = find.entryById(entry_id);
+        System.out.println(entry.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
         return entryResponse(entry);
     }
 
@@ -79,10 +78,14 @@ public class EntryService2 {
                 .entryDataRegister(LocalDate.now())
                 .paymentStatus(PaymentStatus.PENDING)
                 .paymentType(PaymentType.PENDING)
+                .obs(request.obs().toUpperCase())
+                .consumptionValue(0F)
+                .entryValue(ENTRY_VALUE)
                 .totalEntry(ENTRY_VALUE)
                 .build();
-        roomRepository.save(room);
-        entryRepository.save(newEntry);
+
+         roomRepository.save(room);
+         entryRepository.save(newEntry);
     }
 
     public void updateEntry(Long entry_id, UpdateEntryRequest request){
@@ -102,14 +105,19 @@ public class EntryService2 {
                 .entryDataRegister(entry.getEntryDataRegister())
                 .paymentStatus(request.payment_status())
                 .paymentType(request.payment_type())
+                .obs(request.obs().toUpperCase())
+                .entryValue(entry.getEntryValue())
+                .consumptionValue(entry.getConsumptionValue())
                 .totalEntry(entry.getTotalEntry())
                 .build();
 
         if (updatedEntry.getEntryStatus().equals(EntryStatus.FINISH)){
             finishEntry(updatedEntry);
-            calculateHours(updatedEntry);
 
             if (updatedEntry.getPaymentStatus().equals(PaymentStatus.COMPLETED)){
+                var totalEntry = calculateHours(updatedEntry);
+                var totalConsumption = sumConsumption(entry);
+                updatedEntry.setTotalEntry(totalEntry + totalConsumption);
                 saveInCashRegister(updatedEntry);
                 updateRoom(updatedEntry.getRooms());
                 updatedEntry.setEntryStatus(EntryStatus.FINISHED);
@@ -133,7 +141,7 @@ public class EntryService2 {
                     );
             consumptionResponseList.add(consumptionResponse);
         });
-        var total = entry.getTotalEntry() + totalConsumption;
+        var total = entry.getEntryValue() + totalConsumption;
         return new EntryResponse(
                 entry.getId(),
                 entry.getRooms().getNumber(),
@@ -175,18 +183,19 @@ public class EntryService2 {
         return String.format("%d:%02d", hour, minutes);
     }
 
-    private void calculateHours(Entry entry){
+    private float calculateHours(Entry entry){
         var newEntry = find.entryById(entry.getId());
         Duration timeSpent = Duration.between(
                 newEntry.getStartTime(),
-                newEntry.getEndTime());
+                newEntry.getEndTime() != null ? entry.getEndTime() : LocalDateTime.now());
         var minutes = timeSpent.toMinutes();
-        int hours = (int) timeSpent.toHours();
-        if (hours > 2){
-             minutes = (int) ((((float) minutes - 120) / 30) * HOUR_VALUE);
-             newEntry.setTotalEntry(newEntry.getTotalEntry() + minutes);
-             entryRepository.save(newEntry);
+
+        long additionalPeriods = 0;
+        if (minutes > 120){
+            long remainingMinutes = minutes - 120;
+            additionalPeriods = (remainingMinutes + 29) / 30 - 1;
         }
+       return newEntry.getEntryValue() + (additionalPeriods * HOUR_VALUE);
     }
 
     private String reportValidation(String report){
@@ -220,7 +229,6 @@ public class EntryService2 {
                 entry.getRooms().getNumber(),
                 entry.getTotalEntry(),
                 cashOut);
-        updateEntryTotal(entry);
         cashRegisterService.createCashRegister(cashRegisterRequest);
     }
 
@@ -238,11 +246,11 @@ public class EntryService2 {
         roomRepository.save(room);
     }
 
-    private void updateEntryTotal(Entry entry){
+    private Float sumConsumption(Entry entry){
         Double totalConsumption = entryRepository.totalConsumptionByEntryId(entry.getId());
         totalConsumption = totalConsumption != null ? totalConsumption : 0.0;
-        Float total = (float) ((double) entry.getTotalEntry() + totalConsumption);
-        entry.setTotalEntry(total);
+        entry.setConsumptionValue(totalConsumption.floatValue());
+        return totalConsumption.floatValue();
     }
 
     private void finishEntry(Entry entry){

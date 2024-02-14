@@ -5,6 +5,8 @@ import com.example.PousadaIstoE.services.EntryConsumptionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/entry-consumption")
 public class EntryConsumptionController {
@@ -19,8 +21,8 @@ public class EntryConsumptionController {
     @ResponseStatus(HttpStatus.CREATED)
     public void addConsumption(
             @PathVariable Long entry_id,
-            @RequestBody EntryConsumptionRequest request) {
-         entryConsumptionService.addConsumption(entry_id, request);
+            @RequestBody List<EntryConsumptionRequest> request) {
+         entryConsumptionService.addConsumptionToEntry(entry_id, request);
     }
     @DeleteMapping("/remove/{consumption_id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

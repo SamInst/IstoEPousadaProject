@@ -19,9 +19,25 @@ public class EntryBuilder {
     private Float totalEntry;
     private PaymentType paymentType;
     private PaymentStatus paymentStatus;
+    private String obs;
+    private Float consumptionValue;
+    private Float entryValue;
 
     public EntryBuilder id(Long id) {
         this.id = id;
+        return this;
+    }
+    public EntryBuilder obs(String obs) {
+        this.obs = obs;
+        return this;
+    }
+
+    public EntryBuilder consumptionValue(Float consumptionValue) {
+        this.consumptionValue = consumptionValue;
+        return this;
+    }
+    public EntryBuilder entryValue(Float entryValue) {
+        this.entryValue = entryValue;
         return this;
     }
 
@@ -81,6 +97,9 @@ public class EntryBuilder {
                 entryDataRegister,
                 totalEntry,
                 paymentType,
-                paymentStatus);
+                paymentStatus,
+                obs,
+                entryValue,
+                consumptionValue);
     }
 }

@@ -7,7 +7,6 @@ import com.example.PousadaIstoE.repository.RoomRepository;
 import com.example.PousadaIstoE.request.RoomRequest;
 import com.example.PousadaIstoE.request.UpdateRoomRequest;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service

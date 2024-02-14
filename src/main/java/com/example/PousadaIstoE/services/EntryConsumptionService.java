@@ -17,12 +17,18 @@ public class EntryConsumptionService {
         this.find = find;
     }
 
-    public void addConsumption(Long entry_id, EntryConsumptionRequest request) {
-        var item = find.itemById(request.item_id());
-        var entry = find.entryById(entry_id);
+    public void addConsumptionToEntry(Long entry_id, List<EntryConsumptionRequest> request) {
+        request.forEach(newItem -> {
+            var item = find.itemById(newItem.item_id());
+            var entry = find.entryById(entry_id);
 
-        EntryConsumption entryConsumption = new EntryConsumption(request.amount(), item, entry);
-        entryConsumptionRepository.save(entryConsumption);
+            EntryConsumption entryConsumption = new EntryConsumption(
+                    newItem.amount(),
+                    item,
+                    entry);
+            entryConsumptionRepository.save(entryConsumption);
+        });
+
     }
 
     public void removeConsumption(Long consumption_id) {
