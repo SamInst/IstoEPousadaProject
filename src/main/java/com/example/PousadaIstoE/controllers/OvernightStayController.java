@@ -2,8 +2,8 @@ package com.example.PousadaIstoE.controllers;
 
 import com.example.PousadaIstoE.model.OvernightStay;
 import com.example.PousadaIstoE.response.OvernightStayResponse;
-import com.example.PousadaIstoE.response.OvernightStayShortResponse;
-import com.example.PousadaIstoE.services.OvernightStayService;
+import com.example.PousadaIstoE.response.SimpleOvernightResponse;
+import com.example.PousadaIstoE.services.OvernightService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,24 +12,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/pernoites")
 public class OvernightStayController {
-    private final OvernightStayService overnightStayService;
+    private final OvernightService overnightService;
 
-    public OvernightStayController(OvernightStayService overnightStayService) { this.overnightStayService = overnightStayService; }
+    public OvernightStayController(OvernightService overnightService) { this.overnightService = overnightService; }
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<OvernightStayShortResponse> findAll() { return overnightStayService.findAll(); }
+    public List<SimpleOvernightResponse> findAll() { return overnightService.findAll(); }
 
     @GetMapping("/{pernoiteId}")
     @ResponseStatus(HttpStatus.OK)
-    public OvernightStayResponse findbyId(@PathVariable ("pernoiteId") Long id){ return overnightStayService.findById(id); }
+    public OvernightStayResponse findbyId(@PathVariable ("pernoiteId") Long id){ return overnightService.findById(id); }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public OvernightStay createPernoite(OvernightStay overnightStay){ return overnightStayService.createPernoite(overnightStay); }
+    public OvernightStay createPernoite(OvernightStay overnightStay){ return overnightService.createPernoite(overnightStay); }
 
     @PutMapping("/{pernoiteId}")
     public OvernightStay AlterarDadosPernoite(@PathVariable ("pernoiteId") Long pernoiteId, OvernightStay overnightStay){
-        return overnightStayService.updatePernoiteData(pernoiteId, overnightStay);
+        return overnightService.updatePernoiteData(pernoiteId, overnightStay);
     }
 
 }

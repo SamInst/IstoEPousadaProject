@@ -44,7 +44,7 @@ public class Client {
     private Employee registeredBy;
 
     @Column(name = "ip01_hosted")
-    private boolean isHosted;
+    private Boolean isHosted;
 
     public Long getId() {
         return id;
@@ -143,5 +143,13 @@ public class Client {
         this.address = address;
         this.job = job;
         this.registeredBy = registeredBy;
+    }
+
+    public Boolean getHosted() {
+        return isHosted;
+    }
+
+    public void setHosted(Boolean hosted) {
+        isHosted = hosted;
     }
 }

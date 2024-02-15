@@ -3,7 +3,7 @@ package com.example.PousadaIstoE.controllers;
 import com.example.PousadaIstoE.request.ReservationRequest;
 import com.example.PousadaIstoE.request.UpdateReservationRequest;
 import com.example.PousadaIstoE.response.ReservationResponse;
-import com.example.PousadaIstoE.services.OvernightStayReservationService;
+import com.example.PousadaIstoE.services.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,9 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
-    private final OvernightStayReservationService reservationService;
+    private final ReservationService reservationService;
 
-    public ReservationController(OvernightStayReservationService reservationService) {
+    public ReservationController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }
 

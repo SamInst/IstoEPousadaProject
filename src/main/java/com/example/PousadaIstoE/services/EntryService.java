@@ -1,246 +1,302 @@
-//package com.example.PousadaIstoE.services;
-//
-//import com.example.PousadaIstoE.Enums.EntryStatus;
-//import com.example.PousadaIstoE.Enums.PaymentStatus;
-//import com.example.PousadaIstoE.Enums.RoomStatus;
-//import com.example.PousadaIstoE.builders.CashRegisterBuilder;
-//import com.example.PousadaIstoE.exceptions.EntityConflict;
-//import com.example.PousadaIstoE.exceptions.EntityNotFound;
-//import com.example.PousadaIstoE.model.EntryConsumption;
-//import com.example.PousadaIstoE.model.Entry;
-//import com.example.PousadaIstoE.model.CashRegister;
-//import com.example.PousadaIstoE.model.Rooms;
-//import com.example.PousadaIstoE.repository.*;
-//
-//import com.example.PousadaIstoE.response.*;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageImpl;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.stereotype.Service;
-//
-//import java.time.Duration;
-//import java.time.LocalDate;
-//import java.time.LocalDateTime;
-//import java.time.LocalTime;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//import static com.example.PousadaIstoE.Enums.PaymentType.*;
-//
-//@Service
-//public class EntryService {
-//    private final CashRegisterRepository cashRegisterFeing;
-//    private final RoomRepository roomFeing;
-//    private final ItemRepository itemFeing;
-//    private final EntryConsumptionService entryConsumptionService;
-//    double totalHourEntry;
-//    double entryValue;
-//    Duration difference;
-//    int hours;
-//    int minutesRemaining;
-//    String report;
-//    double totalValue;
-//    Entry entry;
-//    double entryAndConsumption;
-//    Float totalCashRegister;
-//    List<EntryConsumption> entryConsumptionList = new ArrayList<>();
-//    private final EntryRepository entryRepository;
-//    private final EntryConsumptionRepository entryConsumptionRepository;
-//
-//    public EntryService(CashRegisterRepository cashRegisterFeing, RoomRepository roomFeing, ItemRepository itemFeing, EntryConsumptionService entryConsumptionService, EntryRepository entryRepository, EntryConsumptionRepository entryConsumptionRepository) {
-//        this.cashRegisterFeing = cashRegisterFeing;
-//        this.roomFeing = roomFeing;
-//        this.itemFeing = itemFeing;
-//        this.entryConsumptionService = entryConsumptionService;
-//        this.entryRepository = entryRepository;
-//        this.entryConsumptionRepository = entryConsumptionRepository;
-//    }
-//
-//    public Page<SimpleEntryResponse> findAll(Pageable pageable) {
-//        Page<Entry> page = entryRepository.findAll(pageable);
-//
-//        List<SimpleEntryResponse> simpleEntryResponseList = new ArrayList<>();
-//        page.forEach(entradas -> {
-//            SimpleEntryResponse simpleEntryResponse = new SimpleEntryResponse(
-//                    entradas.getId(),
-//                    entradas.getRooms().getNumber(),
-//                    entradas.getStartTime(),
-//                    entradas.getEndTime(),
-//                    entradas.getLicensePlate(),
-//                    entradas.getEntryStatus()
-//            );
-//            simpleEntryResponseList.add(simpleEntryResponse);
-//        });
-//        return new PageImpl<>(simpleEntryResponseList, pageable, page.getTotalElements());
-//    }
-//
-////    public AtomicReference<EntryResponse> findById(Long id) {
-////        AtomicReference<EntryResponse> response = new AtomicReference<>();
-////        entryConsumptionList = entryConsumptionRepository.findEntryConsumptionByEntry_Id(id);
-////        final var entrada = entryRepository.findById(id).orElseThrow(
-////                () -> new EntityNotFound("Entrada não foi Cadastrada ou não existe mais"));
-////        calcularHora(id);
-////        Double totalConsumo = entryRepository.totalConsumptionByEntryId(id);
-////
-////        if (totalConsumo == null){ totalConsumo = (double) 0; }
-////        double soma = totalConsumo + entryValue;
-////
-////        List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
-////        entryConsumptionList.forEach(consumo -> {
-////            ConsumptionResponse consumptionResponse = new ConsumptionResponse(
-////                    consumo.getAmount(),
-////                    consumo.getItens().getDescription(),
-////                    consumo.getItens().getValue(),
-////                    consumo.getTotal()
-////            );
-////            consumptionResponseList.add(consumptionResponse);
-////        });
-////        response.set(new EntryResponse(
-////                entrada.getRooms().getNumber(),
-////                entrada.getStartTime(),
-////                entrada.getEndTime(),
-////                entrada.getLicensePlate(),
-////                new EntryResponse.(
-////                        hours,
-////                        minutesRemaining
-////                ),
-////                consumptionResponseList,
-////                entrada.getEntryStatus(),
-////                totalConsumo,
-////                entryValue,
-////                soma
-////        ));
-////        return response;
-////    }
-//
-////    public Entry registerEntrada(Entry entry) {
-////        Rooms quartoOut = roomFeing.findById(entry.getRooms().getId())
-////                .orElseThrow(()-> new EntityNotFound("Quarto não encontrado"));
-////        switch (quartoOut.getRoomStatus()) {
-////            case BUSY -> throw new EntityConflict("Quarto Ocupado");
-////            case NEEDS_CLEANING -> throw new EntityConflict("Quarto Precisa de limpeza!");
-////            case RESERVED -> throw new EntityConflict("Quarto Reservado!");
-////        }
-////        Entry request = new Entry(
-////            quartoOut,
-////            LocalDateTime.now(),
-////            LocalTime.of(0,0),
-////            entry.getLicensePlate(),
-////            EntryStatus.IN_PROGRESS,
-////            LocalDate.now(),
-////            PaymentType.PENDING,
-////            PaymentStatus.PENDING
-////        );
-////        quartoOut.setRoomStatus(RoomStatus.BUSY);
-////        roomFeing.save(quartoOut);
-////        return entryRepository.save(request);
-////    }
-//
-//    public void updateEntradaData(Long entradaId, Entry request) {
-//        entry = entryRepository.findById(entradaId).orElseThrow(
-//                () -> new EntityNotFound("Entrada não encontrada")
-//        );
-//        var entradaAtualizada = new Entry(
-//                entry.getId(),
-//                entry.getRooms(),
-//                entry.getStartTime(),
-//                LocalDateTime.now(),
-//                entry.getLicensePlate(),
-//                request.getPaymentType(),
-//                request.getPaymentStatus(),
-//                entry.getEntryStatus()
-//        );
-//        entradaAtualizada.setEntryDataRegister(LocalDate.now());
-//        entryRepository.save(entradaAtualizada
-//        );
-//        calcularHora(entradaAtualizada.getId());
-//        validacaoPagamento(entry);
-//        if (request.getPaymentType().equals(CASH)){
-//                entradaAtualizada.setTotalEntry((float) entryAndConsumption);
-//            entryRepository.save(entradaAtualizada);
-//        }
-//        if (request.getPaymentStatus().equals(PaymentStatus.COMPLETED)) {
-//            if (entradaAtualizada.getEntryStatus().equals(EntryStatus.FINISH)){
-//                throw new EntityConflict("A Entrada já foi salva no mapa");
-//            }
-////            entryConsumptionList = entryConsumptionRepository.findEntradaConsumoByEntradas_Id(entradaId);
-////            entradaAtualizada.setEn(entryConsumptionList);
-////            if (entradaAtualizada.getEntryConsumption().isEmpty()) { emptyConsumption(); }
-//
-//            validacaoHorario();
-//            salvaNoMapa(request);
-//            atualizaQuarto(entry.getRooms(), entradaAtualizada);
-//            entryRepository.save(entradaAtualizada);
-//        }
-//    }
-//
-//    private void calcularHora(Long request) {
-//        Entry entrada = entryRepository.findById(request)
-//            .orElseThrow(() -> new EntityNotFound("Entity Not found")
-//            );
-//        difference = Duration.between(entrada.getStartTime(), entrada.getEndTime());
-//        long minutos = difference.toMinutes();
-//        hours = (int) (minutos / 60);
-//        minutesRemaining = (int) (minutos % 60);
-//
-//        if (hours < 2) { totalHourEntry = 30.0; }
-//        else { int minutes = (int) ((((float)minutos - 120)/30)*5);
-//               totalHourEntry = 30 + minutes; }
-//        entryValue = totalHourEntry;
-//    }
-//
-//    private void validacaoPagamento(Entry request){
-//        totalCashRegister = cashRegisterFeing.findLastTotal();
-//        Double totalConsumo = entryRepository.totalConsumptionByEntryId(request.getId());
-//        if (totalConsumo == null){ totalConsumo = 0D; }
-//        entryAndConsumption = entryValue + totalConsumo;
-//        totalValue = totalCashRegister + entryAndConsumption;
-//    }
-//
-//    private void validacaoHorario(){
-//        LocalTime noite = LocalTime.of(18,0,0);
-//        LocalTime dia = LocalTime.of(6,0,0);
-//        report = LocalTime.now().isAfter(noite) || LocalTime.now().isBefore(dia)
-//                ? "ENTRADA NOITE" : "ENTRADA DIA";
-//    }
-//
-//    private void salvaNoMapa(Entry request) {
-//
-//        CashRegister cashRegister = new CashRegisterBuilder()
-//                .date(LocalDate.now())
-//                .report(report)
-//                .apartment(request.getRooms().getNumber())
-//                .cashIn(request.getTotalEntry())
-//                .cashOut(0F)
-//                .hour(LocalTime.now())
-//                .build();
-//
-//        switch (request.getPaymentType()){
-//            case PIX -> cashRegister.setReport(report + PIX);
-//
-//            case CREDIT_CARD -> cashRegister.setReport(report + CREDIT_CARD);
-//
-//            case CASH -> cashRegister.setReport(report + CASH);
-//        }
-//        cashRegisterFeing.save(cashRegister);
-//    }
-//
-//    public List<Entry> findByStatusEntrada(EntryStatus entryStatus){
-//        return entryRepository.findEntriesByEntryStatus(entryStatus);
-//    }
-//
-//    public List<Entry> findEntradaByToday(){
-//       LocalDate today = LocalDate.now();
-//       return entryRepository.findEntriesByEntryDataRegister(today);
-//    }
-//    public List<Entry> findEntradaByDate(LocalDate data){
-//        return entryRepository.findEntriesByEntryDataRegister(data);
-//    }
-//
-//    private void atualizaQuarto(Rooms rooms, Entry entradaAtualizada){
-//        rooms = entry.getRooms();
-//        rooms.setRoomStatus(RoomStatus.AVAIABLE);
-//        roomFeing.save(rooms);
-//        entradaAtualizada.setEntryStatus(EntryStatus.FINISH);
-//    }
-//}
+package com.example.PousadaIstoE.services;
+
+import com.example.PousadaIstoE.Enums.EntryStatus;
+import com.example.PousadaIstoE.Enums.PaymentStatus;
+import com.example.PousadaIstoE.Enums.PaymentType;
+import com.example.PousadaIstoE.Enums.RoomStatus;
+import com.example.PousadaIstoE.builders.EntryBuilder;
+import com.example.PousadaIstoE.exceptions.EntityConflict;
+import com.example.PousadaIstoE.model.Entry;
+import com.example.PousadaIstoE.model.Rooms;
+import com.example.PousadaIstoE.repository.EntryConsumptionRepository;
+import com.example.PousadaIstoE.repository.EntryRepository;
+import com.example.PousadaIstoE.repository.RoomRepository;
+import com.example.PousadaIstoE.request.CashRegisterRequest;
+import com.example.PousadaIstoE.request.EntryRequest;
+import com.example.PousadaIstoE.request.UpdateEntryRequest;
+import com.example.PousadaIstoE.response.ConsumptionResponse;
+import com.example.PousadaIstoE.response.EntryResponse;
+import com.example.PousadaIstoE.response.SimpleEntryResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class EntryService {
+    public static final Float ENTRY_VALUE = 30F;
+    public static final Float HOUR_VALUE = 5F;
+    public static final long MAX_HOUR_MINUTES = 120;
+    private final EntryRepository entryRepository;
+    private final EntryConsumptionRepository entryConsumptionRepository;
+    private final Finder find;
+    private final RoomRepository roomRepository;
+    private final CashRegisterService cashRegisterService;
+
+    public EntryService(EntryRepository entryRepository,
+                        EntryConsumptionRepository entryConsumptionRepository,
+                        Finder find,
+                        RoomRepository roomRepository,
+                        CashRegisterService cashRegisterService) {
+        this.entryRepository = entryRepository;
+        this.entryConsumptionRepository = entryConsumptionRepository;
+        this.find = find;
+        this.roomRepository = roomRepository;
+        this.cashRegisterService = cashRegisterService;
+    }
+
+    public Page<SimpleEntryResponse> findAll(Pageable pageable) {
+        Page<Entry> page = entryRepository.findAllOrderByIdDesc(pageable);
+        List<SimpleEntryResponse> simpleEntryResponseList = page.getContent().stream()
+                .map(this::simpleEntryResponse)
+                .collect(Collectors.toList());
+        return new PageImpl<>(simpleEntryResponseList, pageable, page.getTotalElements());
+    }
+
+    public EntryResponse findById(Long entry_id){
+        var entry = find.entryById(entry_id);
+        System.out.println(entry.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
+        return entryResponse(entry);
+    }
+
+    public void createEntry(EntryRequest request){
+        var room = find.roomById(request.room_id());
+        roomVerification(room);
+        room.setRoomStatus(RoomStatus.BUSY);
+        Entry newEntry = new EntryBuilder()
+                .rooms(room)
+                .startTime(LocalDateTime.now())
+                .licensePlate(request.vehicle_plate().toUpperCase())
+                .entryStatus(EntryStatus.IN_PROGRESS)
+                .entryDataRegister(LocalDate.now())
+                .paymentStatus(PaymentStatus.PENDING)
+                .paymentType(PaymentType.PENDING)
+                .obs(request.obs().toUpperCase())
+                .consumptionValue(0F)
+                .entryValue(ENTRY_VALUE)
+                .totalEntry(ENTRY_VALUE)
+                .build();
+
+         roomRepository.save(room);
+         entryRepository.save(newEntry);
+    }
+
+    public void updateEntry(Long entry_id, UpdateEntryRequest request){
+        var entry = find.entryById(entry_id);
+        var room = find.roomById(request.room_id());
+        if (!room.getId().equals(request.room_id())){ roomVerification(entry.getRooms()); }
+
+        if (entry.getEntryStatus().equals(EntryStatus.FINISHED))
+            throw new EntityConflict("The Entry was finished");
+
+        Entry updatedEntry = new EntryBuilder()
+                .id(entry.getId())
+                .rooms(room)
+                .startTime(entry.getStartTime())
+                .licensePlate(request.vehicle_plate().toUpperCase())
+                .entryStatus(request.entry_status())
+                .entryDataRegister(entry.getEntryDataRegister())
+                .paymentStatus(request.payment_status())
+                .paymentType(request.payment_type())
+                .obs(request.obs().toUpperCase())
+                .entryValue(entry.getEntryValue())
+                .consumptionValue(entry.getConsumptionValue())
+                .totalEntry(entry.getTotalEntry())
+                .build();
+
+        if (updatedEntry.getEntryStatus().equals(EntryStatus.FINISH)){
+            finishEntry(updatedEntry);
+
+            if (updatedEntry.getPaymentStatus().equals(PaymentStatus.COMPLETED)){
+                var totalEntry = calculateHours(updatedEntry);
+                var totalConsumption = sumConsumption(entry);
+                updatedEntry.setEntryValue(totalEntry);
+                updatedEntry.setConsumptionValue(totalConsumption);
+                updatedEntry.setTotalEntry(totalEntry + totalConsumption);
+                saveInCashRegister(updatedEntry);
+                updateRoom(updatedEntry.getRooms());
+                updatedEntry.setEntryStatus(EntryStatus.FINISHED);
+            }
+        }
+        entryRepository.save(updatedEntry);
+    }
+
+    private EntryResponse entryResponse(Entry entry){
+        Double totalConsumption = entryRepository.totalConsumptionByEntryId(entry.getId());
+        totalConsumption = totalConsumption != null ? totalConsumption : 0.0;
+
+        var consumptionList = entryConsumptionRepository.findEntryConsumptionByEntry_Id(entry.getId());
+        List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
+        consumptionList.forEach(entryConsumption -> {
+            ConsumptionResponse consumptionResponse = new ConsumptionResponse(
+                    entryConsumption.getAmount(),
+                    entryConsumption.getItens().getDescription(),
+                    entryConsumption.getItens().getValue(),
+                    entryConsumption.getTotal()
+                    );
+            consumptionResponseList.add(consumptionResponse);
+        });
+        float consumptionValue = totalConsumption.floatValue();
+        float entryValue = calculateHours(entry);
+        float totalValue = consumptionValue + entryValue;
+        if (entry.getEntryStatus().equals(EntryStatus.FINISHED)){
+            consumptionValue = entry.getConsumptionValue();
+            entryValue = entry.getEntryValue();
+            totalValue = entry.getEntryValue() + entry.getConsumptionValue();
+        }
+        return new EntryResponse(
+                entry.getId(),
+                entry.getRooms().getNumber(),
+                entry.getEntryDataRegister(),
+                entry.getStartTime(),
+                entry.getEndTime() != null ? entry.getEndTime() :
+                        LocalDateTime.of(
+                                LocalDate.now(),
+                                LocalTime.of(0,0)),
+                entry.getLicensePlate() != null ? entry.getLicensePlate() : "",
+                timeSpent(entry),
+                consumptionResponseList,
+                entry.getEntryStatus(),
+                consumptionValue,
+                entryValue,
+                totalValue
+                );
+    }
+
+    private SimpleEntryResponse simpleEntryResponse(Entry entry) {
+        return new SimpleEntryResponse(
+                entry.getId(),
+                entry.getRooms().getNumber(),
+                entry.getStartTime(),
+                entry.getEndTime(),
+                entry.getLicensePlate() != null ? entry.getLicensePlate() : "",
+                entry.getEntryStatus()
+        );
+    }
+
+    private String timeSpent(Entry entry){
+        Duration timeSpent = Duration.between(
+                entry.getStartTime(),
+                entry.getEndTime() != null ? entry.getEndTime() : LocalDateTime.now());
+
+        var hour = timeSpent.toHours();
+        var minutes = timeSpent.minusHours(hour).toMinutes();
+
+        return String.format("%d:%02d", hour, minutes);
+    }
+
+    private float calculateHours(Entry entry){
+        var newEntry = find.entryById(entry.getId());
+        Duration timeSpent = Duration.between(
+                newEntry.getStartTime(),
+                newEntry.getEndTime() != null ? entry.getEndTime() : LocalDateTime.now());
+        var minutes = timeSpent.toMinutes();
+
+        long additionalPeriods = 0;
+        if (minutes > MAX_HOUR_MINUTES){
+            long remainingMinutes = minutes - MAX_HOUR_MINUTES;
+            additionalPeriods = (remainingMinutes + 29) / 30 - 1;
+        }
+       return newEntry.getEntryValue() + (additionalPeriods * HOUR_VALUE);
+    }
+
+    private String reportValidation(String report){
+        LocalTime night = LocalTime.of(18,0,0);
+        LocalTime day = LocalTime.of(6,0,0);
+        return report = LocalTime.now().isAfter(night) || LocalTime.now().isBefore(day)
+                ? "ENTRADA NOITE " : "ENTRADA DIA ";
+    }
+
+    private void saveInCashRegister(Entry entry){
+        String report = "";
+        String newReport = reportValidation(report);
+        float cashOut = 0F;
+        switch (entry.getPaymentType()){
+            case PIX -> {
+                newReport += "(PIX)";
+                cashOut += entry.getTotalEntry();
+            }
+            case CREDIT_CARD -> {
+                newReport += "(CARTAO CREDITO)";
+                cashOut += entry.getTotalEntry();
+            }
+            case DEBIT_CARD -> {
+                newReport += "(CARTAO DEBITO)";
+                cashOut += entry.getTotalEntry();
+            }
+            case CASH -> newReport += "(DINHEIRO)";
+        }
+        CashRegisterRequest cashRegisterRequest = new CashRegisterRequest(
+                newReport,
+                entry.getRooms().getNumber(),
+                entry.getTotalEntry(),
+                cashOut);
+        cashRegisterService.createCashRegister(cashRegisterRequest);
+    }
+
+    private void roomVerification(Rooms rooms){
+        switch (rooms.getRoomStatus()) {
+            case BUSY -> throw new EntityConflict("The room is busy");
+            case NEEDS_CLEANING -> throw new EntityConflict("The room needs cleaning!");
+            case RESERVED -> throw new EntityConflict("Room Reserved!");
+            case DAILY_CLOSED -> throw new EntityConflict("The room is with daily closed, please set the room to status AVAILABLE manually");
+        }
+    }
+
+    private void updateRoom(Rooms room){
+        room.setRoomStatus(RoomStatus.AVAIABLE);
+        roomRepository.save(room);
+    }
+
+    private Float sumConsumption(Entry entry){
+        Double totalConsumption = entryRepository.totalConsumptionByEntryId(entry.getId());
+        totalConsumption = totalConsumption != null ? totalConsumption : 0.0;
+        entry.setConsumptionValue(totalConsumption.floatValue());
+        return totalConsumption.floatValue();
+    }
+
+    private void finishEntry(Entry entry){
+        entry.setEndTime(LocalDateTime.now());
+        entryRepository.save(entry);
+    }
+
+    public void deleteEntry(Long entry_id){
+        var entry = find.entryById(entry_id);
+        if (!entry.getEntryStatus().equals(EntryStatus.IN_PROGRESS)){
+            throw new EntityConflict("The entry can not be canceled.");
+        }
+        Entry updatedEntry = new EntryBuilder()
+                .id(entry.getId())
+                .rooms(null)
+                .startTime(null)
+                .licensePlate(null)
+                .entryStatus(entry.getEntryStatus())
+                .entryDataRegister(null)
+                .paymentStatus(null)
+                .paymentType(null)
+                .obs(null)
+                .entryValue(0F)
+                .consumptionValue(0F)
+                .totalEntry(0F)
+                .build();
+        updateRoom(entry.getRooms());
+        entryRepository.save(updatedEntry);
+        entryRepository.deleteById(entry_id);
+    }
+
+    public List<SimpleEntryResponse> findAllByDate(LocalDate date){
+        var allEntries = entryRepository.findAllByEntryDataRegister(date);
+        return allEntries.stream()
+                .map(this::simpleEntryResponse)
+                .toList();
+    }
+
+}

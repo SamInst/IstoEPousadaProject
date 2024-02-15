@@ -25,7 +25,7 @@ import static com.example.PousadaIstoE.Enums.RoomStatus.*;
 import static java.time.Period.*;
 
 @Service
-public class OvernightStayService {
+public class OvernightService {
     private static final Float EMPTY = 0F;
     @PersistenceContext
     private EntityManager manager;
@@ -35,7 +35,7 @@ public class OvernightStayService {
     private final OvernightStayComsuptionRepository overnightStayComsuptionRepository;
 
 
-    protected OvernightStayService(
+    protected OvernightService(
             OvernightStayRepository overnightStayRepository,
             RoomRepository roomRepository,
             CashRegisterService cashRegisterService,
@@ -48,22 +48,64 @@ public class OvernightStayService {
 
     }
 
-    public List<OvernightStayShortResponse> findAll() {
+    public List<SimpleOvernightResponse> findAll(){
+
+    }
+
+    private SimpleOvernightResponse simpleOvernightResponse(OvernightStay overnightStay){
+        return new SimpleOvernightResponse(
+                overnightStay.getId(),
+                overnightStay.getClient().getName(),
+                overnightStay.getRoom().getNumber(),
+                overnightStay.getStartDate(),
+                overnightStay.getEndDate(),
+                overnightStay.getAmountPeople()
+        );
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public List<SimpleOvernightResponse> findAll() {
         var allPernoites = overnightStayRepository.findAll();
-        List<OvernightStayShortResponse> overnightStayShortResponseList = new ArrayList<>();
+        List<SimpleOvernightResponse> simpleOvernightResponseList = new ArrayList<>();
 
         allPernoites.forEach(pernoite -> {
-            OvernightStayShortResponse overnightStayShortResponse = new OvernightStayShortResponse(
+            SimpleOvernightResponse simpleOvernightResponse = new SimpleOvernightResponse(
                     pernoite.getId(),
-                    new OvernightStayShortResponse.Client(pernoite.getClient().getName()),
+                    new SimpleOvernightResponse.Client(pernoite.getClient().getName()),
                     pernoite.getRoom().getNumber(),
                     pernoite.getStartDate(),
                     pernoite.getEndDate(),
                     pernoite.getAmountPeople()
             );
-            overnightStayShortResponseList.add(overnightStayShortResponse);
+            simpleOvernightResponseList.add(simpleOvernightResponse);
         });
-        return overnightStayShortResponseList;
+        return simpleOvernightResponseList;
     }
 
     public OvernightStayResponse findById(Long id) {

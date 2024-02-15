@@ -2,16 +2,12 @@ package com.example.PousadaIstoE.response;
 
 import java.time.LocalDate;
 
-public record OvernightStayShortResponse(
+public record SimpleOvernightResponse(
     Long id,
-    Client client,
+    String client_name,
     Integer apartment,
     LocalDate start_date,
     LocalDate end_date,
     Integer amount_people
 
-){
-    public record Client (
-        String client_name
-    ){}
-}
+){}

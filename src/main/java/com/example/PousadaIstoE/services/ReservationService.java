@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class OvernightStayReservationService {
+public class ReservationService {
     private static final String NE = "Not Specified";
     private final OvernightStayReservationRepository overnightStayReservationRepository;
     private final ClientRepository clientRepository;
     private final Finder find;
 
-    public OvernightStayReservationService(
+    public ReservationService(
             OvernightStayReservationRepository overnightStayReservationRepository,
             ClientRepository clientRepository,
             Finder find) {
@@ -89,8 +89,8 @@ public class OvernightStayReservationService {
 
         List<Client> clientListUpdated = new ArrayList<>(reservation.getClientList());
 
-        if(!request.clientList().isEmpty()) {
-            request.clientList().forEach(client -> {
+        if(!request.clients().isEmpty()) {
+            request.clients().forEach(client -> {
                 var findClient = clientRepository.findClientByCpf(replace(client.cpf()));
                 if (clientListUpdated.contains(findClient))
                     throw new EntityConflict("The customer has already been added to this list.");

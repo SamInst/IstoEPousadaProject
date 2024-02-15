@@ -8,7 +8,6 @@ import java.util.List;
 
 @Service
 public class EmployeeService {
-
     private final EmployeeRepository employeeRepository;
 
     public EmployeeService(EmployeeRepository employeeRepository) {
@@ -18,7 +17,6 @@ public class EmployeeService {
     public List<Employee> findAllEmployees(){
         return employeeRepository.findAll();
     }
-
 
     public Employee addEmployee(Employee employee){
         return employeeRepository.save(employee);
