@@ -1,10 +1,11 @@
 package com.example.PousadaIstoE.response;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record SimpleOvernightResponse(
     Long id,
-    String client_name,
+    List<String> client_name,
     Integer apartment,
     LocalDate start_date,
     LocalDate end_date,

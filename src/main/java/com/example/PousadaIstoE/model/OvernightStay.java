@@ -4,6 +4,7 @@ import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.PaymentType;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "ip08_overnight_stay")
@@ -17,9 +18,9 @@ public class OvernightStay {
     @JoinColumn(name = "fkip08ip04_rooms_id")
     private Rooms room;
 
-    @OneToOne
-    @JoinColumn(name = "fkip08ip01_client_id")
-    private Client client;
+    @OneToMany
+    @JoinColumn(name = "fkip08ip01_client_list")
+    private List<Client> clientList;
 
     @Column(name = "ip08_start_date")
     private LocalDate startDate;
@@ -38,8 +39,33 @@ public class OvernightStay {
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
+    @Column(name = "ip08_total_consumption")
+    private Float totalConsumption;
     @Column(name = "ip08_total")
     private Float total;
+
+    @Column(name = "ip08_active")
+    private boolean isActive;
+
+    public Float getTotal() {
+        return total;
+    }
+
+    public void setTotal(Float total) {
+        this.total = total;
+    }
+
+    public void setClientList(List<Client> clientList) {
+        this.clientList = clientList;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
 
     public Long getId() {
         return id;
@@ -55,14 +81,6 @@ public class OvernightStay {
 
     public void setRoom(Rooms room) {
         this.room = room;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
     }
 
     public LocalDate getStartDate() {
@@ -105,24 +123,30 @@ public class OvernightStay {
         this.paymentStatus = paymentStatus;
     }
 
-    public Float getTotal() {
-        return total;
+    public List<Client> getClientList() {
+        return clientList;
     }
 
-    public void setTotal(Float total) {
-        this.total = total;
+    public Float getTotalConsumption() {
+        return totalConsumption;
     }
 
-    public OvernightStay(Long id, Rooms room, Client client, LocalDate startDate, LocalDate endDate, Integer amountPeople, PaymentType paymentType, PaymentStatus paymentStatus, Float total) {
+    public void setTotalConsumption(Float totalConsumption) {
+        this.totalConsumption = totalConsumption;
+    }
+
+    public OvernightStay(Long id, Rooms room, List<Client> clientList, LocalDate startDate, LocalDate endDate, Integer amountPeople, PaymentType paymentType, PaymentStatus paymentStatus, Float totalConsumption, Float total, boolean isActive) {
         this.id = id;
         this.room = room;
-        this.client = client;
+        this.clientList = clientList;
         this.startDate = startDate;
         this.endDate = endDate;
         this.amountPeople = amountPeople;
         this.paymentType = paymentType;
         this.paymentStatus = paymentStatus;
+        this.totalConsumption = totalConsumption;
         this.total = total;
+        this.isActive = isActive;
     }
 
     public OvernightStay() {

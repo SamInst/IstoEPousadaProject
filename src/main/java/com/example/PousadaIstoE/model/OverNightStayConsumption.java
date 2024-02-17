@@ -1,6 +1,5 @@
 package com.example.PousadaIstoE.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity

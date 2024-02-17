@@ -13,19 +13,28 @@ import com.example.PousadaIstoE.request.CashRegisterRequest;
 import com.example.PousadaIstoE.response.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-
+import java.util.stream.Collectors;
 import static com.example.PousadaIstoE.Enums.RoomStatus.*;
 import static java.time.Period.*;
 
 @Service
 public class OvernightService {
+    private static final Float ONE_PERSON_VALUE = 100F;
+    private static final Float TWO_PERSONS_VALUE = 130F;
+    private static final Float THREE_PERSONS_VALUE = 190F;
+    private static final Float FOUR_PERSONS_VALUE = 210F;
+    private static final Float FIVE_PERSONS_VALUE = 280F;
     private static final Float EMPTY = 0F;
     @PersistenceContext
     private EntityManager manager;
@@ -33,29 +42,42 @@ public class OvernightService {
     private final RoomRepository roomRepository;
     private final CashRegisterService cashRegisterService;
     private final OvernightStayComsuptionRepository overnightStayComsuptionRepository;
-
+    private final Finder find;
+    private final OverNightStayConsumptionRepository overNightStayConsumptionRepository;
 
     protected OvernightService(
             OvernightStayRepository overnightStayRepository,
             RoomRepository roomRepository,
             CashRegisterService cashRegisterService,
-            OvernightStayComsuptionRepository overnightStayComsuptionRepository
-            ){
+            OvernightStayComsuptionRepository overnightStayComsuptionRepository, Finder find,
+            OverNightStayConsumptionRepository overNightStayConsumptionRepository){
         this.overnightStayRepository = overnightStayRepository;
         this.roomRepository = roomRepository;
         this.cashRegisterService = cashRegisterService;
         this.overnightStayComsuptionRepository = overnightStayComsuptionRepository;
-
+        this.find = find;
+        this.overNightStayConsumptionRepository = overNightStayConsumptionRepository;
     }
 
-    public List<SimpleOvernightResponse> findAll(){
+    public Page<SimpleOvernightResponse> findAll(Pageable pageable){
+        var allOvernights = overnightStayRepository.findAllOrderByIdDesc(pageable);
 
+        List<SimpleOvernightResponse> responseList = allOvernights
+                .stream()
+                .map(this::simpleOvernightResponse)
+                .sorted(Comparator.comparingLong(SimpleOvernightResponse::id).reversed())
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(responseList, pageable, allOvernights.getTotalElements());
     }
 
     private SimpleOvernightResponse simpleOvernightResponse(OvernightStay overnightStay){
+        List<String> names = overnightStay.getClientList().stream()
+                .map(Client::getName)
+                .collect(Collectors.toList());
         return new SimpleOvernightResponse(
                 overnightStay.getId(),
-                overnightStay.getClient().getName(),
+                names,
                 overnightStay.getRoom().getNumber(),
                 overnightStay.getStartDate(),
                 overnightStay.getEndDate(),
@@ -63,86 +85,122 @@ public class OvernightService {
         );
     }
 
+    private void changeReservationToOvernight(){}
+
+    private void createOvernightStay(){}
+    private void updateOvernightStay(){}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public List<SimpleOvernightResponse> findAll() {
-        var allPernoites = overnightStayRepository.findAll();
-        List<SimpleOvernightResponse> simpleOvernightResponseList = new ArrayList<>();
-
-        allPernoites.forEach(pernoite -> {
-            SimpleOvernightResponse simpleOvernightResponse = new SimpleOvernightResponse(
-                    pernoite.getId(),
-                    new SimpleOvernightResponse.Client(pernoite.getClient().getName()),
-                    pernoite.getRoom().getNumber(),
-                    pernoite.getStartDate(),
-                    pernoite.getEndDate(),
-                    pernoite.getAmountPeople()
-            );
-            simpleOvernightResponseList.add(simpleOvernightResponse);
-        });
-        return simpleOvernightResponseList;
+    private Float amountPeoplePrice(OvernightStay overnightStay) {
+        Integer quantidadePessoa = overnightStay.getAmountPeople();
+        return switch (quantidadePessoa) {
+            case 1 -> {
+                overnightStay.setTotal(ONE_PERSON_VALUE);
+                yield ONE_PERSON_VALUE;
+            }
+            case 2 -> {
+                overnightStay.setTotal(TWO_PERSONS_VALUE);
+                yield TWO_PERSONS_VALUE;
+            }
+            case 3 -> {
+                overnightStay.setTotal(THREE_PERSONS_VALUE);
+                yield THREE_PERSONS_VALUE;
+            }
+            case 4 -> {
+                overnightStay.setTotal(FOUR_PERSONS_VALUE);
+                yield FOUR_PERSONS_VALUE;
+            }
+            case 5 -> {
+                overnightStay.setTotal(FIVE_PERSONS_VALUE);
+                yield FIVE_PERSONS_VALUE;
+            }
+            default -> throw new EntityConflict("Cannot be insert more than 5 peoples");
+        }
+    }
+    private Float dailyValue(OvernightStay overnight) {
+        int amountClient = overnight.getClientList().size();
+        return switch (amountClient) {
+            case 1 -> ONE_PERSON_VALUE;
+            case 2 -> TWO_PERSONS_VALUE;
+            case 3 -> THREE_PERSONS_VALUE;
+            case 4 -> FOUR_PERSONS_VALUE;
+            case 5 -> FIVE_PERSONS_VALUE;
+            default -> EMPTY;
+        };
     }
 
-    public OvernightStayResponse findById(Long id) {
-        final var pernoites = overnightStayRepository.findById(id).orElseThrow(() -> new EntityNotFound("Pernoite não encontrado"));
-        final var consumo_pernoite = overnightStayComsuptionRepository.findOverNightStayConsumptionByOvernightStay_Id(id);
-        final var totalConsumo = overnightStayComsuptionRepository.findTotalConsumption(id);
-        amountPeoplePrice(pernoites);
+    public OvernightStayResponse findById(Long overnight_id){
+        var overnight = find.overnightStayById(overnight_id);
+        return overnightStayResponse(overnight);
+    }
 
-        List<OvernightStayCompanionShortResponse> overnightStayCompanionShortResponseList = new ArrayList<>();
-        Integer p1 = between(pernoites.getStartDate(), pernoites.getEndDate()).getDays();
-        Float total_diarias = pernoites.getTotal() * p1;
-        var valor_total = valorTotal(id, pernoites, p1, total_diarias);
-
-        return new OvernightStayResponse(
-                pernoites.getId(),
-                new OvernightStayResponse.Client(
-                        pernoites.getClient().getName(),
-                        pernoites.getClient().getCpf(),
-                        pernoites.getClient().getPhone()
-                ),
-                overnightStayCompanionShortResponseList,
-                new OvernightStayResponse.Rooms(pernoites.getRoom().getNumber()),
-                pernoites.getStartDate(),
-                pernoites.getEndDate(),
-                consumo_pernoite,
-                new OvernightStayResponse.Values(
-                        pernoites.getAmountPeople(),
-                        p1,
-                        pernoites.getTotal(),
-                        totalConsumo,
-                        total_diarias,
-                        pernoites.getPaymentType(),
-                        pernoites.getPaymentStatus(),
-                        valor_total
-                )
+    private ClientResponse clientResponse(Client client){
+       return new ClientResponse(
+                client.getId(),
+                client.getName(),
+                client.getCpf(),
+                client.getPhone(),
+                client.getAddress(),
+                client.getJob(),
+                client.getRegisteredBy() != null ? client.getRegisteredBy().getName() : "",
+                client.isHosted()
         );
     }
+
+    private OvernightStayResponse overnightStayResponse(OvernightStay overnight){
+
+        var amountDays = Period.between(overnight.getStartDate(), overnight.getEndDate()).getDays();
+        var totalConsumption = overNightStayConsumptionRepository.totalConsumption(overnight.getId());
+        List<ClientResponse> clients = overnight.getClientList().stream()
+                .map(this::clientResponse)
+                .toList();
+        return new OvernightStayResponse(
+                overnight.getId(),
+                clients,
+                new OvernightStayResponse.Room(
+                        overnight.getRoom().getNumber(),
+                        overnight.getRoom().getRoomType()),
+                overnight.getStartDate(),
+                overnight.getEndDate(),
+                new ArrayList<>(),
+                new OvernightStayResponse.Values(
+                        clients.size(),
+                        amountDays,
+                        totalConsumption,
+                        dailyValue(overnight),
+                        overnight.getPaymentType(),
+                        overnight.getPaymentStatus(),
+                        overnight.getTotal())
+        );
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public Double valorTotal(Long id, OvernightStay overnightStay, Integer p1, Float total_diarias) {
         Double totalConsumo = manager.createQuery(
@@ -156,7 +214,7 @@ public class OvernightService {
     }
 
     public OvernightStay createPernoite(OvernightStay overnightStay) {
-        if (overnightStay.getClient() == null) {
+        if (overnightStay.getClientList() == null) {
             throw new EntityConflict("É preciso informar o hóspede.");
         }
         Integer periodoDias = between(overnightStay.getStartDate(), overnightStay.getEndDate()).getDays();
@@ -174,35 +232,25 @@ public class OvernightService {
         return overnightStayRepository.save(overnightStay);
     }
 
-    public OvernightStay updatePernoiteData(Long pernoiteId, OvernightStay request) {
-        OvernightStay pernoite = overnightStayRepository.findById(pernoiteId)
-                .orElseThrow(() -> new EntityNotFound("Overnight Stay not Found."));
+//    public OvernightStay updatePernoiteData(Long pernoiteId, OvernightStay request) {
+//        OvernightStay pernoite = overnightStayRepository.findById(pernoiteId)
+//                .orElseThrow(() -> new EntityNotFound("Overnight Stay not Found."));
+//
+//        var pernoiteAtualizado = new OvernightStay(
+//                pernoite.getId(),
+//                pernoite.getRoom(),
+//                pernoite.getClientList(),
+//                pernoite.getStartDate(),
+//                pernoite.getEndDate(),
+//                pernoite.getAmountPeople(),
+//                request.getPaymentType(),
+//                request.getPaymentStatus(),
+//                pernoite.getTotal()
+//        );
+//        return overnightStayRepository.save(pernoiteAtualizado);
+//    }
 
-        var pernoiteAtualizado = new OvernightStay(
-                pernoite.getId(),
-                pernoite.getRoom(),
-                pernoite.getClient(),
-                pernoite.getStartDate(),
-                pernoite.getEndDate(),
-                pernoite.getAmountPeople(),
-                request.getPaymentType(),
-                request.getPaymentStatus(),
-                pernoite.getTotal()
-        );
-        return overnightStayRepository.save(pernoiteAtualizado);
-    }
 
-    private void amountPeoplePrice(OvernightStay overnightStay) {
-        Integer quantidadePessoa = overnightStay.getAmountPeople();
-        switch (quantidadePessoa) {
-            case 1 -> overnightStay.setTotal(90F);
-            case 2 -> overnightStay.setTotal(130F);
-            case 3 -> overnightStay.setTotal(180F);
-            case 4 -> overnightStay.setTotal(220F);
-            case 5 -> overnightStay.setTotal(280F);
-            default -> throw new EntityConflict("Não podem ser inseridos mais de 5 pessoas no mesmo quarto");
-        }
-    }
 
     private void apartmentValidation(OvernightStay overnight) throws EntityConflict {
         List<OvernightStay> overnightStayCadastrados = overnightStayRepository.findByRoom_Id(overnight.getRoom().getId());

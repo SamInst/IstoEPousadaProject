@@ -22,27 +22,28 @@ public class CashRegisterService {
     public CashRegisterService(CashRegisterRepository cashRegisterRepository) {
         this.cashRegisterRepository = cashRegisterRepository;
     }
-    public Page<CashRegisterResponse> listAllMaps(Pageable pageable){
+    public Page<CashRegisterResponse> listAllMaps(Pageable pageable) {
         var allRegisters = cashRegisterRepository.findAll(pageable);
-        List<CashRegisterResponse> cashRegisterResponseList = new ArrayList<>();
-        allRegisters.forEach( map -> {
-            CashRegisterResponse cashRegisterResponse = new CashRegisterResponse(
-                    map.getId(),
-                    map.getDate(),
-                    map.getHour(),
-                    map.getReport(),
-                    map.getApartment(),
-                    map.getCashIn(),
-                    map.getCashOut(),
-                    map.getTotal()
-                    );
-            cashRegisterResponseList.add(cashRegisterResponse);
-        });
-        allRegisters.stream()
-                .sorted(Comparator.comparingLong(CashRegister::getId)
-                        .reversed())
+
+        List<CashRegisterResponse> cashRegisterResponseList = allRegisters.getContent().stream()
+                .map(this::mapToResponse)
+                .sorted(Comparator.comparingLong(CashRegisterResponse::id).reversed())
                 .collect(Collectors.toList());
+
         return new PageImpl<>(cashRegisterResponseList, pageable, allRegisters.getTotalElements());
+    }
+
+    private CashRegisterResponse mapToResponse(CashRegister map) {
+        return new CashRegisterResponse(
+                map.getId(),
+                map.getDate(),
+                map.getHour(),
+                map.getReport(),
+                map.getApartment(),
+                map.getCashIn(),
+                map.getCashOut(),
+                map.getTotal()
+        );
     }
 
     public void createCashRegister(CashRegisterRequest request) {
