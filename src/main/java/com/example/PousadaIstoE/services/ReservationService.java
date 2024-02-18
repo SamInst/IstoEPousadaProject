@@ -1,14 +1,10 @@
 package com.example.PousadaIstoE.services;
 
-import com.example.PousadaIstoE.Enums.PaymentStatus;
-import com.example.PousadaIstoE.builders.ClientBuilder;
 import com.example.PousadaIstoE.builders.ReservationBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.Client;
 import com.example.PousadaIstoE.model.OvernightStayReservation;
-import com.example.PousadaIstoE.repository.ClientRepository;
 import com.example.PousadaIstoE.repository.OvernightStayReservationRepository;
-import com.example.PousadaIstoE.request.ClientRequest;
 import com.example.PousadaIstoE.request.ReservationRequest;
 import com.example.PousadaIstoE.request.UpdateReservationRequest;
 import com.example.PousadaIstoE.response.ClientResponse;
@@ -16,24 +12,23 @@ import com.example.PousadaIstoE.response.ReservationResponse;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ReservationService {
-    private static final String NE = "Not Specified";
     private final OvernightStayReservationRepository overnightStayReservationRepository;
-    private final ClientRepository clientRepository;
+    private final ClientService clientService;
     private final Finder find;
+    private final RoomService roomService;
 
     public ReservationService(
             OvernightStayReservationRepository overnightStayReservationRepository,
-            ClientRepository clientRepository,
-            Finder find) {
+            ClientService clientService,
+            Finder find, RoomService roomService) {
         this.overnightStayReservationRepository = overnightStayReservationRepository;
-        this.clientRepository = clientRepository;
+        this.clientService = clientService;
         this.find = find;
+        this.roomService = roomService;
     }
 
     public ReservationResponse findReservationById(Long reservation_id){
@@ -53,31 +48,21 @@ public class ReservationService {
 
     public void createReservation(ReservationRequest request) {
         List<Client> clientList = new ArrayList<>();
-        dataValidation(request.startDate(), request.endDate());
+        dataValidation(request.start_date(), request.end_date());
+        var room = find.roomByNumber(request.room());
+        roomService.roomVerification(room);
 
-        request.clients().forEach(client -> {
-            var replacedCpf = replace(client.cpf());
-            Client findClient = clientRepository.findClientByCpf(replacedCpf);
+        request.clients()
+                .forEach(clientService::clientRequest);
 
-            if (findClient == null) {
-                findClient = clientBuilder(client);
-                clientList.add(findClient);
-                clientRepository.save(findClient);
-            } else {
-                clientList.add(findClient);
-            }
-        });
-        Set<Client> uniqueClients = new HashSet<>(clientList);
-        if (uniqueClients.size() < clientList.size()) {
-            throw new EntityConflict("The customer has already been added to this list.");
-        }
+        clientService.clientListVerification(clientList);
         OvernightStayReservation reservation = new ReservationBuilder()
-                .startDate(request.startDate())
-                .endDate(request.endDate())
+                .startDate(request.start_date())
+                .endDate(request.end_date())
                 .clientList(clientList)
                 .room(request.room())
-                .paymentType(request.paymentType())
-                .paymentStatus(PaymentStatus.PENDING)
+                .paymentType(request.payment_type())
+                .paymentStatus(request.payment_status())
                 .isActive(true)
                 .build();
         overnightStayReservationRepository.save(reservation);
@@ -90,42 +75,21 @@ public class ReservationService {
         List<Client> clientListUpdated = new ArrayList<>(reservation.getClientList());
 
         if(!request.clients().isEmpty()) {
-            request.clients().forEach(client -> {
-                var findClient = clientRepository.findClientByCpf(replace(client.cpf()));
-                if (clientListUpdated.contains(findClient))
-                    throw new EntityConflict("The customer has already been added to this list.");
-                if (findClient == null) {
-                    findClient = clientBuilder(client);
-                    Client newClient = clientRepository.save(findClient);
-                    clientListUpdated.add(newClient);
-                } else {
-                    clientListUpdated.add(findClient);
-                }
-            });
+            request.clients().forEach(clientService::clientRequest);
         }
+        clientService.clientListVerification(clientListUpdated);
+
         OvernightStayReservation updateReservation = new ReservationBuilder()
             .id(reservation.getId())
-            .startDate(request.startDate())
-            .endDate(request.endDate())
+            .startDate(request.start_date())
+            .endDate(request.end_date())
             .clientList(clientListUpdated)
             .room(request.room())
-            .paymentType(request.paymentType())
-            .paymentStatus(reservation.getPaymentStatus())
+            .paymentType(request.payment_type())
+            .paymentStatus(request.payment_status())
             .isActive(reservation.getActive())
             .build();
         overnightStayReservationRepository.save(updateReservation);
-    }
-
-    private Client clientBuilder(ClientRequest client){
-        return new ClientBuilder()
-                .name(client.name() != null ? replace(client.name()) : NE)
-                .cpf(client.cpf() != null ? replace(client.cpf()) : NE)
-                .phone(client.phone() != null ? replace(client.phone()) : NE)
-                .birth(client.birth())
-                .address(client.address() != null ? replace(client.address()) : NE)
-                .job(client.job() != null ? replace(client.job()) : NE)
-                .isHosted(false)
-                .build();
     }
 
     public void removeClientFromReservation(Long reservation_id, Long client_id) {
@@ -166,12 +130,6 @@ public class ReservationService {
                 reservation.getPaymentStatus(),
                 clientResponseList.size()
                 );
-    }
-
-    public static String replace(String string) {
-        String regex = "[^a-zA-Z0-9\\s]";
-        String newString = string.replaceAll(regex, "");
-        return newString.toUpperCase();
     }
 
     private void dataValidation(LocalDate startDate, LocalDate endDate){

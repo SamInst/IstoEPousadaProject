@@ -48,6 +48,9 @@ public class Finder {
         return roomRepository.findById(room_id)
                 .orElseThrow(()-> new EntityNotFound("Room not Found"));
     }
+    public Rooms roomByNumber(Integer room_number){
+        return roomRepository.findRoomsByNumber(room_number);
+    }
 
     public OvernightStay overnightStayById(Long overNightStay_id){
         return overnightStayRepository.findById(overNightStay_id)

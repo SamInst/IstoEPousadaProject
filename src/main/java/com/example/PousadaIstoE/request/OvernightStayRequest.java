@@ -6,11 +6,11 @@ import com.example.PousadaIstoE.Enums.PaymentType;
 import java.time.LocalDate;
 import java.util.List;
 
-public record ReservationRequest(
-        List<ClientRequest> clients,
+public record OvernightStayRequest(
+        Long room_id,
+        List<ClientRequest> client_list,
         LocalDate start_date,
         LocalDate end_date,
-        Integer room,
         PaymentType payment_type,
         PaymentStatus payment_status
 ){}

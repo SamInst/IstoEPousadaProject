@@ -7,7 +7,6 @@ import com.example.PousadaIstoE.Enums.RoomStatus;
 import com.example.PousadaIstoE.builders.EntryBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.Entry;
-import com.example.PousadaIstoE.model.Rooms;
 import com.example.PousadaIstoE.repository.EntryConsumptionRepository;
 import com.example.PousadaIstoE.repository.EntryRepository;
 import com.example.PousadaIstoE.repository.RoomRepository;
@@ -40,17 +39,19 @@ public class EntryService {
     private final Finder find;
     private final RoomRepository roomRepository;
     private final CashRegisterService cashRegisterService;
+    private final RoomService roomService;
 
     public EntryService(EntryRepository entryRepository,
                         EntryConsumptionRepository entryConsumptionRepository,
                         Finder find,
                         RoomRepository roomRepository,
-                        CashRegisterService cashRegisterService) {
+                        CashRegisterService cashRegisterService, RoomService roomService) {
         this.entryRepository = entryRepository;
         this.entryConsumptionRepository = entryConsumptionRepository;
         this.find = find;
         this.roomRepository = roomRepository;
         this.cashRegisterService = cashRegisterService;
+        this.roomService = roomService;
     }
 
     public Page<SimpleEntryResponse> findAll(Pageable pageable) {
@@ -69,7 +70,7 @@ public class EntryService {
 
     public void createEntry(EntryRequest request){
         var room = find.roomById(request.room_id());
-        roomVerification(room);
+        roomService.roomVerification(room);
         room.setRoomStatus(RoomStatus.BUSY);
         Entry newEntry = new EntryBuilder()
                 .rooms(room)
@@ -92,7 +93,7 @@ public class EntryService {
     public void updateEntry(Long entry_id, UpdateEntryRequest request){
         var entry = find.entryById(entry_id);
         var room = find.roomById(request.room_id());
-        if (!room.getId().equals(request.room_id())){ roomVerification(entry.getRooms()); }
+        if (!room.getId().equals(request.room_id())){ roomService.roomVerification(entry.getRooms()); }
 
         if (entry.getEntryStatus().equals(EntryStatus.FINISHED))
             throw new EntityConflict("The Entry was finished");
@@ -122,7 +123,7 @@ public class EntryService {
                 updatedEntry.setConsumptionValue(totalConsumption);
                 updatedEntry.setTotalEntry(totalEntry + totalConsumption);
                 saveInCashRegister(updatedEntry);
-                updateRoom(updatedEntry.getRooms());
+                roomService.setRoomAvailable(updatedEntry.getRooms());
                 updatedEntry.setEntryStatus(EntryStatus.FINISHED);
             }
         }
@@ -242,20 +243,6 @@ public class EntryService {
         cashRegisterService.createCashRegister(cashRegisterRequest);
     }
 
-    private void roomVerification(Rooms rooms){
-        switch (rooms.getRoomStatus()) {
-            case BUSY -> throw new EntityConflict("The room is busy");
-            case NEEDS_CLEANING -> throw new EntityConflict("The room needs cleaning!");
-            case RESERVED -> throw new EntityConflict("Room Reserved!");
-            case DAILY_CLOSED -> throw new EntityConflict("The room is with daily closed, please set the room to status AVAILABLE manually");
-        }
-    }
-
-    private void updateRoom(Rooms room){
-        room.setRoomStatus(RoomStatus.AVAIABLE);
-        roomRepository.save(room);
-    }
-
     private Float sumConsumption(Entry entry){
         Double totalConsumption = entryRepository.totalConsumptionByEntryId(entry.getId());
         totalConsumption = totalConsumption != null ? totalConsumption : 0.0;
@@ -287,7 +274,7 @@ public class EntryService {
                 .consumptionValue(0F)
                 .totalEntry(0F)
                 .build();
-        updateRoom(entry.getRooms());
+        roomService.setRoomAvailable(entry.getRooms());
         entryRepository.save(updatedEntry);
         entryRepository.deleteById(entry_id);
     }

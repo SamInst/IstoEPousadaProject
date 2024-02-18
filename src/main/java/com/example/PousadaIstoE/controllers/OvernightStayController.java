@@ -1,13 +1,13 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.OvernightStay;
+import com.example.PousadaIstoE.request.OvernightStayRequest;
 import com.example.PousadaIstoE.response.OvernightStayResponse;
 import com.example.PousadaIstoE.response.SimpleOvernightResponse;
 import com.example.PousadaIstoE.services.OvernightService;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/pernoites")
@@ -15,21 +15,31 @@ public class OvernightStayController {
     private final OvernightService overnightService;
 
     public OvernightStayController(OvernightService overnightService) { this.overnightService = overnightService; }
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<SimpleOvernightResponse> findAll() { return overnightService.findAll(); }
 
-    @GetMapping("/{pernoiteId}")
-    @ResponseStatus(HttpStatus.OK)
-    public OvernightStayResponse findbyId(@PathVariable ("pernoiteId") Long id){ return overnightService.findById(id); }
+    @GetMapping("/find_by_id/{overnight_id}")
+    public OvernightStayResponse findById(@PathVariable Long overnight_id){
+        return overnightService.findById(overnight_id);
+    }
+    public Page<SimpleOvernightResponse> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return overnightService.findAll(pageable);
+    }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public OvernightStay createPernoite(OvernightStay overnightStay){ return overnightService.createPernoite(overnightStay); }
+    @GetMapping("/reservation_to_overnight/{reservation_id}")
+    public void changeReservationToOvernight(@PathVariable Long reservation_id){
+        overnightService.changeReservationToOvernight(reservation_id);
+    }
 
-    @PutMapping("/{pernoiteId}")
-    public OvernightStay AlterarDadosPernoite(@PathVariable ("pernoiteId") Long pernoiteId, OvernightStay overnightStay){
-        return overnightService.updatePernoiteData(pernoiteId, overnightStay);
+    @GetMapping("/create")
+    public void createOvernightStay(@RequestBody OvernightStayRequest request){
+        overnightService.createOvernightStay(request);
+    }
+
+    @GetMapping("/update/{overnight_id}")
+    private void updateOvernightStay(@PathVariable Long overnight_id, @RequestBody OvernightStayRequest request){
+        overnightService.updateOvernightStay(overnight_id, request);
     }
 
 }

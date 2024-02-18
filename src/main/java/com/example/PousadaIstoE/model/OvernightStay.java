@@ -41,6 +41,9 @@ public class OvernightStay {
 
     @Column(name = "ip08_total_consumption")
     private Float totalConsumption;
+
+    @Column(name = "ip08_overnight_value")
+    private Float overnightValue;
     @Column(name = "ip08_total")
     private Float total;
 
@@ -131,11 +134,19 @@ public class OvernightStay {
         return totalConsumption;
     }
 
+    public Float getOvernightValue() {
+        return overnightValue;
+    }
+
+    public void setOvernightValue(Float overnightValue) {
+        this.overnightValue = overnightValue;
+    }
+
     public void setTotalConsumption(Float totalConsumption) {
         this.totalConsumption = totalConsumption;
     }
 
-    public OvernightStay(Long id, Rooms room, List<Client> clientList, LocalDate startDate, LocalDate endDate, Integer amountPeople, PaymentType paymentType, PaymentStatus paymentStatus, Float totalConsumption, Float total, boolean isActive) {
+    public OvernightStay(Long id, Rooms room, List<Client> clientList, LocalDate startDate, LocalDate endDate, Integer amountPeople, PaymentType paymentType, PaymentStatus paymentStatus, Float totalConsumption, Float overnightValue, Float total, boolean isActive) {
         this.id = id;
         this.room = room;
         this.clientList = clientList;
@@ -145,6 +156,7 @@ public class OvernightStay {
         this.paymentType = paymentType;
         this.paymentStatus = paymentStatus;
         this.totalConsumption = totalConsumption;
+        this.overnightValue = overnightValue;
         this.total = total;
         this.isActive = isActive;
     }

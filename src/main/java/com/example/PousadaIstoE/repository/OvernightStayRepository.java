@@ -15,9 +15,7 @@ public interface OvernightStayRepository extends JpaRepository <OvernightStay, L
 
     @Query("select u from OvernightStay u order by u.id desc ")
     Page<OvernightStay> findAllOrderByIdDesc(Pageable pageable);
-    List<OvernightStay> findByStartDate(LocalDate dataEntrada);
-    List<OvernightStay> findByEndDate(LocalDate dataEntrada);
-    List<OvernightStay> findByRoom_Id(Long apt);
+    List<OvernightStay> findAllByRoom_Id(Long room_id);
 
 
 }
