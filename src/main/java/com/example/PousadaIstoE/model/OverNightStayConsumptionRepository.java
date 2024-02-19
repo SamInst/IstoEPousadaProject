@@ -9,4 +9,6 @@ public interface OverNightStayConsumptionRepository extends JpaRepository<OverNi
     @Query("select sum(m.total) from OverNightStayConsumption m where m.overnightStay.id = :overnight_id")
     Float totalConsumptionByOvernightId(Long overnight_id);
 
+    List<OverNightStayConsumption> findAllByOvernightStay_Id(Long overnight_id);
+
 }

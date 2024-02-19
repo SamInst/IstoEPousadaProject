@@ -119,7 +119,7 @@ public class ClientService {
         return jdbcTemplate.query(sql, rowMapperAutoCompleteName);
     }
 
-    public void clientRequest(ClientRequest request){
+    public List<Client> clientRequest(ClientRequest request){
         List<Client> clientList = new ArrayList<>();
         var replacedCpf = find.replace(request.cpf());
         Client findClient = clientRepository.findClientByCpf(replacedCpf);
@@ -131,6 +131,7 @@ public class ClientService {
         } else {
             clientList.add(findClient);
         }
+        return clientList;
     }
 
     public Client clientBuilder(ClientRequest client){

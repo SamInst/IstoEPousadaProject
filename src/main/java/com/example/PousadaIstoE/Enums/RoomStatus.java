@@ -2,7 +2,7 @@ package com.example.PousadaIstoE.Enums;
 
 public enum RoomStatus {
     BUSY,
-    AVAIABLE,
+    AVAILABLE,
     RESERVED,
     NEEDS_CLEANING,
     DAILY_CLOSED,

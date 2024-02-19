@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/pernoites")
+@RequestMapping("/overnights")
 public class OvernightStayController {
     private final OvernightService overnightService;
 

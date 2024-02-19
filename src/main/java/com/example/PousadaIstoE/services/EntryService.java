@@ -64,14 +64,13 @@ public class EntryService {
 
     public EntryResponse findById(Long entry_id){
         var entry = find.entryById(entry_id);
-        System.out.println(entry.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")));
         return entryResponse(entry);
     }
 
     public void createEntry(EntryRequest request){
         var room = find.roomById(request.room_id());
         roomService.roomVerification(room);
-        room.setRoomStatus(RoomStatus.BUSY);
+        roomService.updateRoomStatus(room.getId(), RoomStatus.BUSY);
         Entry newEntry = new EntryBuilder()
                 .rooms(room)
                 .startTime(LocalDateTime.now())
@@ -123,7 +122,7 @@ public class EntryService {
                 updatedEntry.setConsumptionValue(totalConsumption);
                 updatedEntry.setTotalEntry(totalEntry + totalConsumption);
                 saveInCashRegister(updatedEntry);
-                roomService.setRoomAvailable(updatedEntry.getRooms());
+                roomService.updateRoomStatus(room.getId(), RoomStatus.AVAILABLE);
                 updatedEntry.setEntryStatus(EntryStatus.FINISHED);
             }
         }
@@ -274,7 +273,7 @@ public class EntryService {
                 .consumptionValue(0F)
                 .totalEntry(0F)
                 .build();
-        roomService.setRoomAvailable(entry.getRooms());
+        roomService.updateRoomStatus(entry.getRooms().getId(), RoomStatus.AVAILABLE);
         entryRepository.save(updatedEntry);
         entryRepository.deleteById(entry_id);
     }

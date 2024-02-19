@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.model.OverNightStayConsumption;
+import com.example.PousadaIstoE.request.ConsumptionRequest;
 import com.example.PousadaIstoE.services.OvernightStayConsumptionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/pernoite-consumo")
+@RequestMapping("/overnight/consumption")
 public class OvernightStayConsumptionController {
     private final OvernightStayConsumptionService overnightStayConsumptionService;
 
@@ -16,19 +16,14 @@ public class OvernightStayConsumptionController {
         this.overnightStayConsumptionService = overnightStayConsumptionService;
     }
 
-    @GetMapping
-    public List<OverNightStayConsumption> buscarTodos(){
-        return overnightStayConsumptionService.BuscaTodos();
-    }
-
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
-    public OverNightStayConsumption criaConsumo(OverNightStayConsumption overNightStayConsumption){
-        return overnightStayConsumptionService.addConsumo(overNightStayConsumption);
+    @PostMapping("/create/{overnight_id}")
+    public void criaConsumo(@PathVariable Long overnight_id, @RequestBody List<ConsumptionRequest> request){
+         overnightStayConsumptionService.addConsumption(overnight_id, request);
     }
-    @DeleteMapping("/{id_consumo}")
+    @DeleteMapping("/remove/{id_consumption}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletaConsumoPernoite(@PathVariable ("id_consumo") Long id_consumo){
-         overnightStayConsumptionService.deleteConsumoPernoite(id_consumo);
+    public void deletaConsumoPernoite(@PathVariable Long id_consumption){
+         overnightStayConsumptionService.removeConsumption(id_consumption);
     }
 }

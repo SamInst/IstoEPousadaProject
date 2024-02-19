@@ -34,7 +34,7 @@ public class RoomService {
                 .number(request.number())
                 .description(find.replace(request.description()))
                 .personCapacity(request.person_capacity())
-                .roomStatus(RoomStatus.AVAIABLE)
+                .roomStatus(RoomStatus.AVAILABLE)
                 .roomType(request.room_type())
                 .build();
         roomRepository.save(room);
@@ -70,10 +70,5 @@ public class RoomService {
             case RESERVED -> throw new EntityConflict("Room Reserved!");
             case DAILY_CLOSED -> throw new EntityConflict("The room is with daily closed, please set the room to status AVAILABLE manually");
         }
-    }
-
-    public void setRoomAvailable(Rooms room){
-        room.setRoomStatus(RoomStatus.AVAIABLE);
-        roomRepository.save(room);
     }
 }

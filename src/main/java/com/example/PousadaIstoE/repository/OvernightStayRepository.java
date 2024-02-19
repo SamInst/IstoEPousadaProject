@@ -13,9 +13,7 @@ import java.util.List;
 @Repository
 public interface OvernightStayRepository extends JpaRepository <OvernightStay, Long> {
 
-    @Query("select u from OvernightStay u order by u.id desc ")
+    @Query("select u from OvernightStay u where u.isActive = true order by u.id desc ")
     Page<OvernightStay> findAllOrderByIdDesc(Pageable pageable);
     List<OvernightStay> findAllByRoom_Id(Long room_id);
-
-
 }
