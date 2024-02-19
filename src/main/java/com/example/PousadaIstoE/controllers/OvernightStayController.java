@@ -27,17 +27,17 @@ public class OvernightStayController {
         return overnightService.findAll(pageable);
     }
 
-    @GetMapping("/reservation_to_overnight/{reservation_id}")
+    @PutMapping("/reservation_to_overnight/{reservation_id}")
     public void changeReservationToOvernight(@PathVariable Long reservation_id){
         overnightService.changeReservationToOvernight(reservation_id);
     }
 
-    @GetMapping("/create")
+    @PostMapping("/create")
     public void createOvernightStay(@RequestBody OvernightStayRequest request){
         overnightService.createOvernightStay(request);
     }
 
-    @GetMapping("/update/{overnight_id}")
+    @PutMapping("/update/{overnight_id}")
     private void updateOvernightStay(@PathVariable Long overnight_id, @RequestBody OvernightStayRequest request){
         overnightService.updateOvernightStay(overnight_id, request);
     }

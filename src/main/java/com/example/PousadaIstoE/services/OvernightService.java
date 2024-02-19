@@ -18,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -89,15 +88,15 @@ public class OvernightService {
 
         OvernightStay overnight = new OvernightBuilder()
                 .room(room)
-                .clientList(reservation.getClientList())
+                .clientList(reservation.getClient())
                 .startDate(reservation.getStartDate())
                 .endDate(reservation.getEndDate())
-                .amountPeople(reservation.getClientList().size())
+                .amountPeople(reservation.getClient().size())
                 .paymentType(reservation.getPaymentType())
                 .paymentStatus(reservation.getPaymentStatus())
                 .totalConsumption(0F)
-                .overnightValue(amountPeoplePrice(reservation.getClientList().size()))
-                .total(amountPeoplePrice(reservation.getClientList().size()))
+                .overnightValue(amountPeoplePrice(reservation.getClient().size()))
+                .total(amountPeoplePrice(reservation.getClient().size()))
                 .isActive(true)
                 .build();
         overnightStayRepository.save(overnight);
@@ -155,6 +154,7 @@ public class OvernightService {
 
         if (request.payment_status().equals(PaymentStatus.COMPLETED)){
             updatedOvernight.setTotal(updatedOvernight.getOvernightValue() + updatedOvernight.getTotalConsumption());
+            updatedOvernight.setTotalConsumption(sumConsumption(updatedOvernight));
             saveInCashRegister(updatedOvernight);
         }
         overnightStayRepository.save(updatedOvernight);
@@ -162,9 +162,9 @@ public class OvernightService {
 
     private Float sumConsumption(OvernightStay overnight){
         var totalConsumption = overNightStayConsumptionRepository.totalConsumptionByOvernightId(overnight.getId());
-        totalConsumption = totalConsumption != null ? totalConsumption : 0.0;
-        overnight.setTotalConsumption(totalConsumption.floatValue());
-        return totalConsumption.floatValue();
+        totalConsumption = totalConsumption != null ? totalConsumption : 0.0F;
+        overnight.setTotalConsumption(totalConsumption);
+        return totalConsumption;
     }
 
 

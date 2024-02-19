@@ -119,7 +119,7 @@ public class ClientService {
         return jdbcTemplate.query(sql, rowMapperAutoCompleteName);
     }
 
-    public List<Client> clientRequest(ClientRequest request){
+    public void clientRequest(ClientRequest request){
         List<Client> clientList = new ArrayList<>();
         var replacedCpf = find.replace(request.cpf());
         Client findClient = clientRepository.findClientByCpf(replacedCpf);
@@ -131,10 +131,9 @@ public class ClientService {
         } else {
             clientList.add(findClient);
         }
-        return clientList;
     }
 
-    private Client clientBuilder(ClientRequest client){
+    public Client clientBuilder(ClientRequest client){
         return new ClientBuilder()
                 .name(client.name() != null ? find.replace(client.name()) : NE)
                 .cpf(client.cpf() != null ? find.replace(client.cpf()) : NE)

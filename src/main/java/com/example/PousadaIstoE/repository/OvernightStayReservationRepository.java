@@ -13,6 +13,8 @@ public interface OvernightStayReservationRepository extends JpaRepository<Overni
 
     @Query("""
                 select u from OvernightStayReservation u where u.isActive and u.startDate = :localDate
-                """)
+           """)
     List<OvernightStayReservation> findAllByStartDateAndActiveIsTrue(LocalDate localDate);
+
+    List<OvernightStayReservation> findAllByRoom(Integer room);
 }

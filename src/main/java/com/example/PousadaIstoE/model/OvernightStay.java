@@ -18,7 +18,7 @@ public class OvernightStay {
     @JoinColumn(name = "fkip08ip04_rooms_id")
     private Rooms room;
 
-    @OneToMany
+    @ManyToMany
     @JoinColumn(name = "fkip08ip01_client_list")
     private List<Client> clientList;
 

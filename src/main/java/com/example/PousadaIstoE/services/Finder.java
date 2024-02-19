@@ -5,6 +5,8 @@ import com.example.PousadaIstoE.model.*;
 import com.example.PousadaIstoE.repository.*;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
+
 @Service
 public class Finder {
     private final CashRegisterRepository cashRegisterRepository;
@@ -73,8 +75,8 @@ public class Finder {
     }
 
     public String replace(String string) {
-        String regex = "[^a-zA-Z0-9\\s]";
-        String newString = string.replaceAll(regex, "");
-        return newString.toUpperCase();
+        String stringSemAcentos = Normalizer.normalize(string, Normalizer.Form.NFD)
+                .replaceAll("[^\\p{ASCII}]", "");
+        return stringSemAcentos.replaceAll("[^a-zA-Z0-9\\s]", "").toUpperCase();
     }
 }

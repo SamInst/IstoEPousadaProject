@@ -21,9 +21,9 @@ public class OvernightStayReservation {
     @Column(name = "ip13_end_date")
     private LocalDate endDate;
 
-    @OneToMany
+    @ManyToMany
     @JoinColumn(name = "fkip13ip01_id_client")
-    private List<Client> clientList;
+    private List<Client> client;
 
     @Column(name = "ip13_room")
     private Integer room;
@@ -71,12 +71,12 @@ public class OvernightStayReservation {
         this.endDate = endDate;
     }
 
-    public List<Client> getClientList() {
-        return clientList;
+    public List<Client> getClient() {
+        return client;
     }
 
-    public void setClientList(List<Client> clientList) {
-        this.clientList = clientList;
+    public void setClient(List<Client> client) {
+        this.client = client;
     }
 
     public Integer getRoom() {
@@ -106,11 +106,11 @@ public class OvernightStayReservation {
     public OvernightStayReservation() {
     }
 
-    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, List<Client> clientList, Integer room, PaymentType paymentType, PaymentStatus paymentStatus, Boolean isActive) {
+    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, List<Client> client, Integer room, PaymentType paymentType, PaymentStatus paymentStatus, Boolean isActive) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.clientList = clientList;
+        this.client = client;
         this.room = room;
         this.paymentType = paymentType;
         this.paymentStatus = paymentStatus;
