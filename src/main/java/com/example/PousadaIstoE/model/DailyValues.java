@@ -12,6 +12,8 @@ public class DailyValues {
     private Integer amountPeople;
     private Float price;
 
+    public DailyValues() {
+    }
 
     public Long getId() {
         return id;
@@ -34,6 +36,11 @@ public class DailyValues {
     }
 
     public void setPrice(Float price) {
+        this.price = price;
+    }
+
+    public DailyValues(Integer amountPeople, Float price) {
+        this.amountPeople = amountPeople;
         this.price = price;
     }
 }

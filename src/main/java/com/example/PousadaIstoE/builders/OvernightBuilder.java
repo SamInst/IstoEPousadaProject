@@ -1,5 +1,6 @@
 package com.example.PousadaIstoE.builders;
 
+import com.example.PousadaIstoE.Enums.OvernightStayStatus;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.model.Client;
@@ -8,6 +9,7 @@ import com.example.PousadaIstoE.model.Rooms;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public class OvernightBuilder {
     private Long id;
@@ -16,12 +18,14 @@ public class OvernightBuilder {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer amountPeople;
-    private PaymentType paymentType;
+    Set<PaymentType> paymentType;
     private PaymentStatus paymentStatus;
     private Float totalConsumption;
     private Float total;
     private Float overnightValue;
     private boolean isActive;
+    private String obs;
+    private OvernightStayStatus overnightStayStatus;
 
 
     public OvernightBuilder id(Long id) {
@@ -54,7 +58,7 @@ public class OvernightBuilder {
         return this;
     }
 
-    public OvernightBuilder paymentType(PaymentType paymentType) {
+    public OvernightBuilder paymentType(Set<PaymentType> paymentType) {
         this.paymentType = paymentType;
         return this;
     }
@@ -84,6 +88,16 @@ public class OvernightBuilder {
         return this;
     }
 
+    public OvernightBuilder obs(String obs) {
+        this.obs = obs;
+        return this;
+    }
+
+    public OvernightBuilder status(OvernightStayStatus overnightStayStatus) {
+        this.overnightStayStatus = overnightStayStatus;
+        return this;
+    }
+
     public OvernightStay build() {
         return new OvernightStay(
                 id,
@@ -95,8 +109,11 @@ public class OvernightBuilder {
                 paymentType,
                 paymentStatus,
                 totalConsumption,
-                total,
                 overnightValue,
-                isActive);
+                total,
+                isActive,
+                obs,
+                overnightStayStatus
+        );
     }
 }

@@ -4,6 +4,9 @@ import com.example.PousadaIstoE.builders.ClientBuilder;
 import com.example.PousadaIstoE.custom.QueryClient;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.Client;
+import com.example.PousadaIstoE.model.Country;
+import com.example.PousadaIstoE.model.County;
+import com.example.PousadaIstoE.model.States;
 import com.example.PousadaIstoE.repository.ClientRepository;
 import com.example.PousadaIstoE.request.ClientRequest;
 import com.example.PousadaIstoE.response.AutoCompleteNameResponse;
@@ -59,16 +62,28 @@ public class ClientService {
 
     public Client registerClient(ClientRequest request, Long employee_id) {
         var employee = find.employeeById(employee_id);
+        Country country = null;
+        States state = null;
+        County county = null;
+        if (request.country_id() != null) country = find.countryById(request.country_id());
+        if (request.state_id() != null) state = find.stateById(request.state_id());
+        if (request.county_id() != null) county = find.countyById(request.county_id());
 
         Client client = new ClientBuilder()
                 .name(request.name().toUpperCase())
                 .cpf(replaceCPF(request.cpf()))
+                .email(request.email())
                 .phone(request.phone())
                 .birth(request.birth())
                 .address(request.address().toUpperCase())
                 .job(request.job().toUpperCase())
                 .isHosted(false)
+                .isBlocked(false)
+                .obs(request.obs())
                 .registeredBy(employee)
+                .country(country)
+                .state(state)
+                .county(county)
                 .build();
         return clientRepository.save(client);
     }
@@ -105,6 +120,9 @@ public class ClientService {
                 client.getAddress() != null ? client.getAddress() : "",
                 client.getJob() != null ? client.getJob() : "",
                 client.getRegisteredBy() != null ? client.getRegisteredBy().getName() : "",
+                client.getCountry() != null ? client.getCountry().getDescription() : "",
+                client.getState() != null ? client.getState().getDescription() : "",
+                client.getCounty() != null ? client.getCounty().getDescription() : "",
                 client.isHosted()
         );
     }

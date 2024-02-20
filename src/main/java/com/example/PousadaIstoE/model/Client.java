@@ -14,6 +14,9 @@ public class Client {
     @Column(name = "ip01_name")
     private String name;
 
+    @Column(name = "ip01_email")
+    private String email;
+
     @Column(name = "ip01_cpf")
     private String cpf;
 
@@ -45,6 +48,36 @@ public class Client {
 
     @Column(name = "ip01_hosted")
     private Boolean isHosted;
+
+    @Column(name = "ip01_blocked")
+    private Boolean isBlocked;
+
+    @Column(name = "ip01_obs")
+    private String obs;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Boolean getBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(Boolean blocked) {
+        isBlocked = blocked;
+    }
+
+    public String getObs() {
+        return obs;
+    }
+
+    public void setObs(String obs) {
+        this.obs = obs;
+    }
 
     public Long getId() {
         return id;
@@ -136,13 +169,22 @@ public class Client {
         this.birth = birth;
     }
 
-    public Client(String name, String cpf, String phone, String address, String job, Employee registeredBy) {
+    public Client(Long id, String name, String email, String cpf, LocalDate birth, String phone, Country country, States state, County county, String address, String job, Employee registeredBy, Boolean isHosted, Boolean isBlocked, String obs) {
+        this.id = id;
         this.name = name;
+        this.email = email;
         this.cpf = cpf;
+        this.birth = birth;
         this.phone = phone;
+        this.country = country;
+        this.state = state;
+        this.county = county;
         this.address = address;
         this.job = job;
         this.registeredBy = registeredBy;
+        this.isHosted = isHosted;
+        this.isBlocked = isBlocked;
+        this.obs = obs;
     }
 
     public Boolean getHosted() {

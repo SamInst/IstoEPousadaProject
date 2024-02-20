@@ -5,6 +5,7 @@ import com.example.PousadaIstoE.Enums.PaymentType;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record ReservationRequest(
         List<ClientRequest> clients,
@@ -12,5 +13,6 @@ public record ReservationRequest(
         LocalDate end_date,
         Integer room,
         PaymentType payment_type,
-        PaymentStatus payment_status
+        PaymentStatus payment_status,
+        String obs
 ){}

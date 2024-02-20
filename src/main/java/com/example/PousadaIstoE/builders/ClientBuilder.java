@@ -1,20 +1,25 @@
 package com.example.PousadaIstoE.builders;
 
-import com.example.PousadaIstoE.model.Client;
-import com.example.PousadaIstoE.model.Employee;
+import com.example.PousadaIstoE.model.*;
 
 import java.time.LocalDate;
 
 public class ClientBuilder {
     private Long id;
     private String name;
+    private String email;
     private String cpf;
     private LocalDate birth;
     private String phone;
+    private Country country;
+    private States state;
+    private County county;
     private String address;
     private String job;
     private Employee registeredBy;
-    private Boolean hosted;
+    private Boolean isHosted;
+    private Boolean isBlocked;
+    private String obs;
 
     public ClientBuilder id(Long id) {
         this.id = id;
@@ -26,8 +31,13 @@ public class ClientBuilder {
         return this;
     }
 
+    public ClientBuilder email(String email) {
+        this.email = email;
+        return this;
+    }
+
     public ClientBuilder cpf(String cpf) {
-        this.cpf = cpf.replaceAll(".-","");
+        this.cpf = cpf;
         return this;
     }
 
@@ -38,6 +48,21 @@ public class ClientBuilder {
 
     public ClientBuilder phone(String phone) {
         this.phone = phone;
+        return this;
+    }
+
+    public ClientBuilder country(Country country) {
+        this.country = country;
+        return this;
+    }
+
+    public ClientBuilder state(States state) {
+        this.state = state;
+        return this;
+    }
+
+    public ClientBuilder county(County county) {
+        this.county = county;
         return this;
     }
 
@@ -56,22 +81,37 @@ public class ClientBuilder {
         return this;
     }
 
-    public ClientBuilder isHosted(Boolean hosted) {
-        this.hosted = hosted;
+    public ClientBuilder isHosted(Boolean isHosted) {
+        this.isHosted = isHosted;
+        return this;
+    }
+
+    public ClientBuilder isBlocked(Boolean isBlocked) {
+        this.isBlocked = isBlocked;
+        return this;
+    }
+
+    public ClientBuilder obs(String obs) {
+        this.obs = obs;
         return this;
     }
 
     public Client build() {
-        Client client = new Client();
-        client.setId(this.id);
-        client.setName(this.name);
-        client.setCpf(this.cpf);
-        client.setBirth(this.birth);
-        client.setPhone(this.phone);
-        client.setAddress(this.address);
-        client.setJob(this.job);
-        client.setRegisteredBy(this.registeredBy);
-        client.setHosted(this.hosted);
-        return client;
+        return new Client(
+                id,
+                name,
+                email,
+                cpf,
+                birth,
+                phone,
+                country,
+                state,
+                county,
+                address,
+                job,
+                registeredBy,
+                isHosted,
+                isBlocked,
+                obs);
     }
 }

@@ -10,11 +10,11 @@ public class County {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "description")
+    @Column(name = "county_description")
     private String description;
 
     @ManyToOne
-    @JoinColumn (name = "state_id")
+    @JoinColumn (name = "county_state_id")
     private States state;
 
     public Long getId() {

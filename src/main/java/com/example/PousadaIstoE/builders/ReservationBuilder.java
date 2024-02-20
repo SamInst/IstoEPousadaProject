@@ -6,6 +6,7 @@ import com.example.PousadaIstoE.model.Client;
 import com.example.PousadaIstoE.model.OvernightStayReservation;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public class ReservationBuilder {
     private Long id;
@@ -13,9 +14,10 @@ public class ReservationBuilder {
     private LocalDate endDate;
     private List<Client> clientList;
     private Integer room;
-    private PaymentType paymentType;
+    private Set<PaymentType> paymentType;
     private PaymentStatus paymentStatus;
     private Boolean isActive;
+    private String obs;
 
     public ReservationBuilder id(Long id) {
         this.id = id;
@@ -41,7 +43,7 @@ public class ReservationBuilder {
         return this;
     }
 
-    public ReservationBuilder paymentType(PaymentType paymentType) {
+    public ReservationBuilder paymentType(Set<PaymentType> paymentType) {
         this.paymentType = paymentType;
         return this;
     }
@@ -55,6 +57,10 @@ public class ReservationBuilder {
         this.isActive = isActive;
         return this;
     }
+    public ReservationBuilder obs(String obs) {
+        this.obs = obs;
+        return this;
+    }
 
     public OvernightStayReservation build(){
         return new OvernightStayReservation(
@@ -65,6 +71,7 @@ public class ReservationBuilder {
                 room,
                 paymentType,
                 paymentStatus,
-                isActive);
+                isActive,
+                obs);
     }
 }

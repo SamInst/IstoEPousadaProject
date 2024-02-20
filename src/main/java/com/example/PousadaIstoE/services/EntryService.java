@@ -24,7 +24,6 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,7 +77,7 @@ public class EntryService {
                 .entryStatus(EntryStatus.IN_PROGRESS)
                 .entryDataRegister(LocalDate.now())
                 .paymentStatus(PaymentStatus.PENDING)
-                .paymentType(PaymentType.PENDING)
+                .paymentType(PaymentType.PENDENTE)
                 .obs(request.obs().toUpperCase())
                 .consumptionValue(0F)
                 .entryValue(ENTRY_VALUE)
@@ -224,15 +223,15 @@ public class EntryService {
                 newReport += "(PIX)";
                 cashOut += entry.getTotalEntry();
             }
-            case CREDIT_CARD -> {
+            case CARTAO_CREDITO -> {
                 newReport += "(CARTAO CREDITO)";
                 cashOut += entry.getTotalEntry();
             }
-            case DEBIT_CARD -> {
+            case CARTAO_DEBITO -> {
                 newReport += "(CARTAO DEBITO)";
                 cashOut += entry.getTotalEntry();
             }
-            case CASH -> newReport += "(DINHEIRO)";
+            case DINHEIRO -> newReport += "(DINHEIRO)";
         }
         CashRegisterRequest cashRegisterRequest = new CashRegisterRequest(
                 newReport,

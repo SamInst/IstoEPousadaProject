@@ -1,10 +1,12 @@
 package com.example.PousadaIstoE.model;
 
+import com.example.PousadaIstoE.Enums.OvernightStayStatus;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.PaymentType;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "ip08_overnight_stay")
@@ -32,8 +34,7 @@ public class OvernightStay {
     private Integer amountPeople;
 
     @Column(name = "ip08_payment_type")
-    @Enumerated(EnumType.STRING)
-    private PaymentType paymentType;
+    private List<PaymentType> paymentType;
 
     @Column(name = "ip08_payment_status")
     @Enumerated(EnumType.STRING)
@@ -49,6 +50,12 @@ public class OvernightStay {
 
     @Column(name = "ip08_active")
     private boolean isActive;
+
+    @Column(name = "ip08_obs")
+    private String obs;
+
+    @Column(name = "ip08_overnight_status")
+    private OvernightStayStatus overnightStayStatus;
 
     public Float getTotal() {
         return total;
@@ -110,13 +117,7 @@ public class OvernightStay {
         this.amountPeople = amountPeople;
     }
 
-    public PaymentType getPaymentType() {
-        return paymentType;
-    }
 
-    public void setPaymentType(PaymentType paymentType) {
-        this.paymentType = paymentType;
-    }
 
     public PaymentStatus getPaymentStatus() {
         return paymentStatus;
@@ -146,7 +147,31 @@ public class OvernightStay {
         this.totalConsumption = totalConsumption;
     }
 
-    public OvernightStay(Long id, Rooms room, List<Client> clientList, LocalDate startDate, LocalDate endDate, Integer amountPeople, PaymentType paymentType, PaymentStatus paymentStatus, Float totalConsumption, Float overnightValue, Float total, boolean isActive) {
+    public String getObs() {
+        return obs;
+    }
+
+    public OvernightStayStatus getOvernightStayStatus() {
+        return overnightStayStatus;
+    }
+
+    public void setOvernightStayStatus(OvernightStayStatus overnightStayStatus) {
+        this.overnightStayStatus = overnightStayStatus;
+    }
+
+    public void setObs(String obs) {
+        this.obs = obs;
+    }
+
+    public Set<PaymentType> getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(Set<PaymentType> paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public OvernightStay(Long id, Rooms room, List<Client> clientList, LocalDate startDate, LocalDate endDate, Integer amountPeople, Set<PaymentType> paymentType, PaymentStatus paymentStatus, Float totalConsumption, Float overnightValue, Float total, boolean isActive, String obs, OvernightStayStatus overnightStayStatus) {
         this.id = id;
         this.room = room;
         this.clientList = clientList;
@@ -159,6 +184,8 @@ public class OvernightStay {
         this.overnightValue = overnightValue;
         this.total = total;
         this.isActive = isActive;
+        this.obs = obs;
+        this.overnightStayStatus = overnightStayStatus;
     }
 
     public OvernightStay() {

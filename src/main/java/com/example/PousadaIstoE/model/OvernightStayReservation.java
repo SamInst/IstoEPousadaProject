@@ -3,9 +3,9 @@ package com.example.PousadaIstoE.model;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.PaymentType;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "ip13_reservations")
@@ -30,7 +30,7 @@ public class OvernightStayReservation {
 
     @Column(name = "ip13_payment_type")
     @Enumerated(EnumType.STRING)
-    private PaymentType paymentType;
+    private Set<PaymentType> paymentType;
 
     @Column(name = "ip13_payment_status")
     @Enumerated(EnumType.STRING)
@@ -38,6 +38,9 @@ public class OvernightStayReservation {
 
     @Column(name = "ip13_is_active")
     private Boolean isActive;
+
+    @Column(name = "ip13_obs")
+    private String obs;
 
     public Boolean getActive() {
         return isActive;
@@ -87,14 +90,6 @@ public class OvernightStayReservation {
         this.room = room;
     }
 
-    public PaymentType getPaymentType() {
-        return paymentType;
-    }
-
-    public void setPaymentType(PaymentType paymentType) {
-        this.paymentType = paymentType;
-    }
-
     public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
@@ -103,10 +98,26 @@ public class OvernightStayReservation {
         this.paymentStatus = paymentStatus;
     }
 
+    public String getObs() {
+        return obs;
+    }
+
+    public void setObs(String obs) {
+        this.obs = obs;
+    }
+
+    public Set<PaymentType> getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(Set<PaymentType> paymentType) {
+        this.paymentType = paymentType;
+    }
+
     public OvernightStayReservation() {
     }
 
-    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, List<Client> client, Integer room, PaymentType paymentType, PaymentStatus paymentStatus, Boolean isActive) {
+    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, List<Client> client, Integer room, Set<PaymentType> paymentType, PaymentStatus paymentStatus, Boolean isActive, String obs) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -115,5 +126,6 @@ public class OvernightStayReservation {
         this.paymentType = paymentType;
         this.paymentStatus = paymentStatus;
         this.isActive = isActive;
+        this.obs = obs;
     }
 }

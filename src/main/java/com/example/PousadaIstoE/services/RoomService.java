@@ -8,6 +8,8 @@ import com.example.PousadaIstoE.repository.RoomRepository;
 import com.example.PousadaIstoE.request.RoomRequest;
 import com.example.PousadaIstoE.request.UpdateRoomRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -22,7 +24,10 @@ public class RoomService {
     }
 
     public List<Rooms> findAll() {
-        return roomRepository.findAll();
+        return roomRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(Rooms::getNumber))
+                .toList();
     }
 
     public Rooms findRoomById(Long room_id) {

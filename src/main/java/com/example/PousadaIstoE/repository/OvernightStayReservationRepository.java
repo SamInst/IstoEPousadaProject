@@ -11,6 +11,8 @@ import java.util.List;
 @Repository
 public interface OvernightStayReservationRepository extends JpaRepository<OvernightStayReservation, Long> {
 
+    OvernightStayReservation findOvernightStayReservationById(Long overnight_id);
+
     @Query("""
                 select u from OvernightStayReservation u where u.isActive and u.startDate = :localDate
            """)

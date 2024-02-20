@@ -1,8 +1,11 @@
 package com.example.PousadaIstoE.services;
 
+import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.builders.ReservationBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.Client;
+import com.example.PousadaIstoE.model.DailyValues;
+import com.example.PousadaIstoE.model.DailyValuesRepository;
 import com.example.PousadaIstoE.model.OvernightStayReservation;
 import com.example.PousadaIstoE.repository.ClientRepository;
 import com.example.PousadaIstoE.repository.OvernightStayReservationRepository;
@@ -12,8 +15,11 @@ import com.example.PousadaIstoE.response.ClientResponse;
 import com.example.PousadaIstoE.response.ReservationResponse;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ReservationService {
@@ -22,17 +28,20 @@ public class ReservationService {
     private final Finder find;
     private final RoomService roomService;
     private final ClientRepository clientRepository;
+    private final DailyValuesRepository dailyValuesRepository;
 
     public ReservationService(
             OvernightStayReservationRepository overnightStayReservationRepository,
             ClientService clientService,
             Finder find, RoomService roomService,
-            ClientRepository clientRepository) {
+            ClientRepository clientRepository,
+            DailyValuesRepository dailyValuesRepository) {
         this.overnightStayReservationRepository = overnightStayReservationRepository;
         this.clientService = clientService;
         this.find = find;
         this.roomService = roomService;
         this.clientRepository = clientRepository;
+        this.dailyValuesRepository = dailyValuesRepository;
     }
 
     public ReservationResponse findReservationById(Long reservation_id){
@@ -76,6 +85,7 @@ public class ReservationService {
                 .room(request.room())
                 .paymentType(request.payment_type())
                 .paymentStatus(request.payment_status())
+                .obs(request.obs().toUpperCase())
                 .isActive(true)
                 .build();
 //        isRoomAvailable(reservation);
@@ -114,6 +124,7 @@ public class ReservationService {
             .paymentType(request.payment_type())
             .paymentStatus(request.payment_status())
             .isActive(reservation.getActive())
+            .obs(request.obs()!= null ? request.obs() : "")
             .build();
         overnightStayReservationRepository.save(updateReservation);
     }
@@ -127,8 +138,17 @@ public class ReservationService {
              overnightStayReservationRepository.save(reservation);
         }
     }
+    private Float calculateTotal(OvernightStayReservation reservation){
+        var period = Period.between(reservation.getStartDate(), reservation.getEndDate()).getDays();
+        var amountPeople = reservation.getClient().size();
+        var dailyValue = amountPeoplePrice(amountPeople);
+        return dailyValue * period;
+    }
 
     private ReservationResponse reservationResponse(OvernightStayReservation reservation){
+        var total = calculateTotal(reservation);
+
+        Set<PaymentType> paymentTypes = new HashSet<>(reservation.getPaymentType());
         List<ClientResponse> clientResponseList = new ArrayList<>();
 
         if (reservation.getClient() != null) {
@@ -141,6 +161,9 @@ public class ReservationService {
                         client.getAddress(),
                         client.getJob(),
                         client.getRegisteredBy() != null ? client.getRegisteredBy().getName() : "",
+                        client.getCountry() != null ? client.getCountry().getDescription() : "",
+                        client.getState() != null ? client.getState().getDescription() : "",
+                        client.getCounty() != null ? client.getCounty().getDescription() : "",
                         client.isHosted()
                 );
                 clientResponseList.add(clientResponse);
@@ -152,9 +175,12 @@ public class ReservationService {
                 reservation.getStartDate(),
                 reservation.getEndDate(),
                 reservation.getRoom(),
-                reservation.getPaymentType(),
+                paymentTypes,
                 reservation.getPaymentStatus(),
-                clientResponseList.size()
+                clientResponseList.size(),
+                reservation.getObs(),
+                reservation.getActive(),
+                total
                 );
     }
 
@@ -182,5 +208,15 @@ public class ReservationService {
         var reservation = find.reservationById(reservation_id);
         reservation.setActive(false);
         overnightStayReservationRepository.save(reservation);
+    }
+
+    private Float amountPeoplePrice(Integer amountPeople) {
+        List<DailyValues> dailyValuesList = dailyValuesRepository.findAll();
+        for (DailyValues dailyValue : dailyValuesList) {
+            if (amountPeople.equals(dailyValue.getAmountPeople())) {
+                return dailyValue.getPrice();
+            }
+        }
+        throw new IllegalStateException("Price not found for the specified amount of people: " + amountPeople);
     }
 }

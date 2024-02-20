@@ -5,6 +5,7 @@ import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.Enums.RoomType;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record OvernightStayResponse(
         Long id,
@@ -13,14 +14,15 @@ public record OvernightStayResponse(
         LocalDate start_date,
         LocalDate end_date,
         List<ConsumptionResponse> consumptions,
-        Values values
+        Values values,
+        String obs
 ){
     public record Values(
             Integer amount_people,
             Integer amount_days,
             Float total_consumption,
             Float daily_value,
-            PaymentType payment_type,
+            Set<PaymentType> payment_type,
             PaymentStatus payment_status,
             Float total_value
     ){}

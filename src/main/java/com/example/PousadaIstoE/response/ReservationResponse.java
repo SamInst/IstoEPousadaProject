@@ -5,6 +5,7 @@ import com.example.PousadaIstoE.Enums.PaymentType;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record ReservationResponse(
     Long id,
@@ -14,5 +15,8 @@ public record ReservationResponse(
     Integer room,
     PaymentType payment_type,
     PaymentStatus payment_status,
-    Integer amount_people
+    Integer amount_people,
+    String obs,
+    Boolean isActive,
+    Float total
 ){}

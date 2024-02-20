@@ -1,23 +1,20 @@
 package com.example.PousadaIstoE.services;
 
-import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.OverNightStayConsumption;
-import com.example.PousadaIstoE.repository.*;
+import com.example.PousadaIstoE.repository.OverNightStayConsumptionRepository;
 import com.example.PousadaIstoE.request.ConsumptionRequest;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
 public class OvernightStayConsumptionService {
-    private final OvernightStayComsuptionRepository overnightStayComsuptionRepository;
     private final Finder find;
+    private final OverNightStayConsumptionRepository overNightStayConsumptionRepository;
 
     public OvernightStayConsumptionService(
-            OvernightStayComsuptionRepository overnightStayComsuptionRepository,
-            Finder find) {
-        this.overnightStayComsuptionRepository = overnightStayComsuptionRepository;
+            Finder find, OverNightStayConsumptionRepository overNightStayConsumptionRepository) {
         this.find = find;
+        this.overNightStayConsumptionRepository = overNightStayConsumptionRepository;
     }
 
     public void addConsumption(Long overnight_id, List<ConsumptionRequest> consumptionRequest) {
@@ -29,11 +26,11 @@ public class OvernightStayConsumptionService {
                     item,
                     overnight
             );
-            overnightStayComsuptionRepository.save(consumption);
+            overNightStayConsumptionRepository.save(consumption);
         });
     }
 
     public void removeConsumption(Long consumption_id){
-        overnightStayComsuptionRepository.deleteById(consumption_id);
+        overNightStayConsumptionRepository.deleteById(consumption_id);
     }
 }

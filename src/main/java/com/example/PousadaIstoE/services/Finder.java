@@ -2,6 +2,7 @@ package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.exceptions.EntityNotFound;
 import com.example.PousadaIstoE.model.*;
+import com.example.PousadaIstoE.repository.CountryRepository;
 import com.example.PousadaIstoE.repository.*;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class Finder {
     private final OvernightStayReservationRepository reservationRepository;
     private final EntryRepository entryRepository;
     private final ItemRepository itemRepository;
+    private final CountryRepository countryRepository;
+    private final CountyRepository countyRepository;
+    private final StatesRepository statesRepository;
 
     public Finder(
             EntryRepository entryRepository,
@@ -26,7 +30,10 @@ public class Finder {
             RoomRepository roomRepository,
             OvernightStayRepository overnightStayRepository,
             OvernightStayReservationRepository reservationRepository,
-            EntryRepository entryRepository1, ItemRepository itemRepository){
+            EntryRepository entryRepository1, ItemRepository itemRepository,
+            CountryRepository countryRepository,
+            CountyRepository countyRepository,
+            StatesRepository statesRepository){
         this.cashRegisterRepository = cashRegisterRepository;
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
@@ -35,6 +42,9 @@ public class Finder {
         this.reservationRepository = reservationRepository;
         this.entryRepository = entryRepository1;
         this.itemRepository = itemRepository;
+        this.countryRepository = countryRepository;
+        this.countyRepository = countyRepository;
+        this.statesRepository = statesRepository;
     }
 
     public Client clientById(Long client_id){
@@ -60,8 +70,7 @@ public class Finder {
     }
 
     public OvernightStayReservation reservationById(Long reservation_id){
-        return reservationRepository.findById(reservation_id)
-                .orElseThrow(()-> new EntityNotFound("Reservation not found"));
+        return reservationRepository.findOvernightStayReservationById(reservation_id);
     }
 
     public Entry entryById(Long entry_id){
@@ -72,6 +81,20 @@ public class Finder {
     public Item itemById(Long item_id){
         return itemRepository.findById(item_id)
                 .orElseThrow(()-> new EntityNotFound("Item not found"));
+    }
+    public Country countryById(Long country_id){
+        return countryRepository.findById(country_id)
+                .orElseThrow(()-> new EntityNotFound("Country not found"));
+    }
+
+    public County countyById(Long county_id){
+        return countyRepository.findById(county_id)
+                .orElseThrow(()-> new EntityNotFound("County not found"));
+    }
+
+    public States stateById(Long state_id){
+        return statesRepository.findById(state_id)
+                .orElseThrow(()-> new EntityNotFound("State not found"));
     }
 
     public String replace(String string) {
