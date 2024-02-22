@@ -2,13 +2,14 @@ package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.Enums.EntryStatus;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
-import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.Enums.RoomStatus;
 import com.example.PousadaIstoE.builders.EntryBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.Entry;
+import com.example.PousadaIstoE.model.PaymentType;
 import com.example.PousadaIstoE.repository.EntryConsumptionRepository;
 import com.example.PousadaIstoE.repository.EntryRepository;
+import com.example.PousadaIstoE.repository.PaymentTypeRepository;
 import com.example.PousadaIstoE.repository.RoomRepository;
 import com.example.PousadaIstoE.request.CashRegisterRequest;
 import com.example.PousadaIstoE.request.EntryRequest;
@@ -25,7 +26,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,24 +36,33 @@ public class EntryService {
     public static final Float ENTRY_VALUE = 30F;
     public static final Float HOUR_VALUE = 5F;
     public static final long MAX_HOUR_MINUTES = 120;
+    private static final long PENDING = 1L;
+    private static final long CASH = 2L;
+    private static final long CREDIT_CARD = 3L;
+    private static final long DEBIT_CARD = 4L;
+    private static final long BANK_TRANSFER = 5L;
+    private static final long PIX = 6L;
     private final EntryRepository entryRepository;
     private final EntryConsumptionRepository entryConsumptionRepository;
     private final Finder find;
     private final RoomRepository roomRepository;
     private final CashRegisterService cashRegisterService;
     private final RoomService roomService;
+    private final PaymentTypeRepository paymentTypeRepository;
 
     public EntryService(EntryRepository entryRepository,
                         EntryConsumptionRepository entryConsumptionRepository,
                         Finder find,
                         RoomRepository roomRepository,
-                        CashRegisterService cashRegisterService, RoomService roomService) {
+                        CashRegisterService cashRegisterService, RoomService roomService,
+                        PaymentTypeRepository paymentTypeRepository) {
         this.entryRepository = entryRepository;
         this.entryConsumptionRepository = entryConsumptionRepository;
         this.find = find;
         this.roomRepository = roomRepository;
         this.cashRegisterService = cashRegisterService;
         this.roomService = roomService;
+        this.paymentTypeRepository = paymentTypeRepository;
     }
 
     public Page<SimpleEntryResponse> findAll(Pageable pageable) {
@@ -68,6 +80,7 @@ public class EntryService {
 
     public void createEntry(EntryRequest request){
         var room = find.roomById(request.room_id());
+        var paymentType= find.paymentById(PENDING);
         roomService.roomVerification(room);
         roomService.updateRoomStatus(room.getId(), RoomStatus.BUSY);
         Entry newEntry = new EntryBuilder()
@@ -77,7 +90,7 @@ public class EntryService {
                 .entryStatus(EntryStatus.IN_PROGRESS)
                 .entryDataRegister(LocalDate.now())
                 .paymentStatus(PaymentStatus.PENDING)
-                .paymentType(PaymentType.PENDENTE)
+                .paymentType(Collections.singletonList(paymentType))
                 .obs(request.obs().toUpperCase())
                 .consumptionValue(0F)
                 .entryValue(ENTRY_VALUE)
@@ -89,12 +102,19 @@ public class EntryService {
     }
 
     public void updateEntry(Long entry_id, UpdateEntryRequest request){
+
         var entry = find.entryById(entry_id);
         var room = find.roomById(request.room_id());
         if (!room.getId().equals(request.room_id())){ roomService.roomVerification(entry.getRooms()); }
 
         if (entry.getEntryStatus().equals(EntryStatus.FINISHED))
             throw new EntityConflict("The Entry was finished");
+
+        List<PaymentType> paymentTypeList = new ArrayList<>();
+        request.payment_type_ids().forEach(id -> {
+            var paymentType = find.paymentById(id);
+            paymentTypeList.add(paymentType);
+        });
 
         Entry updatedEntry = new EntryBuilder()
                 .id(entry.getId())
@@ -104,7 +124,7 @@ public class EntryService {
                 .entryStatus(request.entry_status())
                 .entryDataRegister(entry.getEntryDataRegister())
                 .paymentStatus(request.payment_status())
-                .paymentType(request.payment_type())
+                .paymentType(paymentTypeList)
                 .obs(request.obs().toUpperCase())
                 .entryValue(entry.getEntryValue())
                 .consumptionValue(entry.getConsumptionValue())
@@ -215,29 +235,27 @@ public class EntryService {
     }
 
     private void saveInCashRegister(Entry entry){
-        String report = "";
-        String newReport = reportValidation(report);
-        float cashOut = 0F;
-        switch (entry.getPaymentType()){
-            case PIX -> {
-                newReport += "(PIX)";
-                cashOut += entry.getTotalEntry();
+        String newReport = "";
+        AtomicReference<String> report = new AtomicReference<>(reportValidation(newReport));
+        AtomicReference<Float> cashOut = new AtomicReference<>(0F);
+
+        List<PaymentType> paymentTypes = entry.getPaymentType();
+        paymentTypes.forEach(paymentType -> {
+            report.updateAndGet(v -> v + "(" + paymentType.getDescription() + ") ");
+            if (paymentType.getId() == PIX
+                    || paymentType.getId() == CREDIT_CARD
+                    || paymentType.getId() == DEBIT_CARD
+                    || paymentType.getId() == BANK_TRANSFER) {
+                cashOut.updateAndGet(v -> v + entry.getTotalEntry());
+            } else if (paymentType.getId() == CASH) {
+                cashOut.set(0F);
             }
-            case CARTAO_CREDITO -> {
-                newReport += "(CARTAO CREDITO)";
-                cashOut += entry.getTotalEntry();
-            }
-            case CARTAO_DEBITO -> {
-                newReport += "(CARTAO DEBITO)";
-                cashOut += entry.getTotalEntry();
-            }
-            case DINHEIRO -> newReport += "(DINHEIRO)";
-        }
+        });
         CashRegisterRequest cashRegisterRequest = new CashRegisterRequest(
                 newReport,
                 entry.getRooms().getNumber(),
                 entry.getTotalEntry(),
-                cashOut);
+                cashOut.get());
         cashRegisterService.createCashRegister(cashRegisterRequest);
     }
 

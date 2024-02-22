@@ -1,20 +1,20 @@
 package com.example.PousadaIstoE.builders;
 
 import com.example.PousadaIstoE.Enums.PaymentStatus;
-import com.example.PousadaIstoE.Enums.PaymentType;
-import com.example.PousadaIstoE.model.Client;
+import com.example.PousadaIstoE.model.Customer;
 import com.example.PousadaIstoE.model.OvernightStayReservation;
+import com.example.PousadaIstoE.model.PaymentType;
+
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 public class ReservationBuilder {
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
-    private List<Client> clientList;
+    private List<Customer> customerList;
     private Integer room;
-    private Set<PaymentType> paymentType;
+    private List<PaymentType> paymentType;
     private PaymentStatus paymentStatus;
     private Boolean isActive;
     private String obs;
@@ -33,8 +33,8 @@ public class ReservationBuilder {
         this.endDate = endDate;
         return this;
     }
-    public ReservationBuilder clientList(List<Client> clientList) {
-        this.clientList = clientList;
+    public ReservationBuilder clientList(List<Customer> customerList) {
+        this.customerList = customerList;
         return this;
     }
 
@@ -43,7 +43,7 @@ public class ReservationBuilder {
         return this;
     }
 
-    public ReservationBuilder paymentType(Set<PaymentType> paymentType) {
+    public ReservationBuilder paymentType(List<PaymentType> paymentType) {
         this.paymentType = paymentType;
         return this;
     }
@@ -67,7 +67,7 @@ public class ReservationBuilder {
                 id,
                 startDate,
                 endDate,
-                clientList,
+                customerList,
                 room,
                 paymentType,
                 paymentStatus,

@@ -2,23 +2,22 @@ package com.example.PousadaIstoE.builders;
 
 import com.example.PousadaIstoE.Enums.OvernightStayStatus;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
-import com.example.PousadaIstoE.Enums.PaymentType;
-import com.example.PousadaIstoE.model.Client;
+import com.example.PousadaIstoE.model.Customer;
 import com.example.PousadaIstoE.model.OvernightStay;
+import com.example.PousadaIstoE.model.PaymentType;
 import com.example.PousadaIstoE.model.Rooms;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 public class OvernightBuilder {
     private Long id;
     private Rooms room;
-    private List<Client> clientList;
+    private List<Customer> customerList;
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer amountPeople;
-    Set<PaymentType> paymentType;
+    private List<PaymentType> paymentType;
     private PaymentStatus paymentStatus;
     private Float totalConsumption;
     private Float total;
@@ -38,8 +37,8 @@ public class OvernightBuilder {
         return this;
     }
 
-    public OvernightBuilder clientList(List<Client> clientList) {
-        this.clientList = clientList;
+    public OvernightBuilder clientList(List<Customer> customerList) {
+        this.customerList = customerList;
         return this;
     }
 
@@ -58,7 +57,7 @@ public class OvernightBuilder {
         return this;
     }
 
-    public OvernightBuilder paymentType(Set<PaymentType> paymentType) {
+    public OvernightBuilder paymentType(List<PaymentType> paymentType) {
         this.paymentType = paymentType;
         return this;
     }
@@ -102,7 +101,7 @@ public class OvernightBuilder {
         return new OvernightStay(
                 id,
                 room,
-                clientList,
+                customerList,
                 startDate,
                 endDate,
                 amountPeople,

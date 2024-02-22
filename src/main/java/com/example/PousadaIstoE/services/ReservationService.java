@@ -1,46 +1,37 @@
 package com.example.PousadaIstoE.services;
 
-import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.builders.ReservationBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
-import com.example.PousadaIstoE.model.Client;
-import com.example.PousadaIstoE.model.DailyValues;
-import com.example.PousadaIstoE.model.DailyValuesRepository;
-import com.example.PousadaIstoE.model.OvernightStayReservation;
-import com.example.PousadaIstoE.repository.ClientRepository;
+import com.example.PousadaIstoE.model.*;
+import com.example.PousadaIstoE.repository.DailyValuesRepository;
 import com.example.PousadaIstoE.repository.OvernightStayReservationRepository;
 import com.example.PousadaIstoE.request.ReservationRequest;
 import com.example.PousadaIstoE.request.UpdateReservationRequest;
-import com.example.PousadaIstoE.response.ClientResponse;
+import com.example.PousadaIstoE.response.ConsumerResponse;
+import com.example.PousadaIstoE.response.PaymentTypeResponse;
 import com.example.PousadaIstoE.response.ReservationResponse;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ReservationService {
     private final OvernightStayReservationRepository overnightStayReservationRepository;
-    private final ClientService clientService;
+    private final CostumerService costumerService;
     private final Finder find;
-    private final RoomService roomService;
-    private final ClientRepository clientRepository;
     private final DailyValuesRepository dailyValuesRepository;
 
     public ReservationService(
             OvernightStayReservationRepository overnightStayReservationRepository,
-            ClientService clientService,
-            Finder find, RoomService roomService,
-            ClientRepository clientRepository,
-            DailyValuesRepository dailyValuesRepository) {
+            CostumerService costumerService,
+            Finder find,
+            DailyValuesRepository dailyValuesRepository
+            ){
         this.overnightStayReservationRepository = overnightStayReservationRepository;
-        this.clientService = clientService;
+        this.costumerService = costumerService;
         this.find = find;
-        this.roomService = roomService;
-        this.clientRepository = clientRepository;
         this.dailyValuesRepository = dailyValuesRepository;
     }
 
@@ -60,71 +51,65 @@ public class ReservationService {
     }
 
     public void createReservation(ReservationRequest request) {
-        List<Client> clientList = new ArrayList<>();
-        dataValidation(request.start_date(), request.end_date());
+        List<Customer> customerList = new ArrayList<>();
+        List<PaymentType> paymentTypeList = new ArrayList<>();
+        dateValidation(request.start_date(), request.end_date());
 
-        request.clients()
-                .forEach(client -> {
+        request.clients().forEach(client -> { costumerService.customerVerification(client, customerList); });
 
-                    var replacedCpf = find.replace(client.cpf());
-                    Client findClient = clientRepository.findClientByCpf(replacedCpf);
+        request.payment_type_id().forEach(id -> {
+            var paymentType = find.paymentById(id);
+            paymentTypeList.add(paymentType);
+        });
 
-                    if (findClient == null) {
-                        findClient = clientService.clientBuilder(client);
-                        clientList.add(findClient);
-                        clientRepository.save(findClient);
-                    } else {
-                        clientList.add(findClient);
-                    }
-                });
-        clientService.clientListVerification(clientList);
+        costumerService.customerListVerification(customerList);
 
         OvernightStayReservation reservation = new ReservationBuilder()
                 .startDate(request.start_date())
                 .endDate(request.end_date())
                 .room(request.room())
-                .paymentType(request.payment_type())
+                .paymentType(paymentTypeList)
                 .paymentStatus(request.payment_status())
                 .obs(request.obs().toUpperCase())
                 .isActive(true)
                 .build();
-//        isRoomAvailable(reservation);
-        reservation.setClient(clientList);
+        isRoomAvailable(reservation);
+        reservation.setClient(customerList);
         overnightStayReservationRepository.save(reservation);
     }
 
+
+
     public void alterReservation(Long reservation_id, UpdateReservationRequest request){
         var reservation = find.reservationById(reservation_id);
-        dataValidation(reservation.getStartDate(), reservation.getEndDate());
+        dateValidation(reservation.getStartDate(), reservation.getEndDate());
 
-        List<Client> clientListUpdated = new ArrayList<>(reservation.getClient());
+        List<Customer> customerListUpdated = new ArrayList<>(reservation.getClient());
+        List<PaymentType> paymentTypeList = new ArrayList<>();
 
-        if(!request.clients().isEmpty()) {
-            request.clients().forEach(client -> {
-                var replacedCpf = find.replace(client.cpf());
-                Client findClient = clientRepository.findClientByCpf(replacedCpf);
+        if(!request.clients().isEmpty()) { request.clients().forEach(
+                client -> { costumerService.customerVerification(client, customerListUpdated); }); }
 
-                if (findClient == null) {
-                    findClient = clientService.clientBuilder(client);
-                    clientListUpdated.add(findClient);
-                    clientRepository.save(findClient);
-                } else {
-                    clientListUpdated.add(findClient);
-                }
+        if (!request.payment_type_id().isEmpty()){
+            request.payment_type_id().forEach(id -> {
+
+                    var paymentType = find.paymentById(id);
+                    paymentTypeList.add(paymentType);
+
             });
         }
-        clientService.clientListVerification(clientListUpdated);
+        costumerService.customerListVerification(customerListUpdated);
 
         OvernightStayReservation updateReservation = new ReservationBuilder()
             .id(reservation.getId())
             .startDate(request.start_date())
             .endDate(request.end_date())
-            .clientList(clientListUpdated)
+            .clientList(customerListUpdated)
             .room(request.room())
-            .paymentType(request.payment_type())
+            .paymentType(paymentTypeList)
             .paymentStatus(request.payment_status())
             .isActive(reservation.getActive())
-            .obs(request.obs()!= null ? request.obs() : "")
+            .obs(request.obs() != null ? request.obs().toUpperCase() : "")
             .build();
         overnightStayReservationRepository.save(updateReservation);
     }
@@ -148,12 +133,17 @@ public class ReservationService {
     private ReservationResponse reservationResponse(OvernightStayReservation reservation){
         var total = calculateTotal(reservation);
 
-        Set<PaymentType> paymentTypes = new HashSet<>(reservation.getPaymentType());
-        List<ClientResponse> clientResponseList = new ArrayList<>();
+        List<PaymentTypeResponse> paymentTypeList = new ArrayList<>();
+        List<ConsumerResponse> consumerResponseList = new ArrayList<>();
+
+        reservation.getPaymentType().forEach(type ->{
+            PaymentTypeResponse response = new PaymentTypeResponse(type.getDescription());
+            paymentTypeList.add(response);
+        });
 
         if (reservation.getClient() != null) {
             reservation.getClient().forEach(client -> {
-                ClientResponse clientResponse = new ClientResponse(
+                ConsumerResponse consumerResponse = new ConsumerResponse(
                         client.getId(),
                         client.getName(),
                         client.getCpf(),
@@ -166,25 +156,25 @@ public class ReservationService {
                         client.getCounty() != null ? client.getCounty().getDescription() : "",
                         client.isHosted()
                 );
-                clientResponseList.add(clientResponse);
+                consumerResponseList.add(consumerResponse);
             });
         }
         return new ReservationResponse(
                 reservation.getId(),
-                clientResponseList,
+                consumerResponseList,
                 reservation.getStartDate(),
                 reservation.getEndDate(),
                 reservation.getRoom(),
-                paymentTypes,
+                paymentTypeList,
                 reservation.getPaymentStatus(),
-                clientResponseList.size(),
+                consumerResponseList.size(),
                 reservation.getObs(),
                 reservation.getActive(),
                 total
                 );
     }
 
-    private void dataValidation(LocalDate startDate, LocalDate endDate){
+    private void dateValidation(LocalDate startDate, LocalDate endDate){
         if (startDate.equals(endDate)) throw new EntityConflict("The dates entered cannot be on the same day");
         if (endDate.isBefore(startDate)) throw new EntityConflict("The date entered cannot be less than today");
     }

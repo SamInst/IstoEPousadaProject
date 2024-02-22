@@ -2,11 +2,12 @@ package com.example.PousadaIstoE.builders;
 
 import com.example.PousadaIstoE.Enums.EntryStatus;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
-import com.example.PousadaIstoE.Enums.PaymentType;
 import com.example.PousadaIstoE.model.Entry;
+import com.example.PousadaIstoE.model.PaymentType;
 import com.example.PousadaIstoE.model.Rooms;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class EntryBuilder {
     private Long id;
@@ -17,7 +18,7 @@ public class EntryBuilder {
     private EntryStatus entryStatus;
     private LocalDate entryDataRegister;
     private Float totalEntry;
-    private PaymentType paymentType;
+    private List<PaymentType> paymentType;
     private PaymentStatus paymentStatus;
     private String obs;
     private Float consumptionValue;
@@ -76,7 +77,7 @@ public class EntryBuilder {
         return this;
     }
 
-    public EntryBuilder paymentType(PaymentType paymentType) {
+    public EntryBuilder paymentType(List<PaymentType> paymentType) {
         this.paymentType = paymentType;
         return this;
     }

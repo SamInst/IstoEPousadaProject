@@ -2,7 +2,7 @@ package com.example.PousadaIstoE.request;
 
 import java.time.LocalDate;
 
-public record ClientRequest(
+public record ConsumerRequest(
         String name,
         String cpf,
         String phone,

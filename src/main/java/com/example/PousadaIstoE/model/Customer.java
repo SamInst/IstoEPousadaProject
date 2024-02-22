@@ -4,9 +4,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-@Table(name = "ip01_clients")
+@Table(name = "ip01_customer")
 @Entity
-public class Client {
+public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ip01_id")
@@ -107,7 +107,7 @@ public class Client {
         this.county = county;
     }
 
-    public Client (){}
+    public Customer(){}
     public String getName() {
         return name;
     }
@@ -169,7 +169,7 @@ public class Client {
         this.birth = birth;
     }
 
-    public Client(Long id, String name, String email, String cpf, LocalDate birth, String phone, Country country, States state, County county, String address, String job, Employee registeredBy, Boolean isHosted, Boolean isBlocked, String obs) {
+    public Customer(Long id, String name, String email, String cpf, LocalDate birth, String phone, Country country, States state, County county, String address, String job, Employee registeredBy, Boolean isHosted, Boolean isBlocked, String obs) {
         this.id = id;
         this.name = name;
         this.email = email;

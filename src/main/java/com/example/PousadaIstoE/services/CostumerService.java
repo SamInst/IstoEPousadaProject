@@ -1,16 +1,16 @@
 package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.builders.ClientBuilder;
-import com.example.PousadaIstoE.custom.QueryClient;
+import com.example.PousadaIstoE.custom.QueryCustomer;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
-import com.example.PousadaIstoE.model.Client;
+import com.example.PousadaIstoE.model.Customer;
 import com.example.PousadaIstoE.model.Country;
 import com.example.PousadaIstoE.model.County;
 import com.example.PousadaIstoE.model.States;
-import com.example.PousadaIstoE.repository.ClientRepository;
-import com.example.PousadaIstoE.request.ClientRequest;
+import com.example.PousadaIstoE.repository.CustomerRepository;
+import com.example.PousadaIstoE.request.ConsumerRequest;
 import com.example.PousadaIstoE.response.AutoCompleteNameResponse;
-import com.example.PousadaIstoE.response.ClientResponse;
+import com.example.PousadaIstoE.response.ConsumerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,49 +18,48 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class ClientService {
+public class CostumerService {
     private static final String NE = "Not Specified";
-    private final ClientRepository clientRepository;
+    private final CustomerRepository customerRepository;
     private final JdbcTemplate jdbcTemplate;
-    private final QueryClient queryClient;
+    private final QueryCustomer queryCustomer;
     private final Finder find;
 
-    public ClientService(
-            ClientRepository clientRepository,
+    public CostumerService(
+            CustomerRepository customerRepository,
             JdbcTemplate jdbcTemplate,
-            QueryClient queryClient,
+            QueryCustomer queryCustomer,
             Finder find) {
-        this.clientRepository = clientRepository;
+        this.customerRepository = customerRepository;
         this.jdbcTemplate = jdbcTemplate;
-        this.queryClient = queryClient;
+        this.queryCustomer = queryCustomer;
         this.find = find;
     }
     static RowMapper<AutoCompleteNameResponse> rowMapperAutoCompleteName = (rs, rowNum) -> new AutoCompleteNameResponse(
             rs.getString("cpf"),
             rs.getString("name"));
 
-    public Page<ClientResponse> findAll(Pageable pageable) {
-        var clients = clientRepository.findAllOrderByName(pageable);
+    public Page<ConsumerResponse> findAll(Pageable pageable) {
+        var clients = customerRepository.findAllOrderByName(pageable);
 
-        List<ClientResponse> clientResponseList = clients.stream()
-                .map(this::clientResponse)
+        List<ConsumerResponse> consumerResponseList = clients.stream()
+                .map(this::customerResponse)
                 .collect(Collectors.toList());
-        return new PageImpl<>(clientResponseList, pageable, clients.getTotalElements());
+        return new PageImpl<>(consumerResponseList, pageable, clients.getTotalElements());
     }
 
-    public ClientResponse findClientById(Long client_id) {
+    public ConsumerResponse findCustomerById(Long client_id) {
         final var client = find.clientById(client_id);
-        return clientResponse(client);
+        return customerResponse(client);
     }
 
-    public Client registerClient(ClientRequest request, Long employee_id) {
+    public Customer registerCustomer(ConsumerRequest request, Long employee_id) {
         var employee = find.employeeById(employee_id);
         Country country = null;
         States state = null;
@@ -69,7 +68,7 @@ public class ClientService {
         if (request.state_id() != null) state = find.stateById(request.state_id());
         if (request.county_id() != null) county = find.countyById(request.county_id());
 
-        Client client = new ClientBuilder()
+        Customer customer = new ClientBuilder()
                 .name(request.name().toUpperCase())
                 .cpf(replaceCPF(request.cpf()))
                 .email(request.email())
@@ -85,13 +84,13 @@ public class ClientService {
                 .state(state)
                 .county(county)
                 .build();
-        return clientRepository.save(client);
+        return customerRepository.save(customer);
     }
 
-    public void updateClientData(ClientRequest request, Long client_id) {
+    public void updateCustomerData(ConsumerRequest request, Long client_id) {
         var client = find.clientById(client_id);
 
-        Client updatedClient = new ClientBuilder()
+        Customer updatedCustomer = new ClientBuilder()
                 .id(client.getId())
                 .name(request.name())
                 .cpf(replaceCPF(request.cpf()))
@@ -102,57 +101,54 @@ public class ClientService {
                 .isHosted(client.isHosted())
                 .registeredBy(client.getRegisteredBy())
                 .build();
-        clientRepository.save(updatedClient);
+        customerRepository.save(updatedCustomer);
     }
 
-    public void inactivateClient(Long client_id) {
-        var client = find.clientById(client_id);
-        client.setHosted(false);
-        clientRepository.save(client);
+    public void customerHosted(Customer customer, boolean hosted){
+        customer.setHosted(hosted);
+        customerRepository.save(customer);
     }
 
-    private ClientResponse clientResponse(Client client){
-        return new ClientResponse(
-                client.getId(),
-                client.getName() != null ? client.getName() : "",
-                client.getCpf() != null ? client.getCpf() : "",
-                client.getPhone() != null ? client.getPhone() : "",
-                client.getAddress() != null ? client.getAddress() : "",
-                client.getJob() != null ? client.getJob() : "",
-                client.getRegisteredBy() != null ? client.getRegisteredBy().getName() : "",
-                client.getCountry() != null ? client.getCountry().getDescription() : "",
-                client.getState() != null ? client.getState().getDescription() : "",
-                client.getCounty() != null ? client.getCounty().getDescription() : "",
-                client.isHosted()
+    public ConsumerResponse customerResponse(Customer customer){
+        return new ConsumerResponse(
+                customer.getId(),
+                customer.getName() != null ? customer.getName() : NE,
+                customer.getCpf() != null ? customer.getCpf() : NE,
+                customer.getPhone() != null ? customer.getPhone() : NE,
+                customer.getAddress() != null ? customer.getAddress() : NE,
+                customer.getJob() != null ? customer.getJob() : NE,
+                customer.getRegisteredBy() != null ? customer.getRegisteredBy().getName() : NE,
+                customer.getCountry() != null ? customer.getCountry().getDescription() : NE,
+                customer.getState() != null ? customer.getState().getDescription() : NE,
+                customer.getCounty() != null ? customer.getCounty().getDescription() : NE,
+                customer.isHosted()
         );
     }
 
-    public ClientResponse findByCPF (String cpf){
-        var client = clientRepository.findClientByCpf(replaceCPF(cpf));
-        return clientResponse(client);
+    public ConsumerResponse findByCPF (String cpf){
+        var client = customerRepository.findClientByCpf(replaceCPF(cpf));
+        return customerResponse(client);
     }
 
     public List<AutoCompleteNameResponse> autoCompleteNameResponse(String name){
-        var sql = queryClient.autoCompleteName(name.toUpperCase());
+        var sql = queryCustomer.autoCompleteName(name.toUpperCase());
         return jdbcTemplate.query(sql, rowMapperAutoCompleteName);
     }
 
-    public List<Client> clientRequest(ClientRequest request){
-        List<Client> clientList = new ArrayList<>();
+    public void customerVerification(ConsumerRequest request, List<Customer> customerList){
         var replacedCpf = find.replace(request.cpf());
-        Client findClient = clientRepository.findClientByCpf(replacedCpf);
+        Customer findCustomer = customerRepository.findClientByCpf(replacedCpf);
 
-        if (findClient == null) {
-            findClient = clientBuilder(request);
-            clientList.add(findClient);
-            clientRepository.save(findClient);
+        if (findCustomer == null) {
+            findCustomer = customerBuilder(request);
+            customerList.add(findCustomer);
+            customerRepository.save(findCustomer);
         } else {
-            clientList.add(findClient);
+            customerList.add(findCustomer);
         }
-        return clientList;
     }
 
-    public Client clientBuilder(ClientRequest client){
+    public Customer customerBuilder(ConsumerRequest client){
         return new ClientBuilder()
                 .name(client.name() != null ? find.replace(client.name()) : NE)
                 .cpf(client.cpf() != null ? find.replace(client.cpf()) : NE)
@@ -163,12 +159,11 @@ public class ClientService {
                 .isHosted(false)
                 .build();
     }
-    public Set<Client> clientListVerification(List<Client> clientList){
-        Set<Client> uniqueClients = new HashSet<>(clientList);
-        if (uniqueClients.size() < clientList.size()) {
+    public void customerListVerification(List<Customer> customerList){
+        Set<Customer> uniqueCustomers = new HashSet<>(customerList);
+        if (uniqueCustomers.size() < customerList.size()) {
             throw new EntityConflict("The customer has already been added to this list.");
         }
-        return uniqueClients;
     }
 
     public String replaceCPF(String cpf){

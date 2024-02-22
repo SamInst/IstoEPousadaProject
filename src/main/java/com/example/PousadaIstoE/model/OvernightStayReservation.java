@@ -1,11 +1,9 @@
 package com.example.PousadaIstoE.model;
 
 import com.example.PousadaIstoE.Enums.PaymentStatus;
-import com.example.PousadaIstoE.Enums.PaymentType;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "ip13_reservations")
@@ -22,15 +20,15 @@ public class OvernightStayReservation {
     private LocalDate endDate;
 
     @ManyToMany
-    @JoinColumn(name = "fkip13ip01_id_client")
-    private List<Client> client;
+    @JoinColumn(name = "fkip13ip01_id_customer")
+    private List<Customer> customer;
 
     @Column(name = "ip13_room")
     private Integer room;
 
-    @Column(name = "ip13_payment_type")
-    @Enumerated(EnumType.STRING)
-    private Set<PaymentType> paymentType;
+    @OneToMany
+    @JoinColumn(name = "ip13_payment_type")
+    private List<PaymentType> paymentType;
 
     @Column(name = "ip13_payment_status")
     @Enumerated(EnumType.STRING)
@@ -74,12 +72,12 @@ public class OvernightStayReservation {
         this.endDate = endDate;
     }
 
-    public List<Client> getClient() {
-        return client;
+    public List<Customer> getClient() {
+        return customer;
     }
 
-    public void setClient(List<Client> client) {
-        this.client = client;
+    public void setClient(List<Customer> customer) {
+        this.customer = customer;
     }
 
     public Integer getRoom() {
@@ -106,22 +104,22 @@ public class OvernightStayReservation {
         this.obs = obs;
     }
 
-    public Set<PaymentType> getPaymentType() {
+    public List<PaymentType> getPaymentType() {
         return paymentType;
     }
 
-    public void setPaymentType(Set<PaymentType> paymentType) {
+    public void setPaymentType(List<PaymentType> paymentType) {
         this.paymentType = paymentType;
     }
 
     public OvernightStayReservation() {
     }
 
-    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, List<Client> client, Integer room, Set<PaymentType> paymentType, PaymentStatus paymentStatus, Boolean isActive, String obs) {
+    public OvernightStayReservation(Long id, LocalDate startDate, LocalDate endDate, List<Customer> customer, Integer room, List<PaymentType> paymentType, PaymentStatus paymentStatus, Boolean isActive, String obs) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.client = client;
+        this.customer = customer;
         this.room = room;
         this.paymentType = paymentType;
         this.paymentStatus = paymentStatus;

@@ -11,7 +11,7 @@ import java.text.Normalizer;
 @Service
 public class Finder {
     private final CashRegisterRepository cashRegisterRepository;
-    private final ClientRepository clientRepository;
+    private final CustomerRepository customerRepository;
     private final EmployeeRepository employeeRepository;
     private final RoomRepository roomRepository;
     private final OvernightStayRepository overnightStayRepository;
@@ -21,11 +21,12 @@ public class Finder {
     private final CountryRepository countryRepository;
     private final CountyRepository countyRepository;
     private final StatesRepository statesRepository;
+    private final PaymentTypeRepository paymentTypeRepository;
 
     public Finder(
             EntryRepository entryRepository,
             CashRegisterRepository cashRegisterRepository,
-            ClientRepository clientRepository,
+            CustomerRepository customerRepository,
             EmployeeRepository employeeRepository,
             RoomRepository roomRepository,
             OvernightStayRepository overnightStayRepository,
@@ -33,9 +34,10 @@ public class Finder {
             EntryRepository entryRepository1, ItemRepository itemRepository,
             CountryRepository countryRepository,
             CountyRepository countyRepository,
-            StatesRepository statesRepository){
+            StatesRepository statesRepository,
+            PaymentTypeRepository paymentTypeRepository){
         this.cashRegisterRepository = cashRegisterRepository;
-        this.clientRepository = clientRepository;
+        this.customerRepository = customerRepository;
         this.employeeRepository = employeeRepository;
         this.roomRepository = roomRepository;
         this.overnightStayRepository = overnightStayRepository;
@@ -45,10 +47,11 @@ public class Finder {
         this.countryRepository = countryRepository;
         this.countyRepository = countyRepository;
         this.statesRepository = statesRepository;
+        this.paymentTypeRepository = paymentTypeRepository;
     }
 
-    public Client clientById(Long client_id){
-       return clientRepository.findById(client_id)
+    public Customer clientById(Long client_id){
+       return customerRepository.findById(client_id)
                .orElseThrow(()-> new EntityNotFound("Client not found."));
     }
 
@@ -95,6 +98,11 @@ public class Finder {
     public States stateById(Long state_id){
         return statesRepository.findById(state_id)
                 .orElseThrow(()-> new EntityNotFound("State not found"));
+    }
+
+    public PaymentType paymentById(Long payment_id){
+       return paymentTypeRepository.findById(payment_id)
+               .orElseThrow(()-> new EntityNotFound("Payment Not Found"));
     }
 
     public String replace(String string) {

@@ -3,7 +3,7 @@ package com.example.PousadaIstoE.custom;
 import org.springframework.stereotype.Component;
 
 @Component
-public class QueryClient {
+public class QueryCustomer {
 
     public String autoCompleteName(String name){
         return

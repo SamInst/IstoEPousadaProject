@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.response;
 
-public record ClientResponse(
+public record ConsumerResponse(
         Long id,
         String name,
         String CPF,

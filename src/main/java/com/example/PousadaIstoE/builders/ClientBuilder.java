@@ -96,8 +96,8 @@ public class ClientBuilder {
         return this;
     }
 
-    public Client build() {
-        return new Client(
+    public Customer build() {
+        return new Customer(
                 id,
                 name,
                 email,
