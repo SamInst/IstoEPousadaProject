@@ -10,7 +10,7 @@ import com.example.PousadaIstoE.model.States;
 import com.example.PousadaIstoE.repository.CustomerRepository;
 import com.example.PousadaIstoE.request.ConsumerRequest;
 import com.example.PousadaIstoE.response.AutoCompleteNameResponse;
-import com.example.PousadaIstoE.response.ConsumerResponse;
+import com.example.PousadaIstoE.response.CustomerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,14 +24,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class CostumerService {
+public class CustomerService {
     private static final String NE = "Not Specified";
     private final CustomerRepository customerRepository;
     private final JdbcTemplate jdbcTemplate;
     private final QueryCustomer queryCustomer;
     private final Finder find;
 
-    public CostumerService(
+    public CustomerService(
             CustomerRepository customerRepository,
             JdbcTemplate jdbcTemplate,
             QueryCustomer queryCustomer,
@@ -45,16 +45,16 @@ public class CostumerService {
             rs.getString("cpf"),
             rs.getString("name"));
 
-    public Page<ConsumerResponse> findAll(Pageable pageable) {
+    public Page<CustomerResponse> findAll(Pageable pageable) {
         var clients = customerRepository.findAllOrderByName(pageable);
 
-        List<ConsumerResponse> consumerResponseList = clients.stream()
+        List<CustomerResponse> customerResponseList = clients.stream()
                 .map(this::customerResponse)
                 .collect(Collectors.toList());
-        return new PageImpl<>(consumerResponseList, pageable, clients.getTotalElements());
+        return new PageImpl<>(customerResponseList, pageable, clients.getTotalElements());
     }
 
-    public ConsumerResponse findCustomerById(Long client_id) {
+    public CustomerResponse findCustomerById(Long client_id) {
         final var client = find.clientById(client_id);
         return customerResponse(client);
     }
@@ -109,8 +109,8 @@ public class CostumerService {
         customerRepository.save(customer);
     }
 
-    public ConsumerResponse customerResponse(Customer customer){
-        return new ConsumerResponse(
+    public CustomerResponse customerResponse(Customer customer){
+        return new CustomerResponse(
                 customer.getId(),
                 customer.getName() != null ? customer.getName() : NE,
                 customer.getCpf() != null ? customer.getCpf() : NE,
@@ -125,7 +125,7 @@ public class CostumerService {
         );
     }
 
-    public ConsumerResponse findByCPF (String cpf){
+    public CustomerResponse findByCPF (String cpf){
         var client = customerRepository.findClientByCpf(replaceCPF(cpf));
         return customerResponse(client);
     }

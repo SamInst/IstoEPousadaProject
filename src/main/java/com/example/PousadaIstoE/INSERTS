@@ -1,13 +1,50 @@
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (2, 'room with capacity for 2 people', 1, 1);
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (3, 'room with capacity for 3 people', 2, 1);
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (4, 'room with capacity for 4 people', 3, 1);
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (5, 'room with capacity for 5 people', 4, 1);
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (2, 'room with capacity for 2 people', 5, 1);
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (3, 'room with capacity for 3 people', 6, 1);
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (4, 'room with capacity for 4 people', 7, 1);
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (5, 'room with capacity for 5 people', 8, 1);
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (2, 'room with capacity for 2 people', 9, 1);
-insert into ip04_rooms (ip04_numero, ip04_description, ip04_person_capacity, ip04_room_status) VALUES (3, 'room with capacity for 3 people', 10, 1);
+insert into ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (1, 'room with capacity for 2 people', 2, 1, 1);
+
+insert into ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (2, 'room with capacity for 2 people', 1, 1, 1);
+
+insert into ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (3, 'room with capacity for 3 people', 3, 1, 1);
+
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (4, 'single room with ensuite bathroom', 1, 1, 1);
+
+-- 2. Inserting another room with different details
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (5, 'luxury suite with ocean view', 2, 1, 1);
+
+-- 3. Inserting a room with different capacity and description
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (6, 'spacious room for 4 guests', 4, 1, 1);
+
+-- 4. Inserting a room with different description and type
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (7, 'cozy room with garden view', 2, 1, 2);
+
+-- 5. Inserting a room with different description and status
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (8, 'comfortable room with mountain view', 2, 0, 1);
+
+-- 6. Inserting a room with different capacity and status
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (9, 'suite for honeymoon couples', 2, 1, 1);
+
+-- 7. Inserting a room with different description and type
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (10, 'premium room with city skyline', 2, 1, 2);
+
+-- 8. Inserting a room with different capacity and type
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (11, 'family suite with kitchenette', 5, 1, 1);
+
+-- 9. Inserting a room with different description and status
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (12, 'budget room with shared bathroom', 1, 1, 1);
+
+-- 10. Inserting a room with different capacity and status
+INSERT INTO ip04_rooms (ip04_number, ip04_description, ip04_person_capacity, ip04_room_status, ip04_room_type)
+VALUES (13, 'penthouse suite with private terrace', 2, 1, 1);
 
 insert into ip07_itens (ip07_description, ip07_value)  VALUES ('agua', 3);
 insert into ip07_itens (ip07_description, ip07_value)  VALUES ('salgadinho', 3);

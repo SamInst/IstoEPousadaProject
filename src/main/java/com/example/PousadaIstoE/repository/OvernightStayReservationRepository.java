@@ -14,9 +14,17 @@ public interface OvernightStayReservationRepository extends JpaRepository<Overni
     OvernightStayReservation findOvernightStayReservationById(Long overnight_id);
 
     @Query("""
-                select u from OvernightStayReservation u where u.isActive and u.startDate = :localDate
+           select u from OvernightStayReservation u where u.isActive and u.startDate = :localDate
            """)
     List<OvernightStayReservation> findAllByStartDateAndActiveIsTrue(LocalDate localDate);
 
-    List<OvernightStayReservation> findAllByRoom(Integer room);
+    @Query("""
+           select u from OvernightStayReservation u where u.isActive = false
+           """)
+    List<OvernightStayReservation> findAllAndActiveIsFalse();
+
+    @Query(value = """
+           select * from ip13_reservations u where u.ip13_is_active = true;
+           """, nativeQuery = true)
+    List<OvernightStayReservation> findAllByRoomAndActiveIsTrue(Integer room);
 }

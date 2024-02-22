@@ -7,9 +7,10 @@ import com.example.PousadaIstoE.repository.DailyValuesRepository;
 import com.example.PousadaIstoE.repository.OvernightStayReservationRepository;
 import com.example.PousadaIstoE.request.ReservationRequest;
 import com.example.PousadaIstoE.request.UpdateReservationRequest;
-import com.example.PousadaIstoE.response.ConsumerResponse;
+import com.example.PousadaIstoE.response.CustomerResponse;
 import com.example.PousadaIstoE.response.PaymentTypeResponse;
 import com.example.PousadaIstoE.response.ReservationResponse;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Period;
@@ -19,18 +20,18 @@ import java.util.List;
 @Service
 public class ReservationService {
     private final OvernightStayReservationRepository overnightStayReservationRepository;
-    private final CostumerService costumerService;
+    private final CustomerService customerService;
     private final Finder find;
     private final DailyValuesRepository dailyValuesRepository;
 
     public ReservationService(
             OvernightStayReservationRepository overnightStayReservationRepository,
-            CostumerService costumerService,
+            CustomerService customerService,
             Finder find,
             DailyValuesRepository dailyValuesRepository
             ){
         this.overnightStayReservationRepository = overnightStayReservationRepository;
-        this.costumerService = costumerService;
+        this.customerService = customerService;
         this.find = find;
         this.dailyValuesRepository = dailyValuesRepository;
     }
@@ -55,14 +56,14 @@ public class ReservationService {
         List<PaymentType> paymentTypeList = new ArrayList<>();
         dateValidation(request.start_date(), request.end_date());
 
-        request.clients().forEach(client -> { costumerService.customerVerification(client, customerList); });
+        request.clients().forEach(client -> { customerService.customerVerification(client, customerList); });
 
         request.payment_type_id().forEach(id -> {
             var paymentType = find.paymentById(id);
             paymentTypeList.add(paymentType);
         });
 
-        costumerService.customerListVerification(customerList);
+        customerService.customerListVerification(customerList);
 
         OvernightStayReservation reservation = new ReservationBuilder()
                 .startDate(request.start_date())
@@ -88,7 +89,7 @@ public class ReservationService {
         List<PaymentType> paymentTypeList = new ArrayList<>();
 
         if(!request.clients().isEmpty()) { request.clients().forEach(
-                client -> { costumerService.customerVerification(client, customerListUpdated); }); }
+                client -> { customerService.customerVerification(client, customerListUpdated); }); }
 
         if (!request.payment_type_id().isEmpty()){
             request.payment_type_id().forEach(id -> {
@@ -98,7 +99,7 @@ public class ReservationService {
 
             });
         }
-        costumerService.customerListVerification(customerListUpdated);
+        customerService.customerListVerification(customerListUpdated);
 
         OvernightStayReservation updateReservation = new ReservationBuilder()
             .id(reservation.getId())
@@ -123,6 +124,17 @@ public class ReservationService {
              overnightStayReservationRepository.save(reservation);
         }
     }
+
+    private void removeAllPaymentTypes(Long reservation_id, Long payment_id){
+        var reservation = find.reservationById(reservation_id);
+        var paymentType = find.paymentById(payment_id);
+
+        if (reservation != null && !reservation.getClient().isEmpty()) {
+            reservation.getPaymentType().remove(paymentType);
+            overnightStayReservationRepository.save(reservation);
+        }
+
+    }
     private Float calculateTotal(OvernightStayReservation reservation){
         var period = Period.between(reservation.getStartDate(), reservation.getEndDate()).getDays();
         var amountPeople = reservation.getClient().size();
@@ -134,7 +146,7 @@ public class ReservationService {
         var total = calculateTotal(reservation);
 
         List<PaymentTypeResponse> paymentTypeList = new ArrayList<>();
-        List<ConsumerResponse> consumerResponseList = new ArrayList<>();
+        List<CustomerResponse> customerResponseList = new ArrayList<>();
 
         reservation.getPaymentType().forEach(type ->{
             PaymentTypeResponse response = new PaymentTypeResponse(type.getDescription());
@@ -143,7 +155,7 @@ public class ReservationService {
 
         if (reservation.getClient() != null) {
             reservation.getClient().forEach(client -> {
-                ConsumerResponse consumerResponse = new ConsumerResponse(
+                CustomerResponse customerResponse = new CustomerResponse(
                         client.getId(),
                         client.getName(),
                         client.getCpf(),
@@ -156,18 +168,18 @@ public class ReservationService {
                         client.getCounty() != null ? client.getCounty().getDescription() : "",
                         client.isHosted()
                 );
-                consumerResponseList.add(consumerResponse);
+                customerResponseList.add(customerResponse);
             });
         }
         return new ReservationResponse(
                 reservation.getId(),
-                consumerResponseList,
+                customerResponseList,
                 reservation.getStartDate(),
                 reservation.getEndDate(),
                 reservation.getRoom(),
                 paymentTypeList,
                 reservation.getPaymentStatus(),
-                consumerResponseList.size(),
+                customerResponseList.size(),
                 reservation.getObs(),
                 reservation.getActive(),
                 total
@@ -180,7 +192,7 @@ public class ReservationService {
     }
 
     public void isRoomAvailable(OvernightStayReservation reservation) {
-        List<OvernightStayReservation> reservationsList = overnightStayReservationRepository.findAllByRoom(reservation.getRoom());
+        List<OvernightStayReservation> reservationsList = overnightStayReservationRepository.findAllByRoomAndActiveIsTrue(reservation.getRoom());
 
         for (OvernightStayReservation existingReservation : reservationsList) {
             if (isOverlap(existingReservation, reservation)) {
@@ -208,5 +220,21 @@ public class ReservationService {
             }
         }
         throw new IllegalStateException("Price not found for the specified amount of people: " + amountPeople);
+    }
+
+    @Scheduled(cron = "0 0 6 * * *") // Runs at 6:00 AM every day
+    public void removeReservations() {
+        var canceledReservations = overnightStayReservationRepository.findAllAndActiveIsFalse();
+        canceledReservations.forEach(reservation -> {
+            if (reservation.getEndDate().isAfter(LocalDate.now().plusDays(7))){
+                reservation.getClient().forEach(client -> {
+                    System.out.println("removed reservation of ID " + reservation.getId() + " of client" + client.getName());
+                    removeClientFromReservation(reservation.getId(), client.getId());
+                    reservation.getPaymentType().forEach(paymentType -> {
+                        removeAllPaymentTypes(reservation.getId(), paymentType.getId());});
+                });
+            }
+            overnightStayReservationRepository.deleteById(reservation.getId());
+        });
     }
 }

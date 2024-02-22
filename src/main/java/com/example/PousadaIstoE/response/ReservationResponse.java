@@ -7,7 +7,7 @@ import java.util.List;
 
 public record ReservationResponse(
     Long id,
-    List<ConsumerResponse> client_response_list,
+    List<CustomerResponse> client_response_list,
     LocalDate start_date,
     LocalDate end_date,
     Integer room,

@@ -20,6 +20,7 @@ import com.example.PousadaIstoE.response.SimpleEntryResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -156,6 +157,7 @@ public class EntryService {
         List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
         consumptionList.forEach(entryConsumption -> {
             ConsumptionResponse consumptionResponse = new ConsumptionResponse(
+                    entryConsumption.getId(),
                     entryConsumption.getAmount(),
                     entryConsumption.getItens().getDescription(),
                     entryConsumption.getItens().getValue(),

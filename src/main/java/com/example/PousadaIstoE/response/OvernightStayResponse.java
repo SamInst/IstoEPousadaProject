@@ -8,7 +8,7 @@ import java.util.List;
 
 public record OvernightStayResponse(
         Long id,
-        List<ConsumerResponse> clients,
+        List<CustomerResponse> clients,
         Room room,
         LocalDate start_date,
         LocalDate end_date,
