@@ -8,10 +8,10 @@ import java.util.List;
 
 public record OvernightStayRequest(
         Long room_id,
-        List<ConsumerRequest> client_list,
+        List<ConsumerRequest> customer_list,
         LocalDate start_date,
         LocalDate end_date,
-        List<Long> payment_type_id,
+        List<CalculatePaymentTypeRequest> payment_type,
         PaymentStatus payment_status,
         String obs,
         OvernightStayStatus overnightStatus

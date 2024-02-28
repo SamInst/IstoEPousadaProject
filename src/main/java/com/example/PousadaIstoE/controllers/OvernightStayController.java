@@ -20,6 +20,8 @@ public class OvernightStayController {
     public OvernightStayResponse findById(@PathVariable Long overnight_id){
         return overnightService.findById(overnight_id);
     }
+
+    @GetMapping("/actives")
     public Page<SimpleOvernightResponse> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size){
