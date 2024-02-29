@@ -24,13 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class OvernightService {
-    private static final long PIX = 6L;
-    private static final long BANK_TRANSFER = 5L;
-    private static final long DEBIT_CARD = 4L;
-    private static final long CREDIT_CARD = 3L;
     private static final long CASH = 2L;
-    private static final long PENDING = 1L;
-
     private final DailyValueRepository dailyValueRepository;
     private final OvernightStayRepository overnightStayRepository;
     private final CashRegisterService cashRegisterService;
@@ -89,14 +83,14 @@ public class OvernightService {
     }
 
     public void calculatePaymentType(OvernightStay overnight, CalculatePaymentTypeRequest request){
-        CalculatePaymentType calculatePaymentType = new CalculatePaymentType();
+        CalculatePaymentTypeOvernight calculatePaymentTypeOvernight = new CalculatePaymentTypeOvernight();
 
         var payment = find.paymentById(request.payment_type_id());
 
-        calculatePaymentType.setPaymentType(payment);
-        calculatePaymentType.setOvernightStay(overnight);
-        calculatePaymentType.setValue(request.value());
-        calculatePaymentTypeRepository.save(calculatePaymentType);
+        calculatePaymentTypeOvernight.setPaymentType(payment);
+        calculatePaymentTypeOvernight.setOvernightStay(overnight);
+        calculatePaymentTypeOvernight.setValue(request.value());
+        calculatePaymentTypeRepository.save(calculatePaymentTypeOvernight);
     }
 
     public void changeReservationToOvernight(Long reservation_id){
@@ -180,7 +174,10 @@ public class OvernightService {
 
         dataValidation(request.start_date(), request.end_date(), request.room_id());
 
-        if (!request.room_id().equals(overnight.getRoom().getId())){ roomService.roomVerification(room); }
+        if (!request.room_id().equals(overnight.getRoom().getId())){
+            roomService.roomVerification(room);
+            roomService.updateRoomStatus(overnight.getRoom().getId(), RoomStatus.AVAILABLE);
+        }
 
         if (!request.customer_list().isEmpty()){
             request.customer_list().forEach(client ->{
@@ -188,7 +185,6 @@ public class OvernightService {
             });
             customerService.customerListVerification(updatedCustomerList);
         }
-
         OvernightStay updatedOvernight = new OvernightBuilder()
                 .id(overnight.getId())
                 .room(room)
@@ -218,6 +214,10 @@ public class OvernightService {
         updatedOvernight.setTotal(total);
 
         if (request.overnightStatus().equals(OvernightStayStatus.FINISHED)){
+            var paymentValues = calculatePaymentTypeRepository.sumAllValues(overnight_id);
+            if (!(paymentValues == total)){
+                throw new EntityConflict("The values entered do not correspond to the total cost of the overnight stay ");
+            }
             updatedOvernight.setTotalConsumption(totalConsumption);
             updatedOvernight.setTotal(total);
             updatedOvernight.setActive(false);
@@ -264,10 +264,10 @@ public class OvernightService {
         );
     }
 
-    private CalculatePaymentTypeResponse paymentTypeRequest(CalculatePaymentType calculatePaymentType){
+    private CalculatePaymentTypeResponse paymentTypeRequest(CalculatePaymentTypeOvernight calculatePaymentTypeOvernight){
         return new CalculatePaymentTypeResponse(
-                calculatePaymentType.getPaymentType().getDescription(),
-                calculatePaymentType.getValue()
+                calculatePaymentTypeOvernight.getPaymentType().getDescription(),
+                calculatePaymentTypeOvernight.getValue()
         );
     }
 

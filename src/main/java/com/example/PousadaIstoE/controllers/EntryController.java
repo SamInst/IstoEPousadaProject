@@ -32,6 +32,15 @@ public class EntryController {
         return entryService.findAll(pageable);
     }
 
+    @GetMapping("/actives")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<SimpleEntryResponse> findAllActives(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return entryService.findAllActives(pageable);
+    }
+
     @GetMapping("/find/id/{entry_id}")
     @ResponseStatus(HttpStatus.OK)
     public EntryResponse findById(@PathVariable Long entry_id){

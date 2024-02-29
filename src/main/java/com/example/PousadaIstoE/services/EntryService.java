@@ -5,15 +5,13 @@ import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.RoomStatus;
 import com.example.PousadaIstoE.builders.EntryBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
-import com.example.PousadaIstoE.model.Entry;
-import com.example.PousadaIstoE.model.PaymentType;
-import com.example.PousadaIstoE.repository.EntryConsumptionRepository;
-import com.example.PousadaIstoE.repository.EntryRepository;
-import com.example.PousadaIstoE.repository.PaymentTypeRepository;
-import com.example.PousadaIstoE.repository.RoomRepository;
+import com.example.PousadaIstoE.model.*;
+import com.example.PousadaIstoE.repository.*;
+import com.example.PousadaIstoE.request.CalculatePaymentTypeRequest;
 import com.example.PousadaIstoE.request.CashRegisterRequest;
 import com.example.PousadaIstoE.request.EntryRequest;
 import com.example.PousadaIstoE.request.UpdateEntryRequest;
+import com.example.PousadaIstoE.response.CalculatePaymentTypeResponse;
 import com.example.PousadaIstoE.response.ConsumptionResponse;
 import com.example.PousadaIstoE.response.EntryResponse;
 import com.example.PousadaIstoE.response.SimpleEntryResponse;
@@ -39,35 +37,42 @@ public class EntryService {
     public static final long MAX_HOUR_MINUTES = 120;
     private static final long PENDING = 1L;
     private static final long CASH = 2L;
-    private static final long CREDIT_CARD = 3L;
-    private static final long DEBIT_CARD = 4L;
-    private static final long BANK_TRANSFER = 5L;
-    private static final long PIX = 6L;
     private final EntryRepository entryRepository;
     private final EntryConsumptionRepository entryConsumptionRepository;
     private final Finder find;
     private final RoomRepository roomRepository;
     private final CashRegisterService cashRegisterService;
     private final RoomService roomService;
-    private final PaymentTypeRepository paymentTypeRepository;
+    private final CalculatePaymentTypeEntryRepository calculatePaymentTypeEntryRepository;
 
     public EntryService(EntryRepository entryRepository,
                         EntryConsumptionRepository entryConsumptionRepository,
                         Finder find,
                         RoomRepository roomRepository,
-                        CashRegisterService cashRegisterService, RoomService roomService,
-                        PaymentTypeRepository paymentTypeRepository) {
+                        CashRegisterService cashRegisterService,
+                        RoomService roomService,
+                        CalculatePaymentTypeEntryRepository calculatePaymentTypeEntryRepository) {
         this.entryRepository = entryRepository;
         this.entryConsumptionRepository = entryConsumptionRepository;
         this.find = find;
         this.roomRepository = roomRepository;
         this.cashRegisterService = cashRegisterService;
         this.roomService = roomService;
-        this.paymentTypeRepository = paymentTypeRepository;
+
+        this.calculatePaymentTypeEntryRepository = calculatePaymentTypeEntryRepository;
     }
 
     public Page<SimpleEntryResponse> findAll(Pageable pageable) {
         Page<Entry> page = entryRepository.findAllOrderByIdDesc(pageable);
+        List<SimpleEntryResponse> simpleEntryResponseList = page.getContent().stream()
+                .map(this::simpleEntryResponse)
+                .collect(Collectors.toList());
+        return new PageImpl<>(simpleEntryResponseList, pageable, page.getTotalElements());
+    }
+
+    //simplify after using a boolen in scope
+    public Page<SimpleEntryResponse> findAllActives(Pageable pageable) {
+        Page<Entry> page = entryRepository.findAllOrderByIdDescActive(pageable);
         List<SimpleEntryResponse> simpleEntryResponseList = page.getContent().stream()
                 .map(this::simpleEntryResponse)
                 .collect(Collectors.toList());
@@ -94,6 +99,7 @@ public class EntryService {
                 .paymentType(Collections.singletonList(paymentType))
                 .obs(request.obs().toUpperCase())
                 .consumptionValue(0F)
+                .active(true)
                 .entryValue(ENTRY_VALUE)
                 .totalEntry(ENTRY_VALUE)
                 .build();
@@ -105,18 +111,27 @@ public class EntryService {
     public void updateEntry(Long entry_id, UpdateEntryRequest request){
 
         var entry = find.entryById(entry_id);
+        if (entry.getEntryStatus().equals(EntryStatus.FINISHED)) throw new EntityConflict("The Entry was finished");
+
+        var paymentTypes = calculatePaymentTypeEntryRepository.findAllByEntry_Id(entry_id);
+
         var room = find.roomById(request.room_id());
-        if (!room.getId().equals(request.room_id())){ roomService.roomVerification(entry.getRooms()); }
+        if (!entry.getRooms().getId().equals(request.room_id())){
+            roomService.roomVerification(room);
+            roomService.updateRoomStatus(entry.getRooms().getId(), RoomStatus.AVAILABLE);
+        }
+        roomService.updateRoomStatus(room.getId(), RoomStatus.BUSY);
 
-        if (entry.getEntryStatus().equals(EntryStatus.FINISHED))
-            throw new EntityConflict("The Entry was finished");
+        if (!request.payment_type().isEmpty()) {
+            request.payment_type().forEach(paymentTypeRequest -> {
 
-        List<PaymentType> paymentTypeList = new ArrayList<>();
-        request.payment_type_ids().forEach(id -> {
-            var paymentType = find.paymentById(id);
-            paymentTypeList.add(paymentType);
-        });
-
+                if (paymentTypes.stream()
+                        .noneMatch(paymentType ->
+                                paymentType.getPaymentType().getId().equals(paymentTypeRequest.payment_type_id()))) {
+                    calculatePaymentType(entry, paymentTypeRequest);
+                }
+            });
+        }
         Entry updatedEntry = new EntryBuilder()
                 .id(entry.getId())
                 .rooms(room)
@@ -125,26 +140,35 @@ public class EntryService {
                 .entryStatus(request.entry_status())
                 .entryDataRegister(entry.getEntryDataRegister())
                 .paymentStatus(request.payment_status())
-                .paymentType(paymentTypeList)
+                .active(entry.getActive())
                 .obs(request.obs().toUpperCase())
                 .entryValue(entry.getEntryValue())
                 .consumptionValue(entry.getConsumptionValue())
                 .totalEntry(entry.getTotalEntry())
                 .build();
 
-        if (updatedEntry.getEntryStatus().equals(EntryStatus.FINISH)){
+        if (updatedEntry.getEntryStatus().equals(EntryStatus.FINISH)) {
+            finishEntry(updatedEntry);
+        }
+
+        if (updatedEntry.getEntryStatus().equals(EntryStatus.FINISHED)){
             finishEntry(updatedEntry);
 
-            if (updatedEntry.getPaymentStatus().equals(PaymentStatus.COMPLETED)){
-                var totalEntry = calculateHours(updatedEntry);
-                var totalConsumption = sumConsumption(entry);
-                updatedEntry.setEntryValue(totalEntry);
-                updatedEntry.setConsumptionValue(totalConsumption);
-                updatedEntry.setTotalEntry(totalEntry + totalConsumption);
-                saveInCashRegister(updatedEntry);
-                roomService.updateRoomStatus(room.getId(), RoomStatus.AVAILABLE);
-                updatedEntry.setEntryStatus(EntryStatus.FINISHED);
+            var paymentValues = calculatePaymentTypeEntryRepository.sumAllValues(entry_id);
+            var totalEntry = calculateHours(updatedEntry);
+            var totalConsumption = sumConsumption(entry);
+            var total = totalEntry + totalConsumption;
+
+            if (paymentValues != total){
+                throw new EntityConflict("The values entered do not correspond to the total cost of the overnight stay ");
             }
+            updatedEntry.setEntryValue(totalEntry);
+            updatedEntry.setConsumptionValue(totalConsumption);
+            updatedEntry.setTotalEntry(total);
+            saveInCashRegister(updatedEntry);
+            roomService.updateRoomStatus(room.getId(), RoomStatus.AVAILABLE);
+            updatedEntry.setEntryStatus(EntryStatus.FINISHED);
+            updatedEntry.setActive(false);
         }
         entryRepository.save(updatedEntry);
     }
@@ -154,6 +178,11 @@ public class EntryService {
         totalConsumption = totalConsumption != null ? totalConsumption : 0.0;
 
         var consumptionList = entryConsumptionRepository.findEntryConsumptionByEntry_Id(entry.getId());
+        var paymentType = calculatePaymentTypeEntryRepository.findAllByEntry_Id(entry.getId());
+
+        List<CalculatePaymentTypeResponse> paymentTypeList = paymentType.stream()
+                .map(this::paymentTypeRequest)
+                .toList();
         List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
         consumptionList.forEach(entryConsumption -> {
             ConsumptionResponse consumptionResponse = new ConsumptionResponse(
@@ -186,6 +215,7 @@ public class EntryService {
                 timeSpent(entry),
                 consumptionResponseList,
                 entry.getEntryStatus(),
+                paymentTypeList,
                 consumptionValue,
                 entryValue,
                 totalValue
@@ -237,28 +267,41 @@ public class EntryService {
     }
 
     private void saveInCashRegister(Entry entry){
+        var cash = find.paymentById(CASH);
         String newReport = "";
         AtomicReference<String> report = new AtomicReference<>(reportValidation(newReport));
-        AtomicReference<Float> cashOut = new AtomicReference<>(0F);
+        AtomicReference<Float> cashIn = new AtomicReference<>(0F);
 
-        List<PaymentType> paymentTypes = entry.getPaymentType();
-        paymentTypes.forEach(paymentType -> {
-            report.updateAndGet(v -> v + "(" + paymentType.getDescription() + ") ");
-            if (paymentType.getId() == PIX
-                    || paymentType.getId() == CREDIT_CARD
-                    || paymentType.getId() == DEBIT_CARD
-                    || paymentType.getId() == BANK_TRANSFER) {
-                cashOut.updateAndGet(v -> v + entry.getTotalEntry());
-            } else if (paymentType.getId() == CASH) {
-                cashOut.set(0F);
+        var paymentTypeList = calculatePaymentTypeEntryRepository.findAllByEntry_Id(entry.getId());
+
+        paymentTypeList.forEach(paymentType -> {
+            if (paymentTypeList.stream().anyMatch(payment -> payment.getPaymentType().equals(cash)) && paymentTypeList.size() == 1){
+                report.updateAndGet(v -> v + "(" + paymentType.getPaymentType().getDescription() + ")");
+                cashIn.set(entry.getTotalEntry());
+            } else {
+                report.updateAndGet(v -> v + "(" + paymentType.getPaymentType().getDescription()
+                        + " 'R$ "+ paymentType.getValue()+ "') ");
+
+                paymentTypeList.stream()
+                        .filter(payment -> payment.getPaymentType().equals(cash))
+                        .findFirst()
+                        .ifPresent(payment -> cashIn.set(payment.getValue()));
             }
         });
+        entry.setObs(entry.getObs() + "\n \n" + report);
         CashRegisterRequest cashRegisterRequest = new CashRegisterRequest(
-                newReport,
+                report.get(),
                 entry.getRooms().getNumber(),
-                entry.getTotalEntry(),
-                cashOut.get());
+                cashIn.get(),
+                0F);
         cashRegisterService.createCashRegister(cashRegisterRequest);
+    }
+
+    private CalculatePaymentTypeResponse paymentTypeRequest(CalculatePaymentTypeEntry calculatePaymentTypeOvernight){
+        return new CalculatePaymentTypeResponse(
+                calculatePaymentTypeOvernight.getPaymentType().getDescription(),
+                calculatePaymentTypeOvernight.getValue()
+        );
     }
 
     private Float sumConsumption(Entry entry){
@@ -302,6 +345,18 @@ public class EntryService {
         return allEntries.stream()
                 .map(this::simpleEntryResponse)
                 .toList();
+    }
+
+    public void calculatePaymentType(Entry entry, CalculatePaymentTypeRequest request){
+        CalculatePaymentTypeEntry calculatePaymentTypeEntry = new CalculatePaymentTypeEntry();
+
+        var payment = find.paymentById(request.payment_type_id());
+
+        calculatePaymentTypeEntry.setPaymentType(payment);
+        calculatePaymentTypeEntry.setEntry(entry);
+        calculatePaymentTypeEntry.setValue(request.value());
+
+        calculatePaymentTypeEntryRepository.save(calculatePaymentTypeEntry);
     }
 
 }

@@ -3,7 +3,9 @@ package com.example.PousadaIstoE.model;
 import com.example.PousadaIstoE.Enums.EntryStatus;
 import com.example.PousadaIstoE.Enums.PaymentStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "ip03_entry")
 public class Entry {
@@ -59,22 +63,7 @@ public class Entry {
     @Column(name = "ip03_consumption_value")
     private Float consumptionValue;
 
-    public Entry() {
-    }
+    @Column(name = "ip03_active")
+    private Boolean active;
 
-    public Entry(Long id, Rooms rooms, LocalDateTime startTime, LocalDateTime endTime, String licensePlate, EntryStatus entryStatus, LocalDate entryDataRegister, Float totalEntry, List<PaymentType> paymentType, PaymentStatus paymentStatus, String obs, Float entryValue, Float consumptionValue) {
-        this.id = id;
-        this.rooms = rooms;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.licensePlate = licensePlate;
-        this.entryStatus = entryStatus;
-        this.entryDataRegister = entryDataRegister;
-        this.totalEntry = totalEntry;
-        this.paymentType = paymentType;
-        this.paymentStatus = paymentStatus;
-        this.obs = obs;
-        this.entryValue = entryValue;
-        this.consumptionValue = consumptionValue;
-    }
 }

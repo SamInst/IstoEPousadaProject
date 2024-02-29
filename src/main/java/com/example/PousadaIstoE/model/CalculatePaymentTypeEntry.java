@@ -3,23 +3,23 @@ package com.example.PousadaIstoE.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "a05_calculate_payment_type")
-public class CalculatePaymentTypeOvernight {
+@Table(name = "a06_calculate_payment_type_entry")
+public class CalculatePaymentTypeEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "a05_id", nullable = false)
+    @Column(name = "a06_id", nullable = false)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "a05_id_payment_type")
+    @JoinColumn(name = "a06_id_payment_type")
     private PaymentType paymentType;
 
-    @Column(name = "a05_value")
+    @Column(name = "a06_value")
     private Float value;
 
     @ManyToOne
-    @JoinColumn(name = "a05_id_overnight")
-    private OvernightStay overnightStay;
+    @JoinColumn(name = "a06_id_entry")
+    private Entry entry;
 
     public Long getId() {
         return id;
@@ -45,11 +45,11 @@ public class CalculatePaymentTypeOvernight {
         this.value = value;
     }
 
-    public OvernightStay getOvernightStay() {
-        return overnightStay;
+    public Entry getEntry() {
+        return entry;
     }
 
-    public void setOvernightStay(OvernightStay overnightStay) {
-        this.overnightStay = overnightStay;
+    public void setEntry(Entry entry) {
+        this.entry = entry;
     }
 }

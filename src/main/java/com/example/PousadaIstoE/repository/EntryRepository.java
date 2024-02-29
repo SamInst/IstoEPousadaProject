@@ -19,4 +19,7 @@ public interface EntryRepository extends JpaRepository<Entry, Long> {
 
     @Query("select u from Entry u order by u.id desc")
     Page<Entry> findAllOrderByIdDesc(Pageable pageable);
+
+    @Query("select u from Entry u where u.active = true order by u.id desc")
+    Page<Entry> findAllOrderByIdDescActive(Pageable pageable);
 }

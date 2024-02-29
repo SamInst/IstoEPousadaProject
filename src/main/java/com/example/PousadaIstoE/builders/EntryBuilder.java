@@ -23,6 +23,7 @@ public class EntryBuilder {
     private String obs;
     private Float consumptionValue;
     private Float entryValue;
+    private boolean active;
 
     public EntryBuilder id(Long id) {
         this.id = id;
@@ -87,6 +88,11 @@ public class EntryBuilder {
         return this;
     }
 
+    public EntryBuilder active(boolean active) {
+        this.active = active;
+        return this;
+    }
+
     public Entry build() {
         return new Entry(
                 id,
@@ -101,6 +107,7 @@ public class EntryBuilder {
                 paymentStatus,
                 obs,
                 entryValue,
-                consumptionValue);
+                consumptionValue,
+                active);
     }
 }
