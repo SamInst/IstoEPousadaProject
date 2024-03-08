@@ -1,31 +1,27 @@
 package com.example.PousadaIstoE.services;
 
 import com.example.PousadaIstoE.Enums.EntryStatus;
-import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.RoomStatus;
 import com.example.PousadaIstoE.builders.EntryBuilder;
 import com.example.PousadaIstoE.exceptions.EntityConflict;
 import com.example.PousadaIstoE.model.*;
 import com.example.PousadaIstoE.repository.*;
-import com.example.PousadaIstoE.request.CalculatePaymentTypeRequest;
 import com.example.PousadaIstoE.request.CashRegisterRequest;
 import com.example.PousadaIstoE.request.EntryRequest;
 import com.example.PousadaIstoE.request.UpdateEntryRequest;
-import com.example.PousadaIstoE.response.CalculatePaymentTypeResponse;
+import com.example.PousadaIstoE.response.PaymentResponse;
 import com.example.PousadaIstoE.response.ConsumptionResponse;
 import com.example.PousadaIstoE.response.EntryResponse;
 import com.example.PousadaIstoE.response.SimpleEntryResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -43,23 +39,23 @@ public class EntryService {
     private final RoomRepository roomRepository;
     private final CashRegisterService cashRegisterService;
     private final RoomService roomService;
-    private final CalculatePaymentTypeEntryRepository calculatePaymentTypeEntryRepository;
+    private final PaymentService paymentService;
+
 
     public EntryService(EntryRepository entryRepository,
                         EntryConsumptionRepository entryConsumptionRepository,
                         Finder find,
                         RoomRepository roomRepository,
                         CashRegisterService cashRegisterService,
-                        RoomService roomService,
-                        CalculatePaymentTypeEntryRepository calculatePaymentTypeEntryRepository) {
+                        RoomService roomService, PaymentService paymentService
+    ){
         this.entryRepository = entryRepository;
         this.entryConsumptionRepository = entryConsumptionRepository;
         this.find = find;
         this.roomRepository = roomRepository;
         this.cashRegisterService = cashRegisterService;
         this.roomService = roomService;
-
-        this.calculatePaymentTypeEntryRepository = calculatePaymentTypeEntryRepository;
+        this.paymentService = paymentService;
     }
 
     public Page<SimpleEntryResponse> findAll(Pageable pageable) {
@@ -86,7 +82,6 @@ public class EntryService {
 
     public void createEntry(EntryRequest request){
         var room = find.roomById(request.room_id());
-        var paymentType= find.paymentById(PENDING);
         roomService.roomVerification(room);
         roomService.updateRoomStatus(room.getId(), RoomStatus.BUSY);
         Entry newEntry = new EntryBuilder()
@@ -95,8 +90,6 @@ public class EntryService {
                 .licensePlate(request.vehicle_plate().toUpperCase())
                 .entryStatus(EntryStatus.IN_PROGRESS)
                 .entryDataRegister(LocalDate.now())
-                .paymentStatus(PaymentStatus.PENDING)
-                .paymentType(Collections.singletonList(paymentType))
                 .obs(request.obs().toUpperCase())
                 .consumptionValue(0F)
                 .active(true)
@@ -113,8 +106,6 @@ public class EntryService {
         var entry = find.entryById(entry_id);
         if (entry.getEntryStatus().equals(EntryStatus.FINISHED)) throw new EntityConflict("The Entry was finished");
 
-        var paymentTypes = calculatePaymentTypeEntryRepository.findAllByEntry_Id(entry_id);
-
         var room = find.roomById(request.room_id());
         if (!entry.getRooms().getId().equals(request.room_id())){
             roomService.roomVerification(room);
@@ -122,16 +113,6 @@ public class EntryService {
         }
         roomService.updateRoomStatus(room.getId(), RoomStatus.BUSY);
 
-        if (!request.payment_type().isEmpty()) {
-            request.payment_type().forEach(paymentTypeRequest -> {
-
-                if (paymentTypes.stream()
-                        .noneMatch(paymentType ->
-                                paymentType.getPaymentType().getId().equals(paymentTypeRequest.payment_type_id()))) {
-                    calculatePaymentType(entry, paymentTypeRequest);
-                }
-            });
-        }
         Entry updatedEntry = new EntryBuilder()
                 .id(entry.getId())
                 .rooms(room)
@@ -139,7 +120,6 @@ public class EntryService {
                 .licensePlate(request.vehicle_plate().toUpperCase())
                 .entryStatus(request.entry_status())
                 .entryDataRegister(entry.getEntryDataRegister())
-                .paymentStatus(request.payment_status())
                 .active(entry.getActive())
                 .obs(request.obs().toUpperCase())
                 .entryValue(entry.getEntryValue())
@@ -154,7 +134,7 @@ public class EntryService {
         if (updatedEntry.getEntryStatus().equals(EntryStatus.FINISHED)){
             finishEntry(updatedEntry);
 
-            var paymentValues = calculatePaymentTypeEntryRepository.sumAllValues(entry_id);
+            var paymentValues = paymentService.sumAllValuesEntry(entry_id);
             var totalEntry = calculateHours(updatedEntry);
             var totalConsumption = sumConsumption(entry);
             var total = totalEntry + totalConsumption;
@@ -178,9 +158,9 @@ public class EntryService {
         totalConsumption = totalConsumption != null ? totalConsumption : 0.0;
 
         var consumptionList = entryConsumptionRepository.findEntryConsumptionByEntry_Id(entry.getId());
-        var paymentType = calculatePaymentTypeEntryRepository.findAllByEntry_Id(entry.getId());
+        var paymentType = paymentService.findAllByEntryId(entry.getId());
 
-        List<CalculatePaymentTypeResponse> paymentTypeList = paymentType.stream()
+        List<PaymentResponse> paymentTypeList = paymentType.stream()
                 .map(this::paymentTypeRequest)
                 .toList();
         List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
@@ -188,8 +168,8 @@ public class EntryService {
             ConsumptionResponse consumptionResponse = new ConsumptionResponse(
                     entryConsumption.getId(),
                     entryConsumption.getAmount(),
-                    entryConsumption.getItens().getDescription(),
-                    entryConsumption.getItens().getValue(),
+                    entryConsumption.getItem().getDescription(),
+                    entryConsumption.getItem().getValue(),
                     entryConsumption.getTotal()
                     );
             consumptionResponseList.add(consumptionResponse);
@@ -211,7 +191,7 @@ public class EntryService {
                         LocalDateTime.of(
                                 LocalDate.now(),
                                 LocalTime.of(0,0)),
-                entry.getLicensePlate() != null ? entry.getLicensePlate() : "",
+                entry.getVehiclePlate() != null ? entry.getVehiclePlate() : "",
                 timeSpent(entry),
                 consumptionResponseList,
                 entry.getEntryStatus(),
@@ -228,7 +208,7 @@ public class EntryService {
                 entry.getRooms().getNumber(),
                 entry.getStartTime(),
                 entry.getEndTime(),
-                entry.getLicensePlate() != null ? entry.getLicensePlate() : "",
+                entry.getVehiclePlate() != null ? entry.getVehiclePlate() : "",
                 entry.getEntryStatus()
         );
     }
@@ -272,7 +252,7 @@ public class EntryService {
         AtomicReference<String> report = new AtomicReference<>(reportValidation(newReport));
         AtomicReference<Float> cashIn = new AtomicReference<>(0F);
 
-        var paymentTypeList = calculatePaymentTypeEntryRepository.findAllByEntry_Id(entry.getId());
+        var paymentTypeList = paymentService.findAllByEntryId(entry.getId());
 
         paymentTypeList.forEach(paymentType -> {
             if (paymentTypeList.stream().anyMatch(payment -> payment.getPaymentType().equals(cash)) && paymentTypeList.size() == 1){
@@ -295,13 +275,6 @@ public class EntryService {
                 cashIn.get(),
                 0F);
         cashRegisterService.createCashRegister(cashRegisterRequest);
-    }
-
-    private CalculatePaymentTypeResponse paymentTypeRequest(CalculatePaymentTypeEntry calculatePaymentTypeOvernight){
-        return new CalculatePaymentTypeResponse(
-                calculatePaymentTypeOvernight.getPaymentType().getDescription(),
-                calculatePaymentTypeOvernight.getValue()
-        );
     }
 
     private Float sumConsumption(Entry entry){
@@ -328,8 +301,6 @@ public class EntryService {
                 .licensePlate(null)
                 .entryStatus(entry.getEntryStatus())
                 .entryDataRegister(null)
-                .paymentStatus(null)
-                .paymentType(null)
                 .obs(null)
                 .entryValue(0F)
                 .consumptionValue(0F)
@@ -346,17 +317,4 @@ public class EntryService {
                 .map(this::simpleEntryResponse)
                 .toList();
     }
-
-    public void calculatePaymentType(Entry entry, CalculatePaymentTypeRequest request){
-        CalculatePaymentTypeEntry calculatePaymentTypeEntry = new CalculatePaymentTypeEntry();
-
-        var payment = find.paymentById(request.payment_type_id());
-
-        calculatePaymentTypeEntry.setPaymentType(payment);
-        calculatePaymentTypeEntry.setEntry(entry);
-        calculatePaymentTypeEntry.setValue(request.value());
-
-        calculatePaymentTypeEntryRepository.save(calculatePaymentTypeEntry);
-    }
-
 }

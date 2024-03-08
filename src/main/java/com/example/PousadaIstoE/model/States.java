@@ -1,7 +1,11 @@
 package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "a01_states")
 public class States {
@@ -13,31 +17,7 @@ public class States {
     @Column(name = "description")
     private String description;
 
-    public Long getId() {
-        return id;
-    }
-
     @ManyToOne
     @JoinColumn (name = "fkip11ip14_id_country")
     private Country country;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
-    }
 }

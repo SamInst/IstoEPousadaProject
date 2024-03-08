@@ -22,6 +22,9 @@ public class Finder {
     private final CountyRepository countyRepository;
     private final StatesRepository statesRepository;
     private final PaymentTypeRepository paymentTypeRepository;
+    private final CalculatePaymentTypeOvernightRepository calculatePaymentTypeOvernightRepository;
+    private final CalculatePaymentTypeEntryRepository calculatePaymentTypeEntryRepository;
+    private final CalculatePaymentTypeReservationRepository calculatePaymentTypeReservationRepository;
 
     public Finder(
             EntryRepository entryRepository,
@@ -35,7 +38,10 @@ public class Finder {
             CountryRepository countryRepository,
             CountyRepository countyRepository,
             StatesRepository statesRepository,
-            PaymentTypeRepository paymentTypeRepository){
+            PaymentTypeRepository paymentTypeRepository,
+            CalculatePaymentTypeOvernightRepository calculatePaymentTypeOvernightRepository,
+            CalculatePaymentTypeEntryRepository calculatePaymentTypeEntryRepository,
+            CalculatePaymentTypeReservationRepository calculatePaymentTypeReservationRepository){
         this.cashRegisterRepository = cashRegisterRepository;
         this.customerRepository = customerRepository;
         this.employeeRepository = employeeRepository;
@@ -48,6 +54,9 @@ public class Finder {
         this.countyRepository = countyRepository;
         this.statesRepository = statesRepository;
         this.paymentTypeRepository = paymentTypeRepository;
+        this.calculatePaymentTypeOvernightRepository = calculatePaymentTypeOvernightRepository;
+        this.calculatePaymentTypeEntryRepository = calculatePaymentTypeEntryRepository;
+        this.calculatePaymentTypeReservationRepository = calculatePaymentTypeReservationRepository;
     }
 
     public Customer clientById(Long client_id){
@@ -72,7 +81,7 @@ public class Finder {
                 .orElseThrow(()-> new EntityNotFound("OverNight Stay not found"));
     }
 
-    public OvernightStayReservation reservationById(Long reservation_id){
+    public Reservation reservationById(Long reservation_id){
         return reservationRepository.findOvernightStayReservationById(reservation_id);
     }
 
@@ -103,6 +112,21 @@ public class Finder {
     public PaymentType paymentById(Long payment_id){
        return paymentTypeRepository.findById(payment_id)
                .orElseThrow(()-> new EntityNotFound("Payment Not Found"));
+    }
+
+    public PaymentOvernight calculatePaymentOvernightById(Long payment_id){
+        return calculatePaymentTypeOvernightRepository.findById(payment_id)
+                .orElseThrow(()-> new EntityNotFound("CalculatePayment not found"));
+    }
+
+    public PaymentEntry calculatePaymentEntryById(Long payment_id){
+        return calculatePaymentTypeEntryRepository.findById(payment_id)
+                .orElseThrow(()-> new EntityNotFound("CalculatePayment not found"));
+    }
+
+    public PaymentReservation calculatePaymentReservationById(Long reservation_id){
+        return calculatePaymentTypeReservationRepository.findById(reservation_id)
+                .orElseThrow(()-> new EntityNotFound("Reservation not found"));
     }
 
     public String replace(String string) {

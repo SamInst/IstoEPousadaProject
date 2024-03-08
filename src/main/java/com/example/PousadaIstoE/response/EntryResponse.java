@@ -17,7 +17,7 @@ public record EntryResponse(
         String time_spent,
         List<ConsumptionResponse> consumptionResponseList,
         EntryStatus entry_status,
-        List<CalculatePaymentTypeResponse> paymentType,
+        List<PaymentResponse> paymentType,
         double total_consumption,
         double entry_value,
         double total

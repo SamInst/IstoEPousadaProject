@@ -2,7 +2,7 @@ package com.example.PousadaIstoE.builders;
 
 import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.model.Customer;
-import com.example.PousadaIstoE.model.OvernightStayReservation;
+import com.example.PousadaIstoE.model.Reservation;
 import com.example.PousadaIstoE.model.PaymentType;
 
 import java.time.LocalDate;
@@ -62,15 +62,13 @@ public class ReservationBuilder {
         return this;
     }
 
-    public OvernightStayReservation build(){
-        return new OvernightStayReservation(
+    public Reservation build(){
+        return new Reservation(
                 id,
                 startDate,
                 endDate,
                 customerList,
                 room,
-                paymentType,
-                paymentStatus,
                 isActive,
                 obs);
     }

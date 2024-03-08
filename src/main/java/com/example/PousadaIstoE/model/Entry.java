@@ -1,7 +1,6 @@
 package com.example.PousadaIstoE.model;
 
 import com.example.PousadaIstoE.Enums.EntryStatus;
-import com.example.PousadaIstoE.Enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,8 +33,8 @@ public class Entry {
     @Column(name = "ip03_end_time")
     private LocalDateTime endTime;
 
-    @Column(name = "ip03_license_plate")
-    private String licensePlate;
+    @Column(name = "ip03_vehicle_plate")
+    private String vehiclePlate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ip03_entry_status")
@@ -47,19 +46,12 @@ public class Entry {
     @Column(name = "ip03_total_entry")
     private Float totalEntry;
 
-    @OneToMany
-    @JoinColumn (name = "ip03_payment_type")
-    private List<PaymentType> paymentType;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ip03_payment_status")
-    private PaymentStatus paymentStatus;
-
     @Column(name = "ip03_obs")
     private String obs;
 
     @Column(name = "ip03_entry_value")
     private Float entryValue;
+
     @Column(name = "ip03_consumption_value")
     private Float consumptionValue;
 

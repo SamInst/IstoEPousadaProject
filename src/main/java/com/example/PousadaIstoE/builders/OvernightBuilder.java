@@ -17,8 +17,6 @@ public class OvernightBuilder {
     private LocalDate startDate;
     private LocalDate endDate;
     private Integer amountPeople;
-    private List<PaymentType> paymentType;
-    private PaymentStatus paymentStatus;
     private Float totalConsumption;
     private Float total;
     private Float overnightValue;
@@ -54,16 +52,6 @@ public class OvernightBuilder {
 
     public OvernightBuilder amountPeople(Integer amountPeople) {
         this.amountPeople = amountPeople;
-        return this;
-    }
-
-    public OvernightBuilder paymentType(List<PaymentType> paymentType) {
-        this.paymentType = paymentType;
-        return this;
-    }
-
-    public OvernightBuilder paymentStatus(PaymentStatus paymentStatus) {
-        this.paymentStatus = paymentStatus;
         return this;
     }
 
@@ -105,8 +93,6 @@ public class OvernightBuilder {
                 startDate,
                 endDate,
                 amountPeople,
-                paymentType,
-                paymentStatus,
                 totalConsumption,
                 overnightValue,
                 total,

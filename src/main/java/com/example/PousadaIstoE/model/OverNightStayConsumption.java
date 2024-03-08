@@ -1,8 +1,14 @@
 package com.example.PousadaIstoE.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "ip10_overnight_consumption")
 public class OverNightStayConsumption {
     @Id
@@ -24,45 +30,10 @@ public class OverNightStayConsumption {
     @Column(name = "ip10_total")
     private Float total;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public Long getId() {
-        return id;
-    }
-    public Integer getAmount() {
-        return amount;
-    }
-    public void setAmount(Integer amount) {
-        this.amount = amount;
-    }
-    public Item getItens() {
-        return item;
-    }
-    public void setItens(Item item) {
-        this.item = item;
-    }
-    public Float getTotal() {
-        return total;
-    }
-    public void setTotal(Float total) {
-        this.total = total;
-    }
-
-    public OvernightStay getPernoites() {
-        return overnightStay;
-    }
-
-    public void setPernoites(OvernightStay overnightStay) {
-        this.overnightStay = overnightStay;
-    }
-
     public OverNightStayConsumption(Integer amount, Item item, OvernightStay overnightStay) {
         this.amount = amount;
         this.item = item;
         this.overnightStay = overnightStay;
         this.total = amount.floatValue() * item.getValue();
-    }
-    public OverNightStayConsumption() {
     }
 }

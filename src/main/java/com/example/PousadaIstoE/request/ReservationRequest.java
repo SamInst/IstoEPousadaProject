@@ -10,7 +10,6 @@ public record ReservationRequest(
         LocalDate start_date,
         LocalDate end_date,
         Integer room,
-        List<Long> payment_type_id,
-        PaymentStatus payment_status,
+        List<CalculatePaymentTypeRequest> paymentType,
         String obs
 ){}

@@ -10,7 +10,5 @@ public record UpdateEntryRequest(
         Long room_id,
         String vehicle_plate,
         EntryStatus entry_status,
-        List<CalculatePaymentTypeRequest> payment_type,
-        PaymentStatus payment_status,
         String obs
 ){}

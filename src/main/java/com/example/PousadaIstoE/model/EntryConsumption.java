@@ -2,8 +2,14 @@ package com.example.PousadaIstoE.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 @Table(name = "ip06_entry_consumption")
 public class EntryConsumption {
     @Id
@@ -26,44 +32,10 @@ public class EntryConsumption {
     @Column(name = "ip06_total")
     private Float total;
 
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public Long getId() {
-        return id;
-    }
-    public Integer getAmount() {
-        return amount;
-    }
-    public void setAmount(Integer amount) {
-        this.amount = amount;
-    }
-    public Item getItens() {
-        return item;
-    }
-    public void setItens(Item item) {
-        this.item = item;
-    }
-    public Entry getEntradas() {
-        return entry;
-    }
-    public void setEntradas(Entry entry) {
-        this.entry = entry;
-    }
-    public Float getTotal() {
-        return total;
-    }
-    public void setTotal(Float total) {
-        this.total = total;
-    }
-
     public EntryConsumption(Integer amount, Item item, Entry entry) {
         this.amount = amount;
         this.item = item;
         this.entry = entry;
         this.total = amount.floatValue() * item.getValue();
-    }
-    public EntryConsumption() {
     }
 }

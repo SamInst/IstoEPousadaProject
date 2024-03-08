@@ -1,8 +1,6 @@
 package com.example.PousadaIstoE.response;
 
-import com.example.PousadaIstoE.Enums.PaymentStatus;
 import com.example.PousadaIstoE.Enums.RoomType;
-import com.example.PousadaIstoE.request.CalculatePaymentTypeRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,8 +20,7 @@ public record OvernightStayResponse(
             Integer amount_days,
             Float total_consumption,
             Float daily_value,
-            List<CalculatePaymentTypeResponse> payment_type,
-            PaymentStatus payment_status,
+            List<PaymentResponse> payment_type,
             Float total_value
     ){}
     public record Room(

@@ -1,7 +1,5 @@
 package com.example.PousadaIstoE.response;
 
-import com.example.PousadaIstoE.Enums.PaymentStatus;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,8 +9,7 @@ public record ReservationResponse(
     LocalDate start_date,
     LocalDate end_date,
     Integer room,
-    List<PaymentTypeResponse> payment_type,
-    PaymentStatus payment_status,
+    List<PaymentResponse> payment_type,
     Integer amount_people,
     String obs,
     Boolean isActive,

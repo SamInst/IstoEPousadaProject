@@ -18,8 +18,6 @@ public class EntryBuilder {
     private EntryStatus entryStatus;
     private LocalDate entryDataRegister;
     private Float totalEntry;
-    private List<PaymentType> paymentType;
-    private PaymentStatus paymentStatus;
     private String obs;
     private Float consumptionValue;
     private Float entryValue;
@@ -78,16 +76,6 @@ public class EntryBuilder {
         return this;
     }
 
-    public EntryBuilder paymentType(List<PaymentType> paymentType) {
-        this.paymentType = paymentType;
-        return this;
-    }
-
-    public EntryBuilder paymentStatus(PaymentStatus paymentStatus) {
-        this.paymentStatus = paymentStatus;
-        return this;
-    }
-
     public EntryBuilder active(boolean active) {
         this.active = active;
         return this;
@@ -103,8 +91,6 @@ public class EntryBuilder {
                 entryStatus,
                 entryDataRegister,
                 totalEntry,
-                paymentType,
-                paymentStatus,
                 obs,
                 entryValue,
                 consumptionValue,

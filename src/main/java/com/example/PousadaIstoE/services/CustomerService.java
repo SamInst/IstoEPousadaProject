@@ -98,14 +98,14 @@ public class CustomerService {
                 .birth(request.birth())
                 .address(request.address())
                 .job(request.job())
-                .isHosted(client.isHosted())
+                .isHosted(client.getIsHosted())
                 .registeredBy(client.getRegisteredBy())
                 .build();
         customerRepository.save(updatedCustomer);
     }
 
     public void customerHosted(Customer customer, boolean hosted){
-        customer.setHosted(hosted);
+        customer.setIsHosted(hosted);
         customerRepository.save(customer);
     }
 
@@ -121,7 +121,7 @@ public class CustomerService {
                 customer.getCountry() != null ? customer.getCountry().getDescription() : NE,
                 customer.getState() != null ? customer.getState().getDescription() : NE,
                 customer.getCounty() != null ? customer.getCounty().getDescription() : NE,
-                customer.isHosted()
+                customer.getIsHosted()
         );
     }
 
@@ -169,4 +169,5 @@ public class CustomerService {
     public String replaceCPF(String cpf){
         return cpf.replaceAll("[.-]", "");
     }
+
 }
