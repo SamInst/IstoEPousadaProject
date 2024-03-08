@@ -6,12 +6,11 @@ import com.example.PousadaIstoE.model.PaymentReservation;
 import com.example.PousadaIstoE.repository.CalculatePaymentTypeEntryRepository;
 import com.example.PousadaIstoE.repository.CalculatePaymentTypeOvernightRepository;
 import com.example.PousadaIstoE.repository.CalculatePaymentTypeReservationRepository;
-import com.example.PousadaIstoE.request.CalculatePaymentTypeRequest;
+import com.example.PousadaIstoE.request.PaymentRequest;
 import com.example.PousadaIstoE.response.PaymentResponse;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class PaymentService {
@@ -27,7 +26,7 @@ public class PaymentService {
         this.find = find;
     }
 
-    public void addCalculatePaymentTypeOvernight(Long overnight_id, List<CalculatePaymentTypeRequest> request){
+    public void addCalculatePaymentTypeOvernight(Long overnight_id, List<PaymentRequest> request){
         var overnight = find.overnightStayById(overnight_id);
         List<PaymentOvernight> paymentOvernightList = new ArrayList<>();
 
@@ -44,7 +43,7 @@ public class PaymentService {
         calculatePaymentTypeOvernightRepository.saveAll(paymentOvernightList);
     }
 
-    public void changeCalculatePaymentTypeOvernight(Long calculate_type, CalculatePaymentTypeRequest request){
+    public void changeCalculatePaymentTypeOvernight(Long calculate_type, PaymentRequest request){
 
         var payment = find.paymentById(request.payment_type_id());
         var calculatePaymentTypeOvernight = find.calculatePaymentOvernightById(calculate_type);
@@ -59,7 +58,7 @@ public class PaymentService {
         calculatePaymentTypeOvernightRepository.deleteById(calculatePaymentTypeOvernight.getId());
     }
 
-    public void addCalculatePaymentTypeEntry(Long entry_id, List<CalculatePaymentTypeRequest> request){
+    public void addCalculatePaymentTypeEntry(Long entry_id, List<PaymentRequest> request){
         List<PaymentEntry> paymentEntryList = new ArrayList<>();
         var allPaymentTypes = calculatePaymentTypeEntryRepository.findAllByEntry_Id(entry_id);
         request.forEach(newRequest -> {
@@ -78,7 +77,7 @@ public class PaymentService {
         calculatePaymentTypeEntryRepository.saveAll(paymentEntryList);
     }
 
-    public void changeCalculatePaymentTypeEntry(Long calculate_type, CalculatePaymentTypeRequest request){
+    public void changeCalculatePaymentTypeEntry(Long calculate_type, PaymentRequest request){
         var calculatePaymentTypeEntry = find.calculatePaymentEntryById(calculate_type);
         var paymentType = find.paymentById(request.payment_type_id());
         calculatePaymentTypeEntry.setPaymentType(paymentType);
@@ -92,7 +91,7 @@ public class PaymentService {
         calculatePaymentTypeEntryRepository.deleteById(calculatePaymentTypeEntry.getId());
     }
 
-    public void addCalculatePaymentTypeReservation(Long reservation_id, List<CalculatePaymentTypeRequest> request){
+    public void addCalculatePaymentTypeReservation(Long reservation_id, List<PaymentRequest> request){
         var reservation = find.reservationById(reservation_id);
 
         List<PaymentReservation> calculatePaymentTypeOvernightList = new ArrayList<>();
@@ -110,7 +109,7 @@ public class PaymentService {
         calculatePaymentTypeReservationRepository.saveAll(calculatePaymentTypeOvernightList);
     }
 
-    public void changeCalculatePaymentTypeReservation(Long calculate_type, CalculatePaymentTypeRequest request){
+    public void changeCalculatePaymentTypeReservation(Long calculate_type, PaymentRequest request){
         var calculatePaymentTypeReservation = find.calculatePaymentReservationById(calculate_type);
         var paymentType = find.paymentById(request.payment_type_id());
         calculatePaymentTypeReservation.setPaymentType(paymentType);
@@ -166,7 +165,7 @@ public class PaymentService {
         );
     }
 
-    public PaymentResponse paymentEntryResponse(PaymentEntry paymentEntry){
+    public static PaymentResponse paymentEntryResponse(PaymentEntry paymentEntry){
         return new PaymentResponse(
                 paymentEntry.getId(),
                 paymentEntry.getPaymentType().getDescription(),

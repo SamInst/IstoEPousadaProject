@@ -11,7 +11,7 @@ public record OvernightStayRequest(
         List<ConsumerRequest> customer_list,
         LocalDate start_date,
         LocalDate end_date,
-        List<CalculatePaymentTypeRequest> payment_type,
+        List<PaymentRequest> payment_type,
         PaymentStatus payment_status,
         String obs,
         OvernightStayStatus overnightStatus

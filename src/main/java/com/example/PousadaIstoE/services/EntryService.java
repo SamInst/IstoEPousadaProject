@@ -161,7 +161,7 @@ public class EntryService {
         var paymentType = paymentService.findAllByEntryId(entry.getId());
 
         List<PaymentResponse> paymentTypeList = paymentType.stream()
-                .map(this::paymentTypeRequest)
+                .map(PaymentService::paymentEntryResponse)
                 .toList();
         List<ConsumptionResponse> consumptionResponseList = new ArrayList<>();
         consumptionList.forEach(entryConsumption -> {

@@ -10,7 +10,5 @@ public record UpdateReservationRequest(
         LocalDate start_date,
         LocalDate end_date,
         Integer room,
-        List<Long> payment_type_id,
-        PaymentStatus payment_status,
         String obs
 ){}

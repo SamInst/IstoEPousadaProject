@@ -8,6 +8,7 @@ import com.example.PousadaIstoE.model.*;
 import com.example.PousadaIstoE.repository.*;
 import com.example.PousadaIstoE.request.CashRegisterRequest;
 import com.example.PousadaIstoE.request.OvernightStayRequest;
+import com.example.PousadaIstoE.request.PaymentRequest;
 import com.example.PousadaIstoE.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -87,6 +88,7 @@ public class OvernightService {
         var period = Period.between(reservation.getStartDate(), reservation.getEndDate()).getDays();
         var overnightValue = amountPeoplePrice(reservation.getCustomer().size());
         var total = period * overnightValue;
+        var payments = paymentService.findAllByReservationId(reservation_id);
 
         roomService.roomVerification(room);
 
@@ -108,10 +110,20 @@ public class OvernightService {
                 .obs(reservation.getObs())
                 .build();
 
-        overnightStayRepository.save(overnight);
+        var savedOvernight = overnightStayRepository.save(overnight);
         reservation.setIsActive(false);
         overnightStayReservationRepository.save(reservation);
         roomService.updateRoomStatus(room.getId(), RoomStatus.BUSY);
+
+        List<PaymentRequest> paymentList = new ArrayList<>();
+        payments.forEach(payment -> {
+            PaymentRequest request = new PaymentRequest(
+                    payment.getPaymentType().getId(),
+                    payment.getValue(),
+                    payment.getPaymentStatus());
+            paymentList.add(request);
+        });
+        paymentService.addCalculatePaymentTypeOvernight(savedOvernight.getId(), paymentList);
     }
 
     public void createOvernightStay(OvernightStayRequest request) {

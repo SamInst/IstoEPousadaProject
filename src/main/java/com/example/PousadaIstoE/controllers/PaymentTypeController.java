@@ -1,6 +1,6 @@
 package com.example.PousadaIstoE.controllers;
 
-import com.example.PousadaIstoE.request.CalculatePaymentTypeRequest;
+import com.example.PousadaIstoE.request.PaymentRequest;
 import com.example.PousadaIstoE.services.PaymentService;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +21,7 @@ public class PaymentTypeController {
     @ResponseStatus(CREATED)
     public void addCalculatePaymentTypeOvernight(
             @PathVariable Long overnight_id,
-            @RequestBody List<CalculatePaymentTypeRequest> request){
+            @RequestBody List<PaymentRequest> request){
         paymentService.addCalculatePaymentTypeOvernight(overnight_id, request);
     }
 
@@ -29,7 +29,7 @@ public class PaymentTypeController {
     @ResponseStatus(ACCEPTED)
     public void changeCalculatePaymentTypeOvernight(
             @PathVariable Long calculate_type,
-            @RequestBody CalculatePaymentTypeRequest request){
+            @RequestBody PaymentRequest request){
         paymentService.changeCalculatePaymentTypeOvernight(calculate_type, request);
     }
 
@@ -43,7 +43,7 @@ public class PaymentTypeController {
     @ResponseStatus(CREATED)
     public void addCalculatePaymentTypeEntry(
             @PathVariable Long entry_id,
-            @RequestBody List<CalculatePaymentTypeRequest> request){
+            @RequestBody List<PaymentRequest> request){
         paymentService.addCalculatePaymentTypeEntry(entry_id, request);
     }
 
@@ -51,7 +51,7 @@ public class PaymentTypeController {
     @ResponseStatus(ACCEPTED)
     public void changeCalculatePaymentTypeEntry(
             @PathVariable Long calculate_type,
-            @RequestBody CalculatePaymentTypeRequest request){
+            @RequestBody PaymentRequest request){
         paymentService.changeCalculatePaymentTypeEntry(calculate_type, request);
     }
 
@@ -65,7 +65,7 @@ public class PaymentTypeController {
     @ResponseStatus(CREATED)
     public void addCalculatePaymentTypeReservation(
             @PathVariable Long reservation_id,
-            @RequestBody List<CalculatePaymentTypeRequest> request){
+            @RequestBody List<PaymentRequest> request){
         paymentService.addCalculatePaymentTypeReservation(reservation_id, request);
     }
 
@@ -73,7 +73,7 @@ public class PaymentTypeController {
     @ResponseStatus(ACCEPTED)
     public void changeCalculatePaymentTypeReservation(
             @PathVariable Long calculate_type,
-            @RequestBody CalculatePaymentTypeRequest request){
+            @RequestBody PaymentRequest request){
         paymentService.changeCalculatePaymentTypeReservation(calculate_type, request);
     }
 

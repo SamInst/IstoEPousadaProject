@@ -56,7 +56,7 @@ public class ReservationService {
 
     public void createReservation(ReservationRequest request) {
         List<Customer> customerList = new ArrayList<>();
-        List<PaymentType> paymentTypeList = new ArrayList<>();
+
         dateValidation(request.start_date(), request.end_date());
 
         request.clients().forEach(client -> { customerService.customerVerification(client, customerList); });
@@ -66,11 +66,10 @@ public class ReservationService {
                 .startDate(request.start_date())
                 .endDate(request.end_date())
                 .room(request.room())
-                .paymentType(paymentTypeList)
                 .obs(request.obs().toUpperCase())
                 .isActive(true)
                 .build();
-        isRoomAvailable(reservation);
+        isRoomAvailable(reservation, request.room());
         reservation.setCustomer(customerList);
        var savedReservation = overnightStayReservationRepository.save(reservation);
 
@@ -90,20 +89,17 @@ public class ReservationService {
         var reservation = find.reservationById(reservation_id);
         dateValidation(reservation.getStartDate(), reservation.getEndDate());
 
+        if (!request.room().equals(reservation.getRoom())
+                || !request.start_date().equals(reservation.getStartDate())
+                || !request.end_date().equals(reservation.getEndDate())){
+                isRoomAvailable(reservation, request.room());
+        }
+
         List<Customer> customerListUpdated = new ArrayList<>(reservation.getCustomer());
-        List<PaymentType> paymentTypeList = new ArrayList<>();
 
         if(!request.clients().isEmpty()) { request.clients().forEach(
                 client -> { customerService.customerVerification(client, customerListUpdated); }); }
 
-        if (!request.payment_type_id().isEmpty()){
-            request.payment_type_id().forEach(id -> {
-
-                    var paymentType = find.paymentById(id);
-                    paymentTypeList.add(paymentType);
-
-            });
-        }
         customerService.customerListVerification(customerListUpdated);
 
         Reservation updateReservation = new ReservationBuilder()
@@ -112,8 +108,6 @@ public class ReservationService {
             .endDate(request.end_date())
             .clientList(customerListUpdated)
             .room(request.room())
-            .paymentType(paymentTypeList)
-            .paymentStatus(request.payment_status())
             .isActive(reservation.getIsActive())
             .obs(request.obs() != null ? request.obs().toUpperCase() : "")
             .build();
@@ -130,15 +124,6 @@ public class ReservationService {
         }
     }
 
-    private void removeAllPaymentTypes(Long reservation_id, Long payment_id){
-        var reservation = find.reservationById(reservation_id);
-
-
-        if (reservation != null && !reservation.getCustomer().isEmpty()) {
-
-            overnightStayReservationRepository.save(reservation);
-        }
-    }
     private Float calculateTotal(Reservation reservation){
         var period = Period.between(reservation.getStartDate(), reservation.getEndDate()).getDays();
         var amountPeople = reservation.getCustomer().size();
@@ -192,8 +177,8 @@ public class ReservationService {
         if (endDate.isBefore(startDate)) throw new EntityConflict("The date entered cannot be less than today");
     }
 
-    public void isRoomAvailable(Reservation reservation) {
-        List<Reservation> reservationsList = overnightStayReservationRepository.findAllByRoomAndActiveIsTrue(reservation.getRoom());
+    public void isRoomAvailable(Reservation reservation, Integer room_number) {
+        List<Reservation> reservationsList = overnightStayReservationRepository.findAllByRoomAndIsActiveIsTrue(room_number);
 
         for (Reservation existingReservation : reservationsList) {
             if (isOverlap(existingReservation, reservation)) {

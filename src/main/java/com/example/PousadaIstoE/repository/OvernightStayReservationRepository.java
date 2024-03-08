@@ -23,8 +23,6 @@ public interface OvernightStayReservationRepository extends JpaRepository<Reserv
            """)
     List<Reservation> findAllAndActiveIsFalse();
 
-    @Query(value = """
-           select * from ip13_reservations u where u.ip13_is_active = true;
-           """, nativeQuery = true)
-    List<Reservation> findAllByRoomAndActiveIsTrue(Integer room);
+
+    List<Reservation> findAllByRoomAndIsActiveIsTrue(Integer room);
 }
